@@ -1,7 +1,7 @@
 {
-    "name": "sylius/plugin-skeleton",
+    "name": "sylius/live-one-page-checkout-plugin",
     "type": "sylius-plugin",
-    "description": "Acme example plugin for Sylius.",
+    "description": "LiveOnePageCheckout plugin for Sylius",
     "keywords": [
         "sylius",
         "sylius-plugin",
@@ -64,36 +64,15 @@
     },
     "autoload": {
         "psr-4": {
-            "Acme\\SyliusExamplePlugin\\": "src/"
+            "Sylius\\LiveOnePageCheckoutPlugin\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\Acme\\SyliusExamplePlugin\\": ["tests/", "tests/TestApplication/src/"]
+            "Tests\\Sylius\\LiveOnePageCheckoutPlugin\\": [
+                "tests/",
+                "tests/TestApplication/src/"
+            ]
         }
-    },
-    "scripts": {
-        "post-root-package-install": [
-            "@php bin/validate-directory.php"
-        ],
-        "post-create-project-cmd": [
-            "@php bin/rename-plugin.php",
-            "@test-app-init",
-            "@php bin/show-success.php"
-        ],
-        "database-reset": [
-            "vendor/bin/console doctrine:database:drop --force --if-exists",
-            "vendor/bin/console doctrine:database:create",
-            "vendor/bin/console doctrine:migration:migrate -n",
-            "vendor/bin/console sylius:fixtures:load -n"
-        ],
-        "frontend-clear": [
-            "cd vendor/sylius/test-application && yarn install && yarn build",
-            "vendor/bin/console assets:install"
-        ],
-        "test-app-init": [
-            "@database-reset",
-            "@frontend-clear"
-        ]
     }
 }
