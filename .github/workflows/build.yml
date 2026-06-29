@@ -1,0 +1,139 @@
+name: Build
+
+on:
+    push:
+        paths-ignore:
+            - "*.md"
+    pull_request:
+        paths-ignore:
+            - "*.md"
+    release:
+        types: [created]
+    schedule:
+        -
+            cron: "0 1 * * 6" # Run at 1am every Saturday
+    workflow_dispatch: ~
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    tests:
+        runs-on: ubuntu-latest
+
+        name: "Sylius ${{ matrix.sylius }}, PHP ${{ matrix.php }}, Symfony ${{ matrix.symfony }}, ${{ matrix.database == 'postgres' && format('PostgreSQL {0}', matrix.database_version) || format('MySQL {0}', matrix.database_version) }}, State Machine Adapter ${{ matrix.state_machine_adapter }}"
+
+        strategy:
+            fail-fast: false
+            matrix:
+                php: ["8.3"]
+                symfony: ["^6.4", "^7.4"]
+                sylius: ["~2.2.0"]
+                node: ["22.x"]
+                database: ["mysql"]
+                database_version: ["8.4"]
+                state_machine_adapter: ["symfony_workflow"]
+
+                include:
+                    -
+                        php: "8.3"
+                        symfony: "^7.4"
+                        sylius: "~2.2.0"
+                        node: "22.x"
+                        database: "postgres"
+                        database_version: "15.8"
+                        state_machine_adapter: "symfony_workflow"
+                    -
+                        php: "8.3"
+                        symfony: "^7.4"
+                        sylius: "~2.2.0"
+                        node: "22.x"
+                        database: "mysql"
+                        database_version: "8.4"
+                        state_machine_adapter: "winzou_state_machine"
+
+        env:
+            APP_ENV: test
+            DATABASE_URL: ${{ matrix.database == 'postgres' && format('pgsql://postgres:postgres@127.0.0.1/sylius?serverVersion={0}', matrix.database_version) || format('mysql://root:root@127.0.0.1/sylius?serverVersion={0}', matrix.database_version) }}
+            TEST_SYLIUS_STATE_MACHINE_ADAPTER: "${{ matrix.state_machine_adapter }}"
+
+        steps:
+            -
+                uses: actions/checkout@v4
+
+            -
+                name: Output PHP version for Symfony CLI
+                run: php -v | head -n 1 | awk '{ print $2 }' > .php-version
+
+            -
+                name: Get Composer cache directory
+                id: composer-cache
+                run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+            -
+                name: Cache Composer
+                uses: actions/cache@v4
+                with:
+                    path: ${{ steps.composer-cache.outputs.dir }}
+                    key: ${{ runner.os }}-php-${{ matrix.php }}-composer-${{ hashFiles('**/composer.json **/composer.lock') }}
+                    restore-keys: |
+                        ${{ runner.os }}-php-${{ matrix.php }}-composer-
+
+            -
+                name: Restrict Symfony version
+                if: matrix.symfony != ''
+                run: |
+                    composer global config --no-plugins allow-plugins.symfony/flex true
+                    composer global require --no-progress --no-scripts --no-plugins "symfony/flex:^1.10"
+                    composer config extra.symfony.require "${{ matrix.symfony }}"
+
+            -
+                name: Restrict Sylius version
+                if: matrix.sylius != ''
+                run: composer require "sylius/sylius:${{ matrix.sylius }}" --no-update --no-scripts --no-interaction
+
+            -
+                name: Require Winzou State Machine
+                if: "${{ matrix.state_machine_adapter == 'winzou_state_machine' }}"
+                run: |
+                    composer require winzou/state-machine:^0.4 --no-update
+                    composer require winzou/state-machine-bundle:^0.6 --no-update
+
+            -
+                name: Build Sylius Test Application
+                uses: SyliusLabs/BuildTestAppAction@v3.2.0
+                with:
+                    e2e_js: "no"
+                    cache_key: "${{ runner.os }}-php-${{ matrix.php }}-composer-${{ hashFiles('**/composer.json') }}"
+                    cache_restore_key: "${{ runner.os }}-php-${{ matrix.php }}-composer-"
+                    database: "${{ matrix.database }}"
+                    database_version: "${{ matrix.database_version }}"
+                    node_version: "${{ matrix.node }}"
+                    php_version: "${{ matrix.php }}"
+                    sylius_version: "${{ matrix.sylius }}"
+                    symfony_version: "${{ matrix.symfony }}"
+
+            -
+                name: Run security check
+                run: composer audit --abandoned=ignore
+
+            -
+                name: Validate composer.json
+                run: composer validate --ansi --strict
+
+            -
+                name: Run ECS
+                run: vendor/bin/ecs check
+
+            -
+                name: Lint container
+                run: vendor/bin/console lint:container
+
+            -
+                name: Run PHPStan
+                run: vendor/bin/phpstan analyse -c phpstan.neon
+
+            -
+                name: Run PHPUnit
+                run: vendor/bin/phpunit --colors=always
