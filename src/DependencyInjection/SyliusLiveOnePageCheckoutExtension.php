@@ -47,6 +47,7 @@ final class SyliusLiveOnePageCheckoutExtension extends AbstractResourceExtension
         return '@SyliusLiveOnePageCheckoutPlugin/src/Migrations';
     }
 
+    /** @return array<int, string> */
     protected function getNamespacesOfMigrationsExecutedBefore(): array
     {
         return [

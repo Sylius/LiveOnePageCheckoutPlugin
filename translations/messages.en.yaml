@@ -1,0 +1,5 @@
+sylius_live_one_page_checkout:
+    form:
+        channel:
+            one_page_checkout_enabled: 'Enable one page checkout'
+            one_page_checkout_enabled_help: 'When enabled, this channel uses the one page checkout instead of the default multi-step checkout. In one page checkout, whenever shipping applies the shipping address is always required, while the billing address stays optional.'
