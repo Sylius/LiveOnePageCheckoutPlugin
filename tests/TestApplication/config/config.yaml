@@ -6,7 +6,13 @@ twig:
     paths:
         '%kernel.project_dir%/../../../tests/TestApplication/templates': ~
 
-# Remove if you do not need to extend entities
+sylius_channel:
+    resources:
+        channel:
+            classes:
+                model: Tests\Sylius\LiveOnePageCheckoutPlugin\Entity\Channel
+
+
 doctrine:
     orm:
         entity_managers:

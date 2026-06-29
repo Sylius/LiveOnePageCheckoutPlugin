@@ -1,0 +1,6 @@
+sylius_twig_hooks:
+    hooks:
+        'sylius_admin.channel.create.content.form.sections.general':
+            one_page_checkout_enabled:
+                template: '@SyliusLiveOnePageCheckoutPlugin/admin/channel/form/sections/general/one_page_checkout_enabled.html.twig'
+                priority: 350
