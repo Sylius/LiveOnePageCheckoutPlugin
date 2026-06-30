@@ -11,7 +11,7 @@ return static function (ContainerConfigurator $container): void {
 
     $services
         ->set('sylius_live_one_page_checkout.context.cart.default_shipping_address', DefaultShippingAddressCartContext::class)
-        ->decorate('sylius.context.cart.new_shop_based', null, 255)
+        ->decorate('sylius.context.cart.new_shop_based')
         ->args([
             service('.inner'),
             service('sylius_live_one_page_checkout.checker.checkout_enabled'),
