@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\LiveOnePageCheckoutPlugin\Unit\Cart\Context;
 
-use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\Address;
@@ -25,7 +24,6 @@ use Sylius\LiveOnePageCheckoutPlugin\Cart\Context\DefaultShippingAddressCartCont
 use Sylius\LiveOnePageCheckoutPlugin\Checker\CheckoutEnabledCheckerInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Model\ChannelInterface;
 
-#[CoversClass(DefaultShippingAddressCartContext::class)]
 final class DefaultShippingAddressCartContextTest extends TestCase
 {
     private ResettableCartContextInterface&MockObject $decoratedContext;

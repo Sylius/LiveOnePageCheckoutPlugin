@@ -1,0 +1,12 @@
+winzou_state_machine:
+    sylius_order_checkout:
+        transitions:
+            complete:
+                from: [payment_selected, payment_skipped, cart]
+                to: completed
+        callbacks:
+            guard:
+                sylius_live_one_page_checkout_block_cart_completion:
+                    on: complete
+                    do: ['@sylius_live_one_page_checkout.winzou.guard.checkout_completion', '__invoke']
+                    args: ['object']

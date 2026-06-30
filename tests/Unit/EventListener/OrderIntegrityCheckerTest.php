@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\LiveOnePageCheckoutPlugin\Unit\EventListener;
 
-use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Bundle\ShopBundle\EventListener\OrderIntegrityCheckerInterface;
@@ -23,7 +22,6 @@ use Sylius\LiveOnePageCheckoutPlugin\EventListener\OrderIntegrityChecker;
 use Sylius\LiveOnePageCheckoutPlugin\Model\ChannelInterface;
 use Sylius\Resource\Symfony\EventDispatcher\GenericEvent;
 
-#[CoversClass(OrderIntegrityChecker::class)]
 final class OrderIntegrityCheckerTest extends TestCase
 {
     private OrderIntegrityCheckerInterface&MockObject $decoratedChecker;

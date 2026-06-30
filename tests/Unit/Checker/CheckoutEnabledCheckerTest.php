@@ -13,13 +13,11 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\LiveOnePageCheckoutPlugin\Unit\Checker;
 
-use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Sylius\LiveOnePageCheckoutPlugin\Checker\CheckoutEnabledChecker;
 use Sylius\LiveOnePageCheckoutPlugin\Checker\CheckoutEnabledCheckerInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Model\ChannelInterface;
 
-#[CoversClass(CheckoutEnabledChecker::class)]
 final class CheckoutEnabledCheckerTest extends TestCase
 {
     private CheckoutEnabledChecker $checker;
