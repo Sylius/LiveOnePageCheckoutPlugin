@@ -1,4 +1,3 @@
-# Put your plugin configuration here
-
 imports:
-    - { resource: "twig_hooks/**/*.yaml" }
+    - { resource: "@SyliusLiveOnePageCheckoutPlugin/config/twig_hooks/**/*.yaml" }
+    - { resource: "@SyliusLiveOnePageCheckoutPlugin/config/integrations.php" }

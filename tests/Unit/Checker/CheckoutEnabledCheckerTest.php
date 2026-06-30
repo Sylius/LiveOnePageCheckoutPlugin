@@ -13,25 +13,23 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\LiveOnePageCheckoutPlugin\Unit\Checker;
 
-use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Sylius\LiveOnePageCheckoutPlugin\Checker\OnePageCheckoutEnabledChecker;
-use Sylius\LiveOnePageCheckoutPlugin\Checker\OnePageCheckoutEnabledCheckerInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Checker\CheckoutEnabledChecker;
+use Sylius\LiveOnePageCheckoutPlugin\Checker\CheckoutEnabledCheckerInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Model\ChannelInterface;
 
-#[CoversClass(OnePageCheckoutEnabledChecker::class)]
-final class OnePageCheckoutEnabledCheckerTest extends TestCase
+final class CheckoutEnabledCheckerTest extends TestCase
 {
-    private OnePageCheckoutEnabledChecker $checker;
+    private CheckoutEnabledChecker $checker;
 
     protected function setUp(): void
     {
-        $this->checker = new OnePageCheckoutEnabledChecker();
+        $this->checker = new CheckoutEnabledChecker();
     }
 
     public function testImplementsCheckerInterface(): void
     {
-        self::assertInstanceOf(OnePageCheckoutEnabledCheckerInterface::class, $this->checker);
+        self::assertInstanceOf(CheckoutEnabledCheckerInterface::class, $this->checker);
     }
 
     public function testReturnsTrueWhenChannelHasOnePageCheckoutEnabled(): void
