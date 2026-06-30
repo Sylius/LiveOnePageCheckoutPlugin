@@ -15,7 +15,10 @@ namespace Sylius\LiveOnePageCheckoutPlugin\Checker;
 
 use Sylius\LiveOnePageCheckoutPlugin\Model\ChannelInterface;
 
-interface OnePageCheckoutEnabledCheckerInterface
+final class CheckoutEnabledChecker implements CheckoutEnabledCheckerInterface
 {
-    public function isEnabled(ChannelInterface $channel): bool;
+    public function isEnabled(ChannelInterface $channel): bool
+    {
+        return $channel->isOnePageCheckoutEnabled();
+    }
 }
