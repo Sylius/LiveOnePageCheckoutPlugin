@@ -2,10 +2,7 @@
 
 namespace Sylius\LiveOnePageCheckoutPlugin\Form\Type;
 
-use Sylius\Bundle\CoreBundle\Form\Type\AddressChoiceType;
 use Sylius\Bundle\CoreBundle\Form\Type\Checkout\ChangePaymentMethodType;
-use Sylius\Bundle\CoreBundle\Form\Type\Checkout\PaymentType;
-use Sylius\Bundle\CoreBundle\Form\Type\Checkout\ShipmentType;
 use Sylius\Bundle\CoreBundle\Form\Type\Customer\CustomerCheckoutGuestType;
 use Sylius\Bundle\PromotionBundle\Form\Type\PromotionCouponToCodeType;
 use Sylius\Bundle\ResourceBundle\Form\Type\AbstractResourceType;
@@ -28,7 +25,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\Valid;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
-use Webmozart\Assert\Assert;
 
 final class CheckoutType extends AbstractResourceType
 {
@@ -65,7 +61,6 @@ final class CheckoutType extends AbstractResourceType
             ->addEventListener(FormEvents::PRE_SUBMIT, fn (FormEvent $event) => $this->applySelectedDefaultAddress($event, $options, 'shipping'))
             ->addEventListener(FormEvents::PRE_SUBMIT, fn (FormEvent $event) => $this->applySelectedDefaultAddress($event, $options, 'billing'))
             ->addEventListener(FormEvents::PRE_SUBMIT, fn (FormEvent $event) => $this->synchronizeAddresses($event, $options))
-            ->addEventListener(FormEvents::SUBMIT, fn (FormEvent $event) => $this->rebuildCollections($event))
         ;
     }
 
@@ -99,6 +94,20 @@ final class CheckoutType extends AbstractResourceType
         $order = $event->getData();
         $channel = $order->getChannel();
 
+        $form
+            ->add('shippingAddress', AddressType::class, [
+                'shippable' => true,
+                'channel' => $channel,
+            ])
+            ->add('billingAddress', AddressType::class, [
+                'channel' => $channel,
+            ])
+            ->add('payments', ChangePaymentMethodType::class, [
+                'entry_type' => PaymentType::class,
+                'label' => false,
+            ])
+        ;
+
         if ($order->isShippingRequired()) {
             $form
                 ->add('differentBillingAddress', CheckboxType::class, [
@@ -113,20 +122,6 @@ final class CheckoutType extends AbstractResourceType
                 ])
             ;
         }
-
-        $form
-            ->add('shippingAddress', AddressType::class, [
-                'shippable' => true,
-                'channel' => $channel,
-            ])
-            ->add('billingAddress', AddressType::class, [
-                'channel' => $channel,
-            ])
-            ->add('payments', ChangePaymentMethodType::class, [
-                'entry_type' => PaymentType::class,
-                'label' => false,
-            ])
-        ;
     }
 
     /**
@@ -226,36 +221,14 @@ final class CheckoutType extends AbstractResourceType
         $event->setData($orderData);
     }
 
-    private function rebuildCollections(FormEvent $event): void
-    {
-        $form = $event->getForm();
-        /** @var OrderInterface $order */
-        $order = $event->getData();
-
-        if ($order->isShippingRequired()) {
-            $form->add('shipments', CollectionType::class, [
-                'entry_type' => ShipmentType::class,
-                'label' => false,
-            ]);
-        }
-
-        $form->add('payments', ChangePaymentMethodType::class, [
-            'entry_type' => PaymentType::class,
-            'label' => false,
-        ]);
-    }
-
     private function addAddressChoice(FormInterface $form, CustomerInterface $customer, ?AddressInterface $orderAddress, string $scope): void
     {
         $default = $this->findMatchingCustomerAddress($customer, $orderAddress);
 
         $form
-            ->add('default' . ucfirst($scope) . 'Address', AddressChoiceType::class, [
+            ->add('default' . ucfirst($scope) . 'Address', DefaultAddressChoiceType::class, [
                 'customer' => $customer,
-                'expanded' => true,
-                'mapped' => false,
                 'data' => $default,
-                'preferred_choices' => null !== $customer->getDefaultAddress() ? [$customer->getDefaultAddress()] : [],
                 'constraints' => [$this->buildAddressRequiredCallback($scope)],
             ])
             ->add('new' . ucfirst($scope) . 'Address', CheckboxType::class, [

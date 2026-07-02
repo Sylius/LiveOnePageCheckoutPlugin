@@ -88,6 +88,7 @@ class FormComponent
     public function toggleDifferentBillingAddress(): void
     {
         $this->clearAddressForm('differentBillingAddress', 'defaultBillingAddress', 'billingAddress');
+        $this->formValues['newBillingAddress'] = false;
     }
 
     private function clearAddressForm(string $flagKey, string $defaultKey, string $addressKey): void

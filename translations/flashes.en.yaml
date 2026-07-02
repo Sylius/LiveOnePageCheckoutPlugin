@@ -1,0 +1,3 @@
+sylius_live_one_page_checkout:
+    checkout:
+        state_mismatch: "The order summary has changed. Please review your order and try again."

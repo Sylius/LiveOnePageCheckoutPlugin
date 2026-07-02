@@ -1,5 +1,2 @@
-sylius_live_one_page_checkout_admin:
-    resource: "@SyliusLiveOnePageCheckoutPlugin/config/routes/admin.yaml"
-
-sylius_live_one_page_checkout_shop:
-    resource: "@SyliusLiveOnePageCheckoutPlugin/config/routes/shop.yaml"
+sylius_live_one_page_checkout:
+    resource: "@SyliusLiveOnePageCheckoutPlugin/config/routes.yaml"

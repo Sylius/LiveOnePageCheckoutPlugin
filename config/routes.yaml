@@ -1,0 +1,5 @@
+sylius_live_one_page_checkout_shop:
+    resource: "@SyliusLiveOnePageCheckoutPlugin/config/routes/shop.yaml"
+    prefix: /{_locale}
+    requirements:
+        _locale: ^[a-z]{2}(?:_[A-Z]{2})?$
