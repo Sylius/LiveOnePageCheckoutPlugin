@@ -24,6 +24,6 @@ final readonly class OrderHasher implements OrderHasherInterface
 
     public function hash(OrderInterface $order): string
     {
-        return md5(json_encode($this->orderHashDataProvider->getData($order)));
+        return md5((string) json_encode($this->orderHashDataProvider->getData($order)));
     }
 }

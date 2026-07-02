@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Sylius\LiveOnePageCheckoutPlugin\Form\Type;
 
 use Sylius\Bundle\ShippingBundle\Form\Type\ShippingMethodChoiceType;
+use Sylius\Component\Core\Model\ShippingMethodInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
@@ -63,16 +64,21 @@ final class ShipmentType extends AbstractType
 
     private function discardUnsupportedMethod(FormEvent $event): void
     {
+        /** @var array<string, mixed> $data */
         $data = $event->getData();
-        $code = is_array($data) ? ($data['method'] ?? null) : null;
+        $code = $data['method'] ?? null;
 
         if (null === $code) {
             return;
         }
 
         $supported = $event->getForm()->get('method')->getConfig()->getOption('choices');
+        $supportedCodes = array_map(
+            static fn (ShippingMethodInterface $method) => $method->getCode(),
+            is_array($supported) ? $supported : [],
+        );
 
-        if (!in_array($code, array_map(static fn ($method) => $method->getCode(), $supported), true)) {
+        if (!in_array($code, $supportedCodes, true)) {
             $data['method'] = null;
             $event->setData($data);
         }

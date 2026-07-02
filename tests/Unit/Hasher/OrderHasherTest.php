@@ -39,7 +39,7 @@ final class OrderHasherTest extends TestCase
 
         $this->orderHashDataProvider->method('getData')->with($order)->willReturn($data);
 
-        self::assertSame(md5(json_encode($data)), $this->hasher->hash($order));
+        self::assertSame(md5((string) json_encode($data)), $this->hasher->hash($order));
     }
 
     public function testProducesDifferentHashesForDifferentData(): void

@@ -182,7 +182,9 @@ final class CheckoutType extends AbstractResourceType
      */
     private function applySelectedDefaultAddress(FormEvent $event, array $options, string $scope): void
     {
+        /** @var array<string, mixed> $orderData */
         $orderData = $event->getData();
+        /** @var CustomerInterface|null $customer */
         $customer = $options['customer'];
 
         $defaultField = 'default' . ucfirst($scope) . 'Address';
@@ -191,10 +193,10 @@ final class CheckoutType extends AbstractResourceType
 
         $selectedDefaultAddressId = $orderData[$defaultField] ?? null;
 
-        if (null !== $customer && null !== $selectedDefaultAddressId && '' !== $selectedDefaultAddressId) {
+        if (null !== $customer && is_string($selectedDefaultAddressId) && '' !== $selectedDefaultAddressId) {
             $orderData[$newField] = false;
 
-            $address = $this->addressRepository->findOneByCustomer((string) $selectedDefaultAddressId, $customer);
+            $address = $this->addressRepository->findOneByCustomer($selectedDefaultAddressId, $customer);
 
             if (null !== $address) {
                 $orderData[$addressField] = $this->buildAddressFormValues($address);
@@ -209,6 +211,7 @@ final class CheckoutType extends AbstractResourceType
      */
     private function synchronizeAddresses(FormEvent $event, array $options): void
     {
+        /** @var array<string, mixed> $orderData */
         $orderData = $event->getData();
         /** @var OrderInterface $order */
         $order = $options['data'];
@@ -258,6 +261,7 @@ final class CheckoutType extends AbstractResourceType
 
         return new Callback(
             callback: function (?AddressInterface $value, ExecutionContextInterface $context) use ($scope, $newField, $message): void {
+                /** @var FormInterface $root */
                 $root = $context->getRoot();
 
                 if ('billing' === $scope && $root->has('differentBillingAddress') && !(bool) $root->get('differentBillingAddress')->getData()) {

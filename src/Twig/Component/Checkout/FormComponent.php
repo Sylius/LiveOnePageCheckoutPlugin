@@ -58,8 +58,14 @@ class FormComponent
     #[PreReRender(priority: -100)]
     public function setHash(): void
     {
-        $this->orderProcessor->process($this->resource);
-        $this->stateHash = $this->orderHasher->hash($this->resource);
+        $order = $this->resource;
+
+        if (null === $order) {
+            return;
+        }
+
+        $this->orderProcessor->process($order);
+        $this->stateHash = $this->orderHasher->hash($order);
     }
 
     protected function instantiateForm(): FormInterface

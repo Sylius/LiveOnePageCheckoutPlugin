@@ -31,7 +31,8 @@ final readonly class SubmittedHashProvider implements SubmittedHashProviderInter
         }
 
         $formData = $request->request->all(CheckoutType::NAME);
+        $stateHash = $formData['stateHash'] ?? '';
 
-        return (string) ($formData['stateHash'] ?? '');
+        return is_string($stateHash) ? $stateHash : '';
     }
 }
