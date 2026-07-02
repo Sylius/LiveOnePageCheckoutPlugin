@@ -1,18 +1,25 @@
 <?php
 
+/*
+ * This file is part of the Sylius package.
+ *
+ * (c) Sylius Sp. z o.o.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 declare(strict_types=1);
 
 namespace Sylius\LiveOnePageCheckoutPlugin\Twig\Component\Checkout;
 
 use Sylius\Bundle\UiBundle\Twig\Component\ResourceFormComponentTrait;
 use Sylius\Bundle\UiBundle\Twig\Component\TemplatePropTrait;
-use Sylius\Component\Core\Model\AddressInterface;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Repository\OrderRepositoryInterface;
 use Sylius\Component\Customer\Context\CustomerContextInterface;
 use Sylius\Component\Order\Processor\OrderProcessorInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Hasher\OrderHasherInterface;
-use Sylius\Resource\Factory\FactoryInterface;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
@@ -26,6 +33,7 @@ class FormComponent
 {
     /** @use ResourceFormComponentTrait<OrderInterface> */
     use ResourceFormComponentTrait;
+
     use TemplatePropTrait;
 
     #[ExposeInTemplate]
@@ -33,7 +41,6 @@ class FormComponent
 
     /**
      * @param OrderRepositoryInterface<OrderInterface> $repository
-     * @param FactoryInterface<AddressInterface> $addressFactory
      */
     public function __construct(
         OrderRepositoryInterface $repository,

@@ -1,5 +1,16 @@
 <?php
 
+/*
+ * This file is part of the Sylius package.
+ *
+ * (c) Sylius Sp. z o.o.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
+
 namespace Sylius\LiveOnePageCheckoutPlugin\Form\Type;
 
 use Sylius\Bundle\CoreBundle\Form\Type\Checkout\ChangePaymentMethodType;
@@ -28,7 +39,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 final class CheckoutType extends AbstractResourceType
 {
-    const NAME = 'sylius_live_one_page_checkout_checkout';
+    public const NAME = 'sylius_live_one_page_checkout_checkout';
 
     /**
      * @param string[] $validationGroups
@@ -151,9 +162,9 @@ final class CheckoutType extends AbstractResourceType
 
     private function shouldCollectGuestCustomer(?CustomerInterface $resourceCustomer, ?CustomerInterface $customer): bool
     {
-        return (null === $customer && null === $resourceCustomer)
-            || (null !== $resourceCustomer && null === $resourceCustomer->getUser())
-            || ($resourceCustomer !== $customer);
+        return (null === $customer && null === $resourceCustomer) ||
+            (null !== $resourceCustomer && null === $resourceCustomer->getUser()) ||
+            ($resourceCustomer !== $customer);
     }
 
     private function hasDifferentBillingAddress(OrderInterface $order): bool
@@ -161,9 +172,9 @@ final class CheckoutType extends AbstractResourceType
         $billingAddress = $order->getBillingAddress();
         $shippingAddress = $order->getShippingAddress();
 
-        return null !== $billingAddress
-            && null !== $shippingAddress
-            && !$this->addressComparator->equal($billingAddress, $shippingAddress);
+        return null !== $billingAddress &&
+            null !== $shippingAddress &&
+            !$this->addressComparator->equal($billingAddress, $shippingAddress);
     }
 
     /**
