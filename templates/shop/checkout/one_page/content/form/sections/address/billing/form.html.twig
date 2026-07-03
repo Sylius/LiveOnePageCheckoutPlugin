@@ -1,0 +1,9 @@
+{% set form = hookable_metadata.context.form %}
+{% set show_billing = form.differentBillingAddress is not defined or form.differentBillingAddress.vars.data %}
+{% set prefixes = hookable_metadata.prefixes|merge(['sylius_live_one_page_checkout.shop.shared.form']) %}
+
+{% if show_billing and (form.defaultBillingAddress is not defined or form.newBillingAddress.vars.data|default(false)) %}
+    <div class="row g-3">
+        {% hook 'address' with { _prefixes: prefixes, form: form.billingAddress } %}
+    </div>
+{% endif %}

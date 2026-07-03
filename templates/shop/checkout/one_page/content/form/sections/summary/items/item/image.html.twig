@@ -1,0 +1,11 @@
+{% set item = hookable_metadata.context.item %}
+
+<div class="flex-shrink-0 summary-item-image">
+    <div class="overflow-hidden bg-light rounded-3 summary-item-thumb">
+        {{ component('sylius_shop:main_image', {
+            product: item.variant.hasImages ? item.variant : item.variant.product,
+            class: 'w-100 h-100 object-fit-cover',
+            filter: 'sylius_shop_product_small_thumbnail',
+        }) }}
+    </div>
+</div>

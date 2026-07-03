@@ -1,0 +1,5 @@
+{% set form = hookable_metadata.context.default_addresses %}
+
+<div class="mb-3">
+    {% hook 'default_addresses' with { form } %}
+</div>

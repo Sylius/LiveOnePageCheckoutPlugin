@@ -1,0 +1,13 @@
+{% import '@SyliusShop/shared/macro/money.html.twig' as money %}
+
+{% set order = hookable_metadata.context.resource %}
+
+{% if order.shipments is not empty %}
+    <div class="d-flex align-items-center mb-2">
+        <div class="d-flex align-items-center gap-2">
+            {{ ux_icon('tabler:truck', { class: 'icon icon-sm text-body-tertiary' }) }}
+            {{ 'sylius.ui.shipping_estimated_cost'|trans }}
+        </div>
+        <div class="ms-auto">{{ money.convertAndFormat(order.shippingTotal) }}</div>
+    </div>
+{% endif %}

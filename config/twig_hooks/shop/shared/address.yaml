@@ -1,0 +1,48 @@
+sylius_twig_hooks:
+    hooks:
+        'sylius_live_one_page_checkout.shop.shared.form.address':
+            first_name:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/shared/form/address/first_name.html.twig'
+                priority: 800
+            last_name:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/shared/form/address/last_name.html.twig'
+                priority: 700
+            street:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/shared/form/address/street.html.twig'
+                priority: 600
+            city:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/shared/form/address/city.html.twig'
+                priority: 500
+            postcode:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/shared/form/address/postcode.html.twig'
+                priority: 400
+            country:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/shared/form/address/country.html.twig'
+                priority: 300
+            province:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/shared/form/address/province.html.twig'
+                priority: 200
+            phone_number:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/shared/form/address/phone_number.html.twig'
+                priority: 100
+            company:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/shared/form/address/company.html.twig'
+                priority: 0
+
+        'sylius_live_one_page_checkout.shop.shared.form.address_book':
+            default_addresses:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/shared/form/address_book/default_addresses.html.twig'
+                priority: 100
+            new_address:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/shared/form/address_book/new_address.html.twig'
+                priority: 0
+
+        'sylius_live_one_page_checkout.shop.shared.form.address_book.default_addresses':
+            address:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/shared/form/address_book/default_addresses/address.html.twig'
+                priority: 0
+
+        'sylius_live_one_page_checkout.shop.shared.form.address_book.default_addresses.address':
+            widget:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/shared/form/address_book/default_addresses/address/widget.html.twig'
+                priority: 0

@@ -1,0 +1,6 @@
+{% set form = hookable_metadata.context.form %}
+
+{{ form_errors(form) }}
+{% for choice in form %}
+    {% hook 'address' with { form: choice } %}
+{% endfor %}

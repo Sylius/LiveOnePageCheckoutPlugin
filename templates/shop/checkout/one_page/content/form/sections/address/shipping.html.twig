@@ -1,0 +1,7 @@
+{% set resource = hookable_metadata.context.resource %}
+
+{% if resource.shippingRequired %}
+    <div>
+        {% hook 'shipping' %}
+    </div>
+{% endif %}

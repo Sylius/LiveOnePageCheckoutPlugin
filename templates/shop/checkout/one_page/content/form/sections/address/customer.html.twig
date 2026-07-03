@@ -1,0 +1,7 @@
+{% set form = hookable_metadata.context.form %}
+
+{% if form.customer is defined %}
+    <div class="mb-4">
+        {{ form_row(form.customer.email) }}
+    </div>
+{% endif %}

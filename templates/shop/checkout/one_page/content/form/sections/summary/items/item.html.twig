@@ -1,0 +1,8 @@
+{% set order = hookable_metadata.context.resource %}
+{% set limit = hookable_metadata.context.limit|default(3) %}
+
+{% for item in order.items %}
+    <div class="d-flex align-items-center gap-3 mb-3 pb-3 border-bottom {{ loop.index > limit ? 'summary-extra-item' : '' }}">
+        {% hook 'item' with { item } %}
+    </div>
+{% endfor %}

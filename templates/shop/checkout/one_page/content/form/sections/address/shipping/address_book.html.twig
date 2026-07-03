@@ -1,0 +1,13 @@
+{% set form = hookable_metadata.context.form %}
+{% set prefixes = hookable_metadata.prefixes|merge(['sylius_live_one_page_checkout.shop.shared.form']) %}
+
+{% if form.defaultShippingAddress is defined %}
+    <div class="mb-4">
+        {% hook 'address_book' with {
+            _prefixes: prefixes,
+            default_addresses: form.defaultShippingAddress,
+            new_address: form.newShippingAddress,
+            toggle_action: 'toggleNewShippingAddress',
+        } %}
+    </div>
+{% endif %}
