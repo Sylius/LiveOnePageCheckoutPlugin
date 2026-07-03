@@ -237,6 +237,10 @@ final class CheckoutType extends AbstractResourceType
 
     private function addAddressChoice(FormInterface $form, CustomerInterface $customer, ?AddressInterface $orderAddress, string $scope): void
     {
+        if ($customer->getAddresses()->isEmpty()) {
+            return;
+        }
+
         $default = $this->findMatchingCustomerAddress($customer, $orderAddress);
 
         $form
