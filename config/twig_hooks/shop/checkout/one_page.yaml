@@ -82,13 +82,13 @@ sylius_twig_hooks:
         'sylius_live_one_page_checkout.shop.checkout.one_page.content.form.sections.shipping_method.shipments.shipment.choice.details':
             name:
                 template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/shipping_method/shipments/shipment/choice/details/name.html.twig'
-                priority: 100
+                priority: 200
             description:
                 template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/shipping_method/shipments/shipment/choice/details/description.html.twig'
-                priority: 0
+                priority: 1000
             delivery_time:
                 template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/shipping_method/shipments/shipment/choice/details/delivery_time.html.twig'
-                priority: -100
+                priority: 0
 
         'sylius_live_one_page_checkout.shop.checkout.one_page.content.form.sections.payment_method':
             payments:
