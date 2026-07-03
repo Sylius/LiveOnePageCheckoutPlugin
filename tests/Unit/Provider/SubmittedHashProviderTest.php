@@ -31,7 +31,7 @@ final class SubmittedHashProviderTest extends TestCase
     public function testReturnsSubmittedHashFromCurrentRequest(): void
     {
         $requestStack = new RequestStack();
-        $requestStack->push(Request::create('/checkout-one-page', 'PUT', [
+        $requestStack->push(Request::create('/checkout/one-page', 'PUT', [
             CheckoutType::NAME => ['stateHash' => 'abc123'],
         ]));
 
@@ -43,7 +43,7 @@ final class SubmittedHashProviderTest extends TestCase
     public function testReturnsEmptyStringWhenStateHashIsMissingFromSubmittedForm(): void
     {
         $requestStack = new RequestStack();
-        $requestStack->push(Request::create('/checkout-one-page', 'PUT', [
+        $requestStack->push(Request::create('/checkout/one-page', 'PUT', [
             CheckoutType::NAME => [],
         ]));
 
