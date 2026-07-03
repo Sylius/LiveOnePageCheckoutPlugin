@@ -1,0 +1,145 @@
+{% import '@SyliusShop/shared/macro/money.html.twig' as money %}
+
+{% set form = hookable_metadata.context.form %}
+{% set resource = hookable_metadata.context.resource %}
+
+<div class="mb-4">
+    <div class="h3 mb-4">
+        {{ 'sylius.ui.address'|trans }}
+    </div>
+
+    {% if form.customer is defined %}
+        <div class="mb-4">
+            {{ form_row(form.customer.email) }}
+        </div>
+    {% endif %}
+
+    {% if resource.shippingRequired %}
+        <div>
+            <div class="h4 mb-4">
+                {{ 'sylius.ui.shipping_address'|trans }}
+            </div>
+
+            {% if form.defaultShippingAddress is defined %}
+                <div class="mb-4">
+                    <div class="mb-3">
+                        {{ form_errors(form.defaultShippingAddress) }}
+                        {% for formDefaultShippingAddress in form.defaultShippingAddress %}
+                            <div class="{{ formDefaultShippingAddress.vars.checked ? 'fw-bold' : '' }}">
+                                {{ form_widget(formDefaultShippingAddress) }}
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    {{ form_row(form.newShippingAddress, {
+                        attr: { 'data-action': 'change->live#action', 'data-live-action-param': 'toggleNewShippingAddress' }
+                    }) }}
+                </div>
+            {% endif %}
+            <div class="mb-4">
+                {% if form.defaultShippingAddress is not defined or form.newShippingAddress.vars.data|default(false) %}
+                    <div class="row g-3">
+                        <div class="col-12 col-sm-6">{{ form_row(form.shippingAddress.firstName) }}</div>
+                        <div class="col-12 col-sm-6">{{ form_row(form.shippingAddress.lastName) }}</div>
+
+                        <div class="col-12">{{ form_row(form.shippingAddress.street) }}</div>
+
+                        <div class="col-12 col-sm-6">{{ form_row(form.shippingAddress.city) }}</div>
+                        <div class="col-12 col-sm-6">{{ form_row(form.shippingAddress.postcode) }}</div>
+
+                        <div class="col-12 col-sm-6">{{ form_row(form.shippingAddress.countryCode) }}</div>
+                        <div class="col-12 col-sm-6">
+                            {% if form.shippingAddress.provinceCode is defined %}
+                                {{ form_row(form.shippingAddress.provinceCode) }}
+                            {% elseif form.shippingAddress.provinceName is defined %}
+                                {{ form_row(form.shippingAddress.provinceName) }}
+                            {% else %}
+                                <div class="field mb-3">
+                                    <label class="form-label">{{ 'sylius.ui.province'|trans }}</label>
+                                    <input type="text" class="form-control" disabled>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-12 col-sm-6">{{ form_row(form.shippingAddress.phoneNumber) }}</div>
+                        <div class="col-12 col-sm-6">{{ form_row(form.shippingAddress.company) }}</div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+
+    <div>
+        <div class="h4 mb-4">
+            {{ 'sylius.ui.billing_address'|trans }}
+        </div>
+
+        <div class="mb-4">
+            {% if form.differentBillingAddress is defined %}
+                {% if not form.differentBillingAddress.vars.data %}
+                    <div class="mb-3">{{ 'sylius_live_one_page_checkout.ui.checkout.billing_same_as_shipping'|trans }}</div>
+                {% endif %}
+
+                <div class="mb-3">
+                    {{ form_row(form.differentBillingAddress, {
+                        attr: { 'data-action': 'change->live#action', 'data-live-action-param': 'toggleDifferentBillingAddress' }
+                    }) }}
+
+                    {{ form_errors(form.differentBillingAddress) }}
+                </div>
+                {% set show_billing = form.differentBillingAddress.vars.data %}
+            {% else %}
+                <div class="mb-3">{{ 'sylius_live_one_page_checkout.ui.checkout.no_shipping'|trans }}</div>
+                {% set show_billing = true %}
+            {% endif %}
+
+            {% if show_billing %}
+                {% if form.defaultBillingAddress is defined %}
+                    <div class="mb-4">
+                        <div class="mb-3">
+                            {{ form_errors(form.defaultBillingAddress) }}
+                            {% for formDefaultBillingAddress in form.defaultBillingAddress %}
+                                <div class="{{ formDefaultBillingAddress.vars.checked ? 'fw-bold' : '' }}">
+                                    {{ form_widget(formDefaultBillingAddress) }}
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        {{ form_row(form.newBillingAddress, {
+                            attr: { 'data-action': 'change->live#action', 'data-live-action-param': 'toggleNewBillingAddress' }
+                        }) }}
+                    </div>
+                {% endif %}
+
+                {% if form.defaultBillingAddress is not defined or form.newBillingAddress.vars.data|default(false) %}
+                    <div class="row g-3">
+                        <div class="col-12 col-sm-6">{{ form_row(form.billingAddress.firstName) }}</div>
+                        <div class="col-12 col-sm-6">{{ form_row(form.billingAddress.lastName) }}</div>
+
+                        <div class="col-12">{{ form_row(form.billingAddress.street) }}</div>
+
+                        <div class="col-12 col-sm-6">{{ form_row(form.billingAddress.city) }}</div>
+                        <div class="col-12 col-sm-6">{{ form_row(form.billingAddress.postcode) }}</div>
+
+                        <div class="col-12 col-sm-6">{{ form_row(form.billingAddress.countryCode) }}</div>
+                        <div class="col-12 col-sm-6">
+                            {% if form.billingAddress.provinceCode is defined %}
+                                {{ form_row(form.billingAddress.provinceCode) }}
+                            {% elseif form.billingAddress.provinceName is defined %}
+                                {{ form_row(form.billingAddress.provinceName) }}
+                            {% else %}
+                                <div class="field mb-3">
+                                    <label class="form-label">{{ 'sylius.ui.province'|trans }}</label>
+                                    <input type="text" class="form-control" disabled>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-12 col-sm-6">{{ form_row(form.billingAddress.phoneNumber) }}</div>
+                        <div class="col-12 col-sm-6">{{ form_row(form.billingAddress.company) }}</div>
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>

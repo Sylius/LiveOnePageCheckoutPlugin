@@ -1,0 +1,31 @@
+
+{% set form = hookable_metadata.context.form %}
+
+<div class="mb-4">
+    <div class="h4 mb-4">
+        {{ 'sylius.ui.payment_methods'|trans }}
+    </div>
+
+    {% for formPayment in form.payments %}
+        {{ form_errors(formPayment.method) }}
+        {% for key, formMethod in formPayment.method %}
+            {% set method = formPayment.method.vars.choices[key].data %}
+            <div class="card bg-body-tertiary border-0 mb-3" >
+                <label class="d-flex gap-3 card-body">
+                    <div class="flex-grow-1">
+                        <div>
+                            {{ form_widget(formMethod) }}
+                        </div>
+                        {% if method.description is not null %}
+                            <div class="ps-4"><small class="text-black-50">{{ method.description }}</small></div>
+                        {% endif %}
+                    </div>
+                </label>
+            </div>
+        {% else %}
+            unavailable
+        {% endfor %}
+    {% else %}
+        unavailable
+    {% endfor %}
+</div>

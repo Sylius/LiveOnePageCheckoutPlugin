@@ -13,11 +13,17 @@ declare(strict_types=1);
 
 namespace Sylius\LiveOnePageCheckoutPlugin\EventListener;
 
+use Doctrine\Persistence\ObjectManager;
 use Sylius\Bundle\ShopBundle\EventListener\OrderIntegrityCheckerInterface;
 use Sylius\Component\Core\Model\OrderInterface;
+use Sylius\Component\Order\Processor\OrderProcessorInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Checker\CheckoutEnabledCheckerInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Checker\OrderConsistencyCheckerInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Model\ChannelInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Provider\SubmittedHashProviderInterface;
 use Sylius\Resource\Symfony\EventDispatcher\GenericEvent;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\Routing\RouterInterface;
 use Webmozart\Assert\Assert;
 
 final readonly class OrderIntegrityChecker implements OrderIntegrityCheckerInterface
@@ -25,6 +31,11 @@ final readonly class OrderIntegrityChecker implements OrderIntegrityCheckerInter
     public function __construct(
         private OrderIntegrityCheckerInterface $decoratedChecker,
         private CheckoutEnabledCheckerInterface $checkoutEnabledChecker,
+        private OrderConsistencyCheckerInterface $consistencyChecker,
+        private SubmittedHashProviderInterface $submittedHashProvider,
+        private OrderProcessorInterface $orderProcessor,
+        private RouterInterface $router,
+        private ObjectManager $manager,
     ) {
     }
 
@@ -36,10 +47,23 @@ final readonly class OrderIntegrityChecker implements OrderIntegrityCheckerInter
         $channel = $order->getChannel();
         Assert::isInstanceOf($channel, ChannelInterface::class);
 
-        if ($this->checkoutEnabledChecker->isEnabled($channel)) {
+        if (false === $this->checkoutEnabledChecker->isEnabled($channel)) {
+            $this->decoratedChecker->check($event);
+
             return;
         }
 
-        $this->decoratedChecker->check($event);
+        $submittedHash = $this->submittedHashProvider->getSubmittedHash();
+        $this->orderProcessor->process($order);
+
+        if ($this->consistencyChecker->isConsistent($order, $submittedHash)) {
+            return;
+        }
+
+        $event->stop('sylius_live_one_page_checkout.checkout.state_mismatch');
+        $event->setResponse(new RedirectResponse($this->router->generate('sylius_live_one_page_checkout_shop_checkout')));
+
+        $this->manager->persist($order);
+        $this->manager->flush();
     }
 }

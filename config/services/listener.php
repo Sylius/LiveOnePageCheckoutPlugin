@@ -17,6 +17,11 @@ return static function (ContainerConfigurator $container): void {
         ->args([
             service('.inner'),
             service('sylius_live_one_page_checkout.checker.checkout_enabled'),
+            service('sylius_live_one_page_checkout.checker.order_consistency'),
+            service('sylius_live_one_page_checkout.provider.submitted_hash'),
+            service('sylius.order_processing.order_processor.composite'),
+            service('router'),
+            service('sylius.manager.order'),
         ])
     ;
 

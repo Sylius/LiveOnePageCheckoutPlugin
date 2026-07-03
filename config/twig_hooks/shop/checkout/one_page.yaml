@@ -1,0 +1,43 @@
+sylius_twig_hooks:
+    hooks:
+        'sylius_live_one_page_checkout.shop.checkout.header':
+            logo:
+                template: '@SyliusShop/checkout/common/header/logo.html.twig'
+                priority: 100
+            account:
+                template: '@SyliusShop/checkout/common/header/account.html.twig'
+                priority: 0
+
+        'sylius_live_one_page_checkout.shop.checkout.one_page':
+            content:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content.html.twig'
+                priority: 0
+
+        'sylius_live_one_page_checkout.shop.checkout.one_page.content':
+            flashes:
+                template: '@SyliusShop/shared/flashes.html.twig'
+                priority: 100
+            form:
+                component: 'sylius_live_one_page_checkout:checkout:form'
+                props:
+                    resource: '@=_context.order'
+                    form: '@=_context.form'
+                    template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form.html.twig'
+                priority: 0
+
+        'sylius_live_one_page_checkout.shop.checkout.one_page.content.form':
+            sections:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections.html.twig'
+                priority: 0
+
+        'sylius_live_one_page_checkout.shop.checkout.one_page.content.form.sections#left':
+            shipping_method:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/shipping_method.html.twig'
+            address:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/address.html.twig'
+            payment_method:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/payment_method.html.twig'
+
+        'sylius_live_one_page_checkout.shop.checkout.one_page.content.form.sections#right':
+            summary:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/summary.html.twig'
