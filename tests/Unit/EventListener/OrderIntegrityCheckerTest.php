@@ -105,7 +105,7 @@ final class OrderIntegrityCheckerTest extends TestCase
         $this->submittedHashProvider->method('getSubmittedHash')->willReturn('outdated-hash');
         $this->orderProcessor->expects(self::once())->method('process');
         $this->consistencyChecker->method('isConsistent')->willReturn(false);
-        $this->router->method('generate')->with('sylius_live_one_page_checkout_shop_checkout')->willReturn('/checkout-one-page');
+        $this->router->method('generate')->with('sylius_live_one_page_checkout_shop_checkout')->willReturn('/checkout/one-page');
 
         $this->decoratedChecker->expects(self::never())->method('check');
         $this->manager->expects(self::once())->method('persist');
@@ -116,7 +116,7 @@ final class OrderIntegrityCheckerTest extends TestCase
         self::assertTrue($event->isStopped());
         self::assertTrue($event->hasResponse());
         self::assertInstanceOf(RedirectResponse::class, $event->getResponse());
-        self::assertSame('/checkout-one-page', $event->getResponse()->getTargetUrl());
+        self::assertSame('/checkout/one-page', $event->getResponse()->getTargetUrl());
     }
 
     private function createEvent(): GenericEvent

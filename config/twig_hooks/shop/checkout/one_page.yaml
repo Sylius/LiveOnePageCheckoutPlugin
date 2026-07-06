@@ -85,7 +85,7 @@ sylius_twig_hooks:
                 priority: 200
             description:
                 template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/shipping_method/shipments/shipment/choice/details/description.html.twig'
-                priority: 1000
+                priority: 100
             delivery_time:
                 template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/shipping_method/shipments/shipment/choice/details/delivery_time.html.twig'
                 priority: 0

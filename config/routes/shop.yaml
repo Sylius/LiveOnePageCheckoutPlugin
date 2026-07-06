@@ -1,5 +1,5 @@
 sylius_live_one_page_checkout_shop_checkout:
-    path: /checkout-one-page
+    path: /checkout/one-page
     methods: [ GET, PUT ]
     defaults:
         _controller: sylius.controller.order::updateAction
