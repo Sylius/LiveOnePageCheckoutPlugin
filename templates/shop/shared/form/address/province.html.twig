@@ -1,0 +1,14 @@
+{% set form = hookable_metadata.context.form %}
+
+<div class="col-12 col-sm-6">
+    {% if form.provinceCode is defined %}
+        {{ form_row(form.provinceCode) }}
+    {% elseif form.provinceName is defined %}
+        {{ form_row(form.provinceName) }}
+    {% else %}
+        <div class="field mb-3">
+            <label class="form-label">{{ 'sylius.ui.province'|trans }}</label>
+            <input type="text" class="form-control" disabled>
+        </div>
+    {% endif %}
+</div>

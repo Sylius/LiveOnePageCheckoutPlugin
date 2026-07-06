@@ -11,3 +11,5 @@ sylius_live_one_page_checkout:
         checkout:
             billing_same_as_shipping: "Billing address is the same as the shipping address."
             no_shipping: "This order does not require shipping."
+            show_more: "Show more"
+            show_less: "Show less"

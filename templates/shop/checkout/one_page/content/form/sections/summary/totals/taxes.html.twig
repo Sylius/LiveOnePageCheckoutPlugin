@@ -1,0 +1,18 @@
+{% import '@SyliusShop/shared/macro/money.html.twig' as money %}
+
+{% set order = hookable_metadata.context.resource %}
+{% set tax_included = order.getTaxIncludedTotal() %}
+{% set tax_excluded = order.getTaxExcludedTotal() %}
+
+<div class="d-flex align-items-center mb-2">
+    <div class="d-flex align-items-center gap-2">
+        {{ ux_icon('tabler:receipt-tax', { class: 'icon icon-sm text-body-tertiary' }) }}
+        <div>
+            {{ 'sylius.ui.taxes_total'|trans }}
+            {% if tax_included %}
+                <small class="text-body-tertiary">({{ 'sylius.ui.included_in_price'|trans }})</small>
+            {% endif %}
+        </div>
+    </div>
+    <div class="ms-auto">{{ money.convertAndFormat(tax_excluded ?: tax_included) }}</div>
+</div>

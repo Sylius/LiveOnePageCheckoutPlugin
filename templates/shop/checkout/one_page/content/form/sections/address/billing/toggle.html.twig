@@ -1,0 +1,19 @@
+{% set form = hookable_metadata.context.form %}
+
+<div class="mb-3">
+    {% if form.differentBillingAddress is defined %}
+        {% if not form.differentBillingAddress.vars.data %}
+            <div class="mb-3">{{ 'sylius_live_one_page_checkout.ui.checkout.billing_same_as_shipping'|trans }}</div>
+        {% endif %}
+
+        <div class="mb-3">
+            {{ form_row(form.differentBillingAddress, {
+                attr: { 'data-action': 'change->live#action', 'data-live-action-param': 'toggleDifferentBillingAddress' }
+            }) }}
+
+            {{ form_errors(form.differentBillingAddress) }}
+        </div>
+    {% else %}
+        <div class="mb-3">{{ 'sylius_live_one_page_checkout.ui.checkout.no_shipping'|trans }}</div>
+    {% endif %}
+</div>

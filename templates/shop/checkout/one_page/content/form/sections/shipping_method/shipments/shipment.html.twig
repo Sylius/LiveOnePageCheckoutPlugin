@@ -1,0 +1,7 @@
+{% set form = hookable_metadata.context.form %}
+
+{% for key, formShipment in form.shipments %}
+    {% hook 'shipment' with { 'form': formShipment } %}
+{% else %}
+    {% hook 'shipment#unavailable' %}
+{% endfor %}

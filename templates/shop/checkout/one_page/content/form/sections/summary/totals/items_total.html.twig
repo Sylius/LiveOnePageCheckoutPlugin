@@ -1,0 +1,11 @@
+{% import '@SyliusShop/shared/macro/money.html.twig' as money %}
+
+{% set order = hookable_metadata.context.resource %}
+
+<div class="d-flex align-items-center mb-2">
+    <div class="d-flex align-items-center gap-2">
+        {{ ux_icon('tabler:shopping-bag', { class: 'icon icon-sm text-body-tertiary' }) }}
+        {{ 'sylius.ui.items_total'|trans }}
+    </div>
+    <div class="ms-auto">{{ money.convertAndFormat(order.itemsSubtotal) }}</div>
+</div>

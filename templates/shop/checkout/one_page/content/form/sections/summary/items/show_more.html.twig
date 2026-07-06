@@ -1,0 +1,13 @@
+{% set order = hookable_metadata.context.resource %}
+{% set limit = hookable_metadata.context.limit|default(3) %}
+
+{% if order.items|length > limit %}
+    <label for="summary-show-all-items" class="btn btn-link btn-sm p-0 summary-show-more align-items-center gap-1">
+        {{ ux_icon('tabler:chevron-down', { class: 'icon icon-sm' }) }}
+        {{ 'sylius_live_one_page_checkout.ui.checkout.show_more'|trans }}
+    </label>
+    <label for="summary-show-all-items" class="btn btn-link btn-sm p-0 summary-show-less align-items-center gap-1">
+        {{ ux_icon('tabler:chevron-up', { class: 'icon icon-sm' }) }}
+        {{ 'sylius_live_one_page_checkout.ui.checkout.show_less'|trans }}
+    </label>
+{% endif %}

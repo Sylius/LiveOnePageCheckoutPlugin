@@ -1,0 +1,10 @@
+{% set form = hookable_metadata.context.form %}
+{% set prefixes = hookable_metadata.prefixes|merge(['sylius_live_one_page_checkout.shop.shared.form']) %}
+
+<div class="mb-4">
+    {% if form.defaultShippingAddress is not defined or form.newShippingAddress.vars.data|default(false) %}
+        <div class="row g-3">
+            {% hook 'address' with { _prefixes: prefixes, form: form.shippingAddress } %}
+        </div>
+    {% endif %}
+</div>

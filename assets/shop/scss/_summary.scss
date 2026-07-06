@@ -1,0 +1,15 @@
+.sylius-one-page-checkout {
+    .summary-card {
+        top: 1.5rem;
+        max-height: calc(100vh - 3rem);
+        overflow-y: auto;
+    }
+
+    .summary-item-image {
+        width: 3.5rem;
+    }
+
+    .summary-item-thumb {
+        aspect-ratio: 1 / 1;
+    }
+}

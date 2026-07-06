@@ -1,0 +1,5 @@
+{% set form = hookable_metadata.context.new_address %}
+
+{{ form_row(form, {
+    attr: { 'data-action': 'change->live#action', 'data-live-action-param': hookable_metadata.context.toggle_action }
+}) }}

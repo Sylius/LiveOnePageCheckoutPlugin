@@ -33,11 +33,191 @@ sylius_twig_hooks:
         'sylius_live_one_page_checkout.shop.checkout.one_page.content.form.sections#left':
             shipping_method:
                 template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/shipping_method.html.twig'
+                priority: 200
             address:
                 template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/address.html.twig'
+                priority: 100
             payment_method:
                 template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/payment_method.html.twig'
+                priority: 0
 
         'sylius_live_one_page_checkout.shop.checkout.one_page.content.form.sections#right':
             summary:
                 template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/summary.html.twig'
+                priority: 0
+
+        'sylius_live_one_page_checkout.shop.checkout.one_page.content.form.sections.shipping_method':
+            shipments:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/shipping_method/shipments.html.twig'
+                priority: 0
+
+        'sylius_live_one_page_checkout.shop.checkout.one_page.content.form.sections.shipping_method.shipments':
+            shipment:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/shipping_method/shipments/shipment.html.twig'
+                priority: 0
+
+        'sylius_live_one_page_checkout.shop.checkout.one_page.content.form.sections.shipping_method.shipments.shipment':
+            choice:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/shipping_method/shipments/shipment/choice.html.twig'
+                priority: 0
+
+        'sylius_live_one_page_checkout.shop.checkout.one_page.content.form.sections.shipping_method.shipments.shipment#unavailable':
+            unavailable:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/shipping_method/no_methods.html.twig'
+                priority: 0
+
+        'sylius_live_one_page_checkout.shop.checkout.one_page.content.form.sections.shipping_method.shipments.shipment.choice':
+            details:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/shipping_method/shipments/shipment/choice/details.html.twig'
+                priority: 100
+            fee:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/shipping_method/shipments/shipment/choice/fee.html.twig'
+                priority: 0
+
+        'sylius_live_one_page_checkout.shop.checkout.one_page.content.form.sections.shipping_method.shipments.shipment.choice#unavailable':
+            unavailable:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/shipping_method/no_methods.html.twig'
+                priority: 0
+
+        'sylius_live_one_page_checkout.shop.checkout.one_page.content.form.sections.shipping_method.shipments.shipment.choice.details':
+            name:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/shipping_method/shipments/shipment/choice/details/name.html.twig'
+                priority: 200
+            description:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/shipping_method/shipments/shipment/choice/details/description.html.twig'
+                priority: 1000
+            delivery_time:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/shipping_method/shipments/shipment/choice/details/delivery_time.html.twig'
+                priority: 0
+
+        'sylius_live_one_page_checkout.shop.checkout.one_page.content.form.sections.payment_method':
+            payments:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/payment_method/payments.html.twig'
+                priority: 0
+
+        'sylius_live_one_page_checkout.shop.checkout.one_page.content.form.sections.payment_method.payments':
+            payment:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/payment_method/payments/payment.html.twig'
+                priority: 0
+
+        'sylius_live_one_page_checkout.shop.checkout.one_page.content.form.sections.payment_method.payments.payment':
+            choice:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/payment_method/payments/payment/choice.html.twig'
+                priority: 0
+
+        'sylius_live_one_page_checkout.shop.checkout.one_page.content.form.sections.payment_method.payments.payment#unavailable':
+            unavailable:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/payment_method/no_methods.html.twig'
+                priority: 0
+
+        'sylius_live_one_page_checkout.shop.checkout.one_page.content.form.sections.payment_method.payments.payment.choice':
+            details:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/payment_method/payments/payment/choice/details.html.twig'
+                priority: 0
+
+        'sylius_live_one_page_checkout.shop.checkout.one_page.content.form.sections.payment_method.payments.payment.choice#unavailable':
+            unavailable:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/payment_method/no_methods.html.twig'
+                priority: 0
+
+        'sylius_live_one_page_checkout.shop.checkout.one_page.content.form.sections.payment_method.payments.payment.choice.details':
+            name:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/payment_method/payments/payment/choice/details/name.html.twig'
+                priority: 100
+            description:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/payment_method/payments/payment/choice/details/description.html.twig'
+                priority: 0
+
+        'sylius_live_one_page_checkout.shop.checkout.one_page.content.form.sections.address':
+            customer:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/address/customer.html.twig'
+                priority: 200
+            shipping:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/address/shipping.html.twig'
+                priority: 100
+            billing:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/address/billing.html.twig'
+                priority: 0
+
+        'sylius_live_one_page_checkout.shop.checkout.one_page.content.form.sections.address.shipping':
+            header:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/address/shipping/header.html.twig'
+                priority: 200
+            address_book:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/address/shipping/address_book.html.twig'
+                priority: 100
+            form:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/address/shipping/form.html.twig'
+                priority: 0
+
+        'sylius_live_one_page_checkout.shop.checkout.one_page.content.form.sections.address.billing':
+            header:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/address/billing/header.html.twig'
+                priority: 300
+            toggle:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/address/billing/toggle.html.twig'
+                priority: 200
+            address_book:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/address/billing/address_book.html.twig'
+                priority: 100
+            form:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/address/billing/form.html.twig'
+                priority: 0
+
+        'sylius_live_one_page_checkout.shop.checkout.one_page.content.form.sections.summary':
+            items:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/summary/items.html.twig'
+                priority: 400
+            totals:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/summary/totals.html.twig'
+                priority: 300
+            coupon:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/summary/coupon.html.twig'
+                priority: 200
+            order_total:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/summary/order_total.html.twig'
+                priority: 100
+            pay:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/summary/pay.html.twig'
+                priority: 0
+
+        'sylius_live_one_page_checkout.shop.checkout.one_page.content.form.sections.summary.items':
+            toggle:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/summary/items/toggle.html.twig'
+                priority: 200
+            item:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/summary/items/item.html.twig'
+                priority: 100
+            show_more:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/summary/items/show_more.html.twig'
+                priority: 0
+
+        'sylius_live_one_page_checkout.shop.checkout.one_page.content.form.sections.summary.items.item':
+            image:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/summary/items/item/image.html.twig'
+                priority: 100
+            details:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/summary/items/item/details.html.twig'
+                priority: 0
+
+        'sylius_live_one_page_checkout.shop.checkout.one_page.content.form.sections.summary.items.item.details':
+            name:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/summary/items/item/details/name.html.twig'
+                priority: 100
+            quantity:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/summary/items/item/details/quantity.html.twig'
+                priority: 0
+
+        'sylius_live_one_page_checkout.shop.checkout.one_page.content.form.sections.summary.totals':
+            items_total:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/summary/totals/items_total.html.twig'
+                priority: 300
+            shipping:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/summary/totals/shipping.html.twig'
+                priority: 200
+            discount:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/summary/totals/discount.html.twig'
+                priority: 100
+            taxes:
+                template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections/summary/totals/taxes.html.twig'
+                priority: 0

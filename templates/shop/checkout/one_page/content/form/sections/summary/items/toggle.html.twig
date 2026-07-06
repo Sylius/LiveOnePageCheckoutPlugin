@@ -1,0 +1,6 @@
+{% set order = hookable_metadata.context.resource %}
+{% set limit = hookable_metadata.context.limit|default(3) %}
+
+{% if order.items|length > limit %}
+    <input type="checkbox" id="summary-show-all-items" class="d-none">
+{% endif %}

@@ -1,6 +1,3 @@
-{% import '@SyliusShop/shared/macro/money.html.twig' as money %}
-{% import '@SyliusShop/shared/macros/delivery_time.html.twig' as delivery %}
-
 {% set form = hookable_metadata.context.form %}
 
 {% if form.shipments is defined %}
@@ -10,52 +7,7 @@
         </div>
 
         <div>
-            {% for formShipment in form.shipments %}
-                {{ form_errors(formShipment.method) }}
-
-                {% for key, formMethod in formShipment.method %}
-                    {% set method = formShipment.method.vars.choices[key].data %}
-
-                    <div class="card bg-body-tertiary border-0 mb-3" >
-                        <label class="d-flex gap-3 card-body">
-                            <div class="flex-grow-1">
-                                <div>{{ form_widget(formMethod) }}</div>
-                                {% if method.description is not null %}
-                                    <div class="ps-4"><small class="text-black-50">{{ method.description }}</small></div>
-                                {% endif %}
-
-                                {% set min = attribute(method, 'minDeliveryTimeDays') %}
-                                {% set max = attribute(method, 'maxDeliveryTimeDays') %}
-                                {% set text = delivery.delivery_time_text(min, max)|trim %}
-                                {% if text is not empty %}
-                                    <div class="ps-4"><small class="text-body-tertiary">{{ 'sylius.ui.estimated_delivery_time'|trans }}: {{ text }}</small></div>
-                                {% endif %}
-                            </div>
-                            <div>
-                                {{ money.convertAndFormat(formShipment.method.vars.shipping_costs[formMethod.vars.value]) }}
-                            </div>
-                        </label>
-                    </div
-                    >
-                {% else %}
-                    <div class="card bg-body-tertiary border-0 mb-3">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ 'sylius.ui.warning'|trans }}</h5>
-                            {{ 'sylius.ui.no_shipping_methods_available'|trans }}.
-                        </div>
-                    </div>
-
-                {% endfor %}
-
-            {% else %}
-                <div class="card bg-body-tertiary border-0 mb-3">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ 'sylius.ui.warning'|trans }}</h5>
-                        {{ 'sylius.ui.no_shipping_methods_available'|trans }}.
-                    </div>
-                </div>
-
-            {% endfor %}
+            {% hook 'shipping_method' %}
         </div>
     </div>
 {% endif %}

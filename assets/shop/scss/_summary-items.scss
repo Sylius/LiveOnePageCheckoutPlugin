@@ -1,0 +1,27 @@
+.sylius-one-page-checkout {
+    .summary-extra-item {
+        display: none !important;
+    }
+
+    .summary-show-more {
+        display: inline-flex !important;
+    }
+
+    .summary-show-less {
+        display: none !important;
+    }
+
+    #summary-show-all-items:checked {
+        ~ .summary-extra-item {
+            display: flex !important;
+        }
+
+        ~ .summary-show-more {
+            display: none !important;
+        }
+
+        ~ .summary-show-less {
+            display: inline-flex !important;
+        }
+    }
+}

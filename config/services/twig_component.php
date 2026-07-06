@@ -20,6 +20,7 @@ return static function (ContainerConfigurator $container): void {
             service('sylius.context.customer'),
             service('sylius_live_one_page_checkout.order_processing.order_processor.composite'),
             service('sylius_live_one_page_checkout.hasher.order'),
+            service('sylius.factory.address'),
         ])
         ->tag('sylius.live_component.shop', ['key' => 'sylius_live_one_page_checkout:checkout:form'])
     ;
