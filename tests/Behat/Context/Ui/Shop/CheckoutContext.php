@@ -16,6 +16,10 @@ namespace Tests\Sylius\LiveOnePageCheckoutPlugin\Behat\Context\Ui\Shop;
 use Behat\Behat\Context\Context;
 use Behat\Step\Then;
 use Behat\Step\When;
+use Doctrine\Persistence\ObjectManager;
+use Sylius\Behat\Service\SharedStorageInterface;
+use Sylius\Component\Core\OrderCheckoutStates;
+use Sylius\Component\Core\Repository\OrderRepositoryInterface;
 use Tests\Sylius\LiveOnePageCheckoutPlugin\Behat\Page\Shop\Checkout\OnePageCheckoutPageInterface;
 use Webmozart\Assert\Assert;
 
@@ -23,14 +27,10 @@ final readonly class CheckoutContext implements Context
 {
     public function __construct(
         private OnePageCheckoutPageInterface $onePageCheckoutPage,
+        private OrderRepositoryInterface $orderRepository,
+        private ObjectManager $orderManager,
+        private SharedStorageInterface $sharedStorage,
     ) {
-    }
-
-    #[Then('I should be on the one page checkout')]
-    #[Then('I should be redirected to the one page checkout')]
-    public function iShouldBeOnTheOnePageCheckout(): void
-    {
-        Assert::true($this->onePageCheckoutPage->isOpen());
     }
 
     #[When('I open the one page checkout')]
@@ -51,6 +51,43 @@ final readonly class CheckoutContext implements Context
         $this->onePageCheckoutPage->specifyShippingAddress($customerName, $street, $city, $postcode, $country);
     }
 
+    #[When('I provide my shipping province as :province')]
+    public function iProvideMyShippingProvince(string $province): void
+    {
+        $this->onePageCheckoutPage->specifyShippingProvince($province);
+    }
+
+    #[When('I select :shippingMethodName as my shipping method')]
+    public function iSelectMyShippingMethod(string $shippingMethodName): void
+    {
+        $this->onePageCheckoutPage->selectShippingMethod($shippingMethodName);
+    }
+
+    #[When('I select :paymentMethodName as my payment method')]
+    public function iSelectMyPaymentMethod(string $paymentMethodName): void
+    {
+        $this->onePageCheckoutPage->selectPaymentMethod($paymentMethodName);
+    }
+
+    #[When('I place my order')]
+    public function iPlaceMyOrder(): void
+    {
+        $this->onePageCheckoutPage->pay();
+    }
+
+    #[Then('I should be on the one page checkout')]
+    #[Then('I should be redirected to the one page checkout')]
+    public function iShouldBeOnTheOnePageCheckout(): void
+    {
+        Assert::true($this->onePageCheckoutPage->isOpen());
+    }
+
+    #[Then('I should no longer be on the one page checkout')]
+    public function iShouldNoLongerBeOnTheOnePageCheckout(): void
+    {
+        Assert::false($this->onePageCheckoutPage->isOpen());
+    }
+
     #[Then('the :shippingMethodName shipping method should be available')]
     public function theShippingMethodShouldBeAvailable(string $shippingMethodName): void
     {
@@ -61,5 +98,22 @@ final readonly class CheckoutContext implements Context
     public function theShippingMethodShouldNotBeAvailable(string $shippingMethodName): void
     {
         Assert::false($this->onePageCheckoutPage->hasShippingMethod($shippingMethodName));
+    }
+
+    #[Then('the :shippingMethodName shipping method should be selected')]
+    public function theShippingMethodShouldBeSelected(string $shippingMethodName): void
+    {
+        Assert::true($this->onePageCheckoutPage->hasSelectedShippingMethod($shippingMethodName));
+    }
+
+    #[Then('my order should be placed')]
+    public function myOrderShouldBePlaced(): void
+    {
+        $this->orderManager->clear();
+
+        $order = $this->orderRepository->findOneByTokenValue($this->sharedStorage->get('cart_token'));
+
+        Assert::notNull($order, 'Order was not found.');
+        Assert::same($order->getCheckoutState(), OrderCheckoutStates::STATE_COMPLETED);
     }
 }

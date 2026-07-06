@@ -24,6 +24,7 @@ default:
                 - sylius.behat.context.transform.province
                 - sylius.behat.context.transform.shared_storage
                 - sylius.behat.context.transform.shipping_method
+                - sylius.behat.context.transform.user
                 - sylius.behat.context.transform.zone
 
                 - sylius.behat.context.setup.address

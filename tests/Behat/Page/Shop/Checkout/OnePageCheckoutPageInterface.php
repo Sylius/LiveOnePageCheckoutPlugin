@@ -21,9 +21,19 @@ interface OnePageCheckoutPageInterface extends PageInterface
 
     public function specifyShippingAddress(string $fullName, string $street, string $city, string $postcode, string $countryName): void;
 
+    public function specifyShippingProvince(string $province): void;
+
     public function selectShippingAddressFromAddressBook(string $fullName): void;
 
+    public function selectShippingMethod(string $shippingMethodName): void;
+
+    public function selectPaymentMethod(string $paymentMethodName): void;
+
+    public function pay(): void;
+
     public function hasShippingMethod(string $shippingMethodName): bool;
+
+    public function hasSelectedShippingMethod(string $shippingMethodName): bool;
 
     public function hasPaymentMethod(string $paymentMethodName): bool;
 

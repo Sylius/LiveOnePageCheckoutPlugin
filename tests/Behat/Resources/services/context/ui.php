@@ -28,5 +28,8 @@ return static function (ContainerConfigurator $container): void {
     $services->set('sylius_live_one_page_checkout.behat.context.ui.shop.checkout', CheckoutContext::class)
         ->args([
             service('sylius_live_one_page_checkout.behat.page.shop.checkout.one_page'),
+            service('sylius.repository.order'),
+            service('sylius.manager.order'),
+            service('sylius.behat.shared_storage'),
         ]);
 };
