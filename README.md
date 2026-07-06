@@ -60,8 +60,8 @@ See [`CLAUDE.md`](CLAUDE.md) for a full architecture breakdown.
 
    ```php
    use Sylius\Component\Core\Model\Channel as BaseChannel;
-   use Sylius\LiveOnePageCheckoutPlugin\Model\ChannelInterface;
-   use Sylius\LiveOnePageCheckoutPlugin\Model\ChannelOnePageCheckoutAwareTrait;
+   use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelInterface;
+   use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelOnePageCheckoutAwareTrait;
 
    class Channel extends BaseChannel implements ChannelInterface
    {

@@ -23,7 +23,7 @@ use Sylius\Component\Channel\Context\ChannelNotFoundException;
 use Sylius\Component\Order\Context\CartContextInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Checker\CheckoutEnabledCheckerInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Checkout\ChannelAwareCheckoutResolver;
-use Sylius\LiveOnePageCheckoutPlugin\Model\ChannelInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestMatcherInterface;

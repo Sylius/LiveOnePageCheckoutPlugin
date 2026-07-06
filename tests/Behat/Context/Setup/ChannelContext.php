@@ -17,7 +17,7 @@ use Behat\Behat\Context\Context;
 use Behat\Step\Given;
 use Doctrine\Persistence\ObjectManager;
 use Sylius\Behat\Service\SharedStorageInterface;
-use Sylius\LiveOnePageCheckoutPlugin\Model\ChannelInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelInterface;
 
 final readonly class ChannelContext implements Context
 {

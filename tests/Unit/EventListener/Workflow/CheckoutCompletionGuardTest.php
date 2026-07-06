@@ -20,7 +20,7 @@ use Sylius\Component\Core\OrderCheckoutStates;
 use Sylius\Component\Core\OrderCheckoutTransitions;
 use Sylius\LiveOnePageCheckoutPlugin\Checker\CheckoutEnabledCheckerInterface;
 use Sylius\LiveOnePageCheckoutPlugin\EventListener\Workflow\CheckoutCompletionGuard;
-use Sylius\LiveOnePageCheckoutPlugin\Model\ChannelInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelInterface;
 use Symfony\Component\Workflow\Event\GuardEvent;
 use Symfony\Component\Workflow\Marking;
 use Symfony\Component\Workflow\Transition;

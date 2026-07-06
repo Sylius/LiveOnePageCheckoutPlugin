@@ -16,7 +16,7 @@ namespace Sylius\LiveOnePageCheckoutPlugin\EventListener\Workflow;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\OrderCheckoutStates;
 use Sylius\LiveOnePageCheckoutPlugin\Checker\CheckoutEnabledCheckerInterface;
-use Sylius\LiveOnePageCheckoutPlugin\Model\ChannelInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelInterface;
 use Symfony\Component\Workflow\Event\GuardEvent;
 use Webmozart\Assert\Assert;
 

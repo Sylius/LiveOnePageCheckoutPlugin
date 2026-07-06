@@ -18,7 +18,7 @@ use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Order\Context\ResettableCartContextInterface;
 use Sylius\Component\Order\Model\OrderInterface as BaseOrderInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Checker\CheckoutEnabledCheckerInterface;
-use Sylius\LiveOnePageCheckoutPlugin\Model\ChannelInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelInterface;
 use Webmozart\Assert\Assert;
 
 final readonly class DefaultShippingAddressCartContext implements ResettableCartContextInterface

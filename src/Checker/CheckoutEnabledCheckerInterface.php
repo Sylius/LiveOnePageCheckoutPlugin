@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Sylius\LiveOnePageCheckoutPlugin\Checker;
 
-use Sylius\LiveOnePageCheckoutPlugin\Model\ChannelInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelInterface;
 
 interface CheckoutEnabledCheckerInterface
 {

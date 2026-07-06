@@ -11,10 +11,11 @@
 
 declare(strict_types=1);
 
-namespace Sylius\LiveOnePageCheckoutPlugin\Model;
+namespace Sylius\LiveOnePageCheckoutPlugin\Entity;
 
-use Sylius\Component\Core\Model\ChannelInterface as BaseChannelInterface;
-
-interface ChannelInterface extends BaseChannelInterface, ChannelOnePageCheckoutAwareInterface
+interface ChannelOnePageCheckoutAwareInterface
 {
+    public function isOnePageCheckoutEnabled(): bool;
+
+    public function setOnePageCheckoutEnabled(bool $onePageCheckoutEnabled): void;
 }
