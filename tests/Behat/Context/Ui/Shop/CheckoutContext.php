@@ -18,14 +18,20 @@ use Behat\Step\Then;
 use Behat\Step\When;
 use Doctrine\Persistence\ObjectManager;
 use Sylius\Behat\Service\SharedStorageInterface;
+use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\OrderCheckoutStates;
 use Sylius\Component\Core\Repository\OrderRepositoryInterface;
+use Sylius\Component\Promotion\Model\PromotionCouponInterface;
 use Sylius\Component\Promotion\Repository\PromotionCouponRepositoryInterface;
 use Tests\Sylius\LiveOnePageCheckoutPlugin\Behat\Page\Shop\Checkout\OnePageCheckoutPageInterface;
 use Webmozart\Assert\Assert;
 
 final readonly class CheckoutContext implements Context
 {
+    /**
+     * @param OrderRepositoryInterface<OrderInterface> $orderRepository
+     * @param PromotionCouponRepositoryInterface<PromotionCouponInterface> $couponRepository
+     */
     public function __construct(
         private OnePageCheckoutPageInterface $onePageCheckoutPage,
         private OrderRepositoryInterface $orderRepository,
@@ -121,7 +127,7 @@ final readonly class CheckoutContext implements Context
 
         $order = $this->orderRepository->findOneByTokenValue($this->sharedStorage->get('cart_token'));
 
-        Assert::notNull($order, 'Order was not found.');
+        Assert::isInstanceOf($order, OrderInterface::class, 'Order was not found.');
         Assert::same($order->getCheckoutState(), OrderCheckoutStates::STATE_COMPLETED);
     }
 
@@ -138,7 +144,7 @@ final readonly class CheckoutContext implements Context
 
         $coupon = $this->couponRepository->findOneBy(['code' => $couponCode]);
 
-        Assert::notNull($coupon, 'Coupon was not found.');
+        Assert::isInstanceOf($coupon, PromotionCouponInterface::class, 'Coupon was not found.');
         Assert::same($coupon->getUsed(), 1);
     }
 }

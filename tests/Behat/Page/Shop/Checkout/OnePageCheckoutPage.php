@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Tests\Sylius\LiveOnePageCheckoutPlugin\Behat\Page\Shop\Checkout;
 
 use Sylius\Behat\Page\Shop\Page;
+use Webmozart\Assert\Assert;
 
 class OnePageCheckoutPage extends Page implements OnePageCheckoutPageInterface
 {
@@ -63,14 +64,18 @@ class OnePageCheckoutPage extends Page implements OnePageCheckoutPageInterface
 
     public function selectShippingMethod(string $shippingMethodName): void
     {
-        $this->getElement('shipping_method', ['%name%' => $shippingMethodName])->find('css', 'input[type="radio"]')->click();
+        $radio = $this->getElement('shipping_method', ['%name%' => $shippingMethodName])->find('css', 'input[type="radio"]');
+        Assert::notNull($radio);
+        $radio->click();
 
         $this->waitForFormToUpdate();
     }
 
     public function selectPaymentMethod(string $paymentMethodName): void
     {
-        $this->getElement('payment_method', ['%name%' => $paymentMethodName])->find('css', 'input[type="radio"]')->click();
+        $radio = $this->getElement('payment_method', ['%name%' => $paymentMethodName])->find('css', 'input[type="radio"]');
+        Assert::notNull($radio);
+        $radio->click();
 
         $this->waitForFormToUpdate();
     }
@@ -125,6 +130,9 @@ class OnePageCheckoutPage extends Page implements OnePageCheckoutPageInterface
         $this->waitForElementUpdate('form');
     }
 
+    /**
+     * @return array<string, string>
+     */
     protected function getDefinedElements(): array
     {
         return array_merge(parent::getDefinedElements(), [
