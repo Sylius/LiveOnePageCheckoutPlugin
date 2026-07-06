@@ -1,0 +1,14 @@
+name: Generate Docs
+
+on:
+    workflow_dispatch: ~
+
+jobs:
+    generate:
+        uses: Sylius/PluginDocsGenerator/.github/workflows/generate.yml@main
+        with:
+            plugin_name: one_page_checkout
+            channel_code: FASHION_WEB
+            plus: "yes"
+            node_version: "22"
+        secrets: inherit
