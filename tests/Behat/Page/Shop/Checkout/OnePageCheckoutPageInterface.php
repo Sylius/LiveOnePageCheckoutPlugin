@@ -29,11 +29,17 @@ interface OnePageCheckoutPageInterface extends PageInterface
 
     public function selectPaymentMethod(string $paymentMethodName): void;
 
+    public function applyCoupon(string $couponCode): void;
+
     public function pay(): void;
 
     public function hasShippingMethod(string $shippingMethodName): bool;
 
     public function hasSelectedShippingMethod(string $shippingMethodName): bool;
+
+    public function hasPromotionDiscount(): bool;
+
+    public function hasAppliedCoupon(string $couponCode): bool;
 
     public function hasPaymentMethod(string $paymentMethodName): bool;
 

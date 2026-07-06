@@ -75,9 +75,28 @@ class OnePageCheckoutPage extends Page implements OnePageCheckoutPageInterface
         $this->waitForFormToUpdate();
     }
 
+    public function applyCoupon(string $couponCode): void
+    {
+        $this->getElement('coupon_input')->setValue($couponCode);
+        $this->getElement('apply_coupon')->press();
+
+        $this->waitForFormToUpdate();
+    }
+
     public function pay(): void
     {
         $this->getElement('pay')->press();
+    }
+
+    public function hasPromotionDiscount(): bool
+    {
+        return $this->hasElement('promotion_discount');
+    }
+
+    public function hasAppliedCoupon(string $couponCode): bool
+    {
+        return $this->hasElement('applied_coupon') &&
+            str_contains($this->getElement('applied_coupon')->getText(), $couponCode);
     }
 
     public function hasShippingMethod(string $shippingMethodName): bool
@@ -109,10 +128,14 @@ class OnePageCheckoutPage extends Page implements OnePageCheckoutPageInterface
     protected function getDefinedElements(): array
     {
         return array_merge(parent::getDefinedElements(), [
+            'applied_coupon' => '[data-test-applied-coupon]',
+            'apply_coupon' => '[data-test-apply-coupon]',
+            'coupon_input' => '[data-test-coupon] input',
             'email' => '[data-test-email]',
             'form' => '[data-live-name-value="sylius_live_one_page_checkout:checkout:form"]',
             'pay' => '[data-test-pay]',
             'payment_method' => '[data-test-payment-method="%name%"]',
+            'promotion_discount' => '[data-test-promotion-discount]',
             'shipping_address_book' => '[data-test-shipping-address] [data-test-address-book]',
             'shipping_city' => '[data-test-shipping-address] [data-test-city]',
             'shipping_country' => '[data-test-shipping-address] [data-test-country]',

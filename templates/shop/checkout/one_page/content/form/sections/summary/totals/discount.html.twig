@@ -3,7 +3,7 @@
 {% set order = hookable_metadata.context.resource %}
 
 {% if order.orderPromotionTotal %}
-    <div class="d-flex align-items-center mb-2 text-success">
+    <div class="d-flex align-items-center mb-2 text-success" {{ sylius_test_html_attribute('promotion-discount') }}>
         <div class="d-flex align-items-center gap-2">
             {{ ux_icon('tabler:discount', { class: 'icon icon-sm' }) }}
             {{ 'sylius.ui.discount'|trans }}

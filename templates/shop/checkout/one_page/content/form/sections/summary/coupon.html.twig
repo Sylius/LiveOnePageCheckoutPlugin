@@ -10,7 +10,7 @@
             {{ form_widget(form.promotionCoupon) }}
         </div>
         <div class="d-flex flex-row justify-content-between align-items-center w-100 py-2 px-3 border rounded-3 bg-light">
-            <span class="badge d-flex align-items-center gap-1 text-bg-success">
+            <span class="badge d-flex align-items-center gap-1 text-bg-success" {{ sylius_test_html_attribute('applied-coupon') }}>
                 {{ ux_icon('tabler:discount-check', { class: 'icon icon-xs' }) }}
                 {{ form.promotionCoupon.vars.value }}
             </span>
@@ -22,9 +22,9 @@
             </button>
         </div>
     {% else %}
-        <div class="input-group field">
+        <div class="input-group field" {{ sylius_test_html_attribute('coupon') }}>
             {{ form_widget(form.promotionCoupon, {'attr': {'data-model': 'norender|sylius_live_one_page_checkout_checkout[promotionCoupon]', 'form': form.vars.id, 'placeholder': 'sylius.ui.enter_your_code'|trans ~ '...'}}) }}
-            <button class="btn btn-primary px-3" type="button" data-action="live#$render">{{ ux_icon('tabler:arrow-right', { class: 'icon icon-sm' }) }}</button>
+            <button class="btn btn-primary px-3" type="button" data-action="live#$render" {{ sylius_test_html_attribute('apply-coupon') }}>{{ ux_icon('tabler:arrow-right', { class: 'icon icon-sm' }) }}</button>
         </div>
         {{ form_errors(form.promotionCoupon) }}
     {% endif %}

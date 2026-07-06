@@ -20,6 +20,7 @@ use Doctrine\Persistence\ObjectManager;
 use Sylius\Behat\Service\SharedStorageInterface;
 use Sylius\Component\Core\OrderCheckoutStates;
 use Sylius\Component\Core\Repository\OrderRepositoryInterface;
+use Sylius\Component\Promotion\Repository\PromotionCouponRepositoryInterface;
 use Tests\Sylius\LiveOnePageCheckoutPlugin\Behat\Page\Shop\Checkout\OnePageCheckoutPageInterface;
 use Webmozart\Assert\Assert;
 
@@ -28,6 +29,7 @@ final readonly class CheckoutContext implements Context
     public function __construct(
         private OnePageCheckoutPageInterface $onePageCheckoutPage,
         private OrderRepositoryInterface $orderRepository,
+        private PromotionCouponRepositoryInterface $couponRepository,
         private ObjectManager $orderManager,
         private SharedStorageInterface $sharedStorage,
     ) {
@@ -67,6 +69,12 @@ final readonly class CheckoutContext implements Context
     public function iSelectMyPaymentMethod(string $paymentMethodName): void
     {
         $this->onePageCheckoutPage->selectPaymentMethod($paymentMethodName);
+    }
+
+    #[When('I apply the :couponCode coupon')]
+    public function iApplyTheCoupon(string $couponCode): void
+    {
+        $this->onePageCheckoutPage->applyCoupon($couponCode);
     }
 
     #[When('I place my order')]
@@ -115,5 +123,22 @@ final readonly class CheckoutContext implements Context
 
         Assert::notNull($order, 'Order was not found.');
         Assert::same($order->getCheckoutState(), OrderCheckoutStates::STATE_COMPLETED);
+    }
+
+    #[Then('I should be given the promotion discount')]
+    public function iShouldBeGivenThePromotionDiscount(): void
+    {
+        Assert::true($this->onePageCheckoutPage->hasPromotionDiscount());
+    }
+
+    #[Then('the :couponCode coupon should be used')]
+    public function theCouponShouldBeUsed(string $couponCode): void
+    {
+        $this->orderManager->clear();
+
+        $coupon = $this->couponRepository->findOneBy(['code' => $couponCode]);
+
+        Assert::notNull($coupon, 'Coupon was not found.');
+        Assert::same($coupon->getUsed(), 1);
     }
 }

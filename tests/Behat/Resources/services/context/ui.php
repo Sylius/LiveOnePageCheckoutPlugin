@@ -29,6 +29,7 @@ return static function (ContainerConfigurator $container): void {
         ->args([
             service('sylius_live_one_page_checkout.behat.page.shop.checkout.one_page'),
             service('sylius.repository.order'),
+            service('sylius.repository.promotion_coupon'),
             service('sylius.manager.order'),
             service('sylius.behat.shared_storage'),
         ]);
