@@ -14,6 +14,7 @@ declare(strict_types=1);
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 use Tests\Sylius\LiveOnePageCheckoutPlugin\Behat\Context\Ui\Admin\ManagingChannelsContext;
+use Tests\Sylius\LiveOnePageCheckoutPlugin\Behat\Context\Ui\Shop\CheckoutContext;
 
 return static function (ContainerConfigurator $container): void {
     $services = $container->services();
@@ -22,5 +23,10 @@ return static function (ContainerConfigurator $container): void {
     $services->set('sylius_live_one_page_checkout.behat.context.ui.admin.managing_channels', ManagingChannelsContext::class)
         ->args([
             service('sylius_live_one_page_checkout.behat.element.admin.channel.one_page_checkout_form'),
+        ]);
+
+    $services->set('sylius_live_one_page_checkout.behat.context.ui.shop.checkout', CheckoutContext::class)
+        ->args([
+            service('sylius_live_one_page_checkout.behat.page.shop.checkout.one_page'),
         ]);
 };

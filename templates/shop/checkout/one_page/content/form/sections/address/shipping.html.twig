@@ -1,7 +1,7 @@
 {% set resource = hookable_metadata.context.resource %}
 
 {% if resource.shippingRequired %}
-    <div>
+    <div {{ sylius_test_html_attribute('shipping-address') }}>
         {% hook 'shipping' %}
     </div>
 {% endif %}

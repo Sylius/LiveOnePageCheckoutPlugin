@@ -2,9 +2,9 @@
 
 <div class="col-12 col-sm-6">
     {% if form.provinceCode is defined %}
-        {{ form_row(form.provinceCode) }}
+        {{ form_row(form.provinceCode, sylius_test_form_attribute('province-code')) }}
     {% elseif form.provinceName is defined %}
-        {{ form_row(form.provinceName) }}
+        {{ form_row(form.provinceName, sylius_test_form_attribute('province-name')) }}
     {% else %}
         <div class="field mb-3">
             <label class="form-label">{{ 'sylius.ui.province'|trans }}</label>

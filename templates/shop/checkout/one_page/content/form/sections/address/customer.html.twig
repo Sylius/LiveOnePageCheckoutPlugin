@@ -2,6 +2,6 @@
 
 {% if form.customer is defined %}
     <div class="mb-4">
-        {{ form_row(form.customer.email) }}
+        {{ form_row(form.customer.email, sylius_test_form_attribute('email')) }}
     </div>
 {% endif %}
