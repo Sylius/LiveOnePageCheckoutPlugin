@@ -8,122 +8,147 @@
     </a>
 </p>
 
-<h1 align="center">Plugin Skeleton</h1>
+<h1 align="center">Live One Page Checkout</h1>
 
-<p align="center">Skeleton for starting Sylius plugins.</p>
+<p align="center">A Sylius 2.x plugin that replaces the multi-step checkout with a single,
+live-updating one page checkout, enabled per channel.</p>
 
-## Documentation
+## What it does
 
-For a comprehensive guide on Sylius Plugins development please go to Sylius documentation,
-there you will find the <a href="https://docs.sylius.com/plugins-development-guide/how-to-create-a-plugin-for-sylius">Plugin Development Guide</a> - it's a great place to start.
+- Puts cart, addresses, shipping, payment and order summary on **one page**, updating live
+  via **Symfony UX Live Components** — no full page reloads as the customer fills the form.
+- **Per-channel toggle**: enable "one page checkout" on a channel in the admin panel and only
+  that channel switches to the one-page flow; every other channel keeps the standard Sylius
+  checkout.
+- Adds a direct `cart → completed` checkout transition (guarded so it only fires on enabled
+  channels), works with both the **Symfony Workflow** and **winzou** state machines.
+- Protects against stale submissions with an order **state hash**: if totals, promotions,
+  shipping or payment changed between render and submit, the customer is sent back to review.
 
-For more information about the **Test Application** included in the skeleton, please refer to the [Sylius documentation](https://docs.sylius.com/plugins-development-guide/test-application).
+See [`CLAUDE.md`](CLAUDE.md) for a full architecture breakdown.
 
-## Quickstart Installation
+## Requirements
 
-Run `composer create-project sylius/plugin-skeleton ProjectName`.
+| Package         | Version |
+|-----------------|---------|
+| PHP             | `^8.2`  |
+| `sylius/sylius` | `^2.0`  |
 
-### Traditional
+## Installation
 
-1. From the plugin skeleton root directory, run the following commands:
+1. Require the plugin:
 
-    ```bash
-    (cd vendor/sylius/test-application && yarn install)
-    (cd vendor/sylius/test-application && yarn build)
-    vendor/bin/console assets:install
-   
-    vendor/bin/console doctrine:database:create
-    vendor/bin/console doctrine:migrations:migrate -n
-    # Optionally load data fixtures
-    vendor/bin/console sylius:fixtures:load -n
-    ```
+   ```bash
+   composer require sylius/live-one-page-checkout-plugin
+   ```
 
-To be able to set up a plugin's database, remember to configure your database credentials in `tests/TestApplication/.env` and `tests/TestApplication/.env.test`.
+2. Register the bundle in `config/bundles.php`:
 
-2. Run your local server:
+   ```php
+   Sylius\LiveOnePageCheckoutPlugin\SyliusLiveOnePageCheckoutPlugin::class => ['all' => true],
+   ```
 
-      ```bash
-      symfony server:ca:install
-      symfony server:start -d
-      ```
+3. Import the plugin config (e.g. `config/packages/sylius_live_one_page_checkout.yaml`):
 
-3. Open your browser and navigate to `https://localhost:8000`.
+   ```yaml
+   imports:
+       - { resource: "@SyliusLiveOnePageCheckoutPlugin/config/config.yaml" }
+   ```
+
+4. Make your `Channel` entity aware of the flag — implement the plugin interface and use its
+   trait:
+
+   ```php
+   use Sylius\Component\Core\Model\Channel as BaseChannel;
+   use Sylius\LiveOnePageCheckoutPlugin\Model\ChannelInterface;
+   use Sylius\LiveOnePageCheckoutPlugin\Model\ChannelOnePageCheckoutAwareTrait;
+
+   class Channel extends BaseChannel implements ChannelInterface
+   {
+       use ChannelOnePageCheckoutAwareTrait;
+   }
+   ```
+
+   and point the Sylius channel resource at it:
+
+   ```yaml
+   sylius_channel:
+       resources:
+           channel:
+               classes:
+                   model: App\Entity\Channel\Channel
+   ```
+
+5. Apply the migration adding the `one_page_checkout_enabled` column:
+
+   ```bash
+   bin/console doctrine:migrations:migrate
+   ```
+
+6. In the admin panel, edit a channel and tick **Enable one page checkout**.
+
+## Local development
+
+This repository ships a **test application** (`sylius/test-application`) so the plugin can be
+run and tested in isolation. Pick either a local Symfony/PHP setup or Docker.
+
+### Traditional (local PHP)
+
+```bash
+(cd vendor/sylius/test-application && yarn install && yarn build)
+vendor/bin/console assets:install
+
+vendor/bin/console doctrine:database:create
+vendor/bin/console doctrine:migrations:migrate -n
+vendor/bin/console sylius:fixtures:load -n   # optional demo data
+
+symfony server:start -d
+```
+
+Configure database credentials in `tests/TestApplication/.env` and
+`tests/TestApplication/.env.test`. The app is then served by the Symfony CLI (default
+`https://localhost:8000`).
 
 ### Docker
 
-1. Execute `make init` to initialize the container and install the dependencies.
+```bash
+make init            # install deps, build assets, start containers
+make database-init   # create DB + run migrations
+make load-fixtures   # optional demo data
+```
 
-2. Execute `make database-init` to create the database and run migrations.
+The app is then available at `http://localhost`.
 
-3. (Optional) Execute `make load-fixtures` to load the fixtures.
+### Quality & tests
 
-4. Your app is available at `http://localhost`.
+| Task           | Local                                                       | Docker         |
+|----------------|-------------------------------------------------------------|----------------|
+| PHPUnit        | `vendor/bin/phpunit`                                        | `make phpunit` |
+| Behat (non-JS) | `vendor/bin/behat --strict --tags="~@javascript&&~@mink:chromedriver"` | `make behat` |
+| PHPStan (max)  | `vendor/bin/phpstan analyse -c phpstan.neon`                | `make phpstan` |
+| ECS            | `vendor/bin/ecs check`                                      | `make ecs`     |
 
-## Usage
+### Behat JS scenarios
 
-### Running plugin tests
+JS scenarios need a running server and headless Chrome:
 
-  - PHPUnit
+```bash
+symfony server:ca:install
+APP_ENV=test symfony server:start --port=8080 --daemon
 
-    ```bash
-    vendor/bin/phpunit
-    ```
+google-chrome-stable --enable-automation --disable-background-networking --no-first-run \
+  --headless --remote-debugging-port=9222 --window-size=2880,1800 \
+  --proxy-server='direct://' --proxy-bypass-list='*' http://127.0.0.1
 
-  - Behat (non-JS scenarios)
+vendor/bin/behat --strict --tags="@javascript,@mink:chromedriver"
+```
 
-    ```bash
-    vendor/bin/behat --strict --tags="~@javascript&&~@mink:chromedriver"
-    ```
+Non-JS scenarios:
 
-  - Behat (JS scenarios)
- 
-    1. [Install Symfony CLI command](https://symfony.com/download).
- 
-    2. Start Headless Chrome:
-    
-      ```bash
-      google-chrome-stable --enable-automation --disable-background-networking --no-default-browser-check --no-first-run --disable-popup-blocking --disable-default-apps --allow-insecure-localhost --disable-translate --disable-extensions --no-sandbox --enable-features=Metal --headless --remote-debugging-port=9222 --window-size=2880,1800 --proxy-server='direct://' --proxy-bypass-list='*' http://127.0.0.1
-      ```
-    
-    3. Install SSL certificates (only once needed) and run test application's webserver on `127.0.0.1:8080`:
-    
-      ```bash
-      symfony server:ca:install
-      APP_ENV=test symfony server:start --port=8080 --daemon
-      ```
-    
-    4. Run Behat:
-    
-      ```bash
-      vendor/bin/behat --strict --tags="@javascript,@mink:chromedriver"
-      ```
-    
-  - Static Analysis
-      
-    - PHPStan
-    
-      ```bash
-      vendor/bin/phpstan analyse -c phpstan.neon -l max src/  
-      ```
+```bash
+vendor/bin/behat --strict --tags="~@javascript&&~@mink:chromedriver"
+```
 
-  - Coding Standard
-  
-    ```bash
-    vendor/bin/ecs check
-    ```
+## License
 
-### Opening Sylius with your plugin
-
-- Using `test` environment:
-
-    ```bash
-    APP_ENV=test vendor/bin/console sylius:fixtures:load -n
-    APP_ENV=test symfony server:start -d
-    ```
-    
-- Using `dev` environment:
-
-    ```bash
-    vendor/bin/console sylius:fixtures:load -n
-    symfony server:start -d
-    ```
+Released under the [MIT License](LICENSE).
