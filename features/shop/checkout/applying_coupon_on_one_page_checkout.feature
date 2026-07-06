@@ -21,6 +21,14 @@ Feature: Applying a promotion coupon on the one page checkout
         Then I should be given the promotion discount
 
     @ui @no-api @javascript
+    Scenario: Losing the discount after removing an applied coupon
+        Given I added product "PHP T-Shirt" to the cart
+        When I open the one page checkout
+        And I apply the "SANTA2024" coupon
+        And I remove my coupon
+        Then I should not be given the promotion discount
+
+    @ui @no-api @javascript
     Scenario: Placing an order with an applied coupon marks the coupon as used
         Given I added product "PHP T-Shirt" to the cart
         When I open the one page checkout

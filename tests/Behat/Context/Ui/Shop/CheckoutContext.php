@@ -65,6 +65,24 @@ final readonly class CheckoutContext implements Context
         $this->onePageCheckoutPage->specifyShippingProvince($province);
     }
 
+    #[When('I want to use a new shipping address')]
+    public function iWantToUseANewShippingAddress(): void
+    {
+        $this->onePageCheckoutPage->useNewShippingAddress();
+    }
+
+    #[When('I use a different billing address')]
+    public function iUseADifferentBillingAddress(): void
+    {
+        $this->onePageCheckoutPage->useDifferentBillingAddress();
+    }
+
+    #[When('I provide my billing address as :street, :city, :postcode, :country for :customerName')]
+    public function iProvideMyBillingAddress(string $street, string $city, string $postcode, string $country, string $customerName): void
+    {
+        $this->onePageCheckoutPage->specifyBillingAddress($customerName, $street, $city, $postcode, $country);
+    }
+
     #[When('I select :shippingMethodName as my shipping method')]
     public function iSelectMyShippingMethod(string $shippingMethodName): void
     {
@@ -81,6 +99,12 @@ final readonly class CheckoutContext implements Context
     public function iApplyTheCoupon(string $couponCode): void
     {
         $this->onePageCheckoutPage->applyCoupon($couponCode);
+    }
+
+    #[When('I remove my coupon')]
+    public function iRemoveTheCoupon(): void
+    {
+        $this->onePageCheckoutPage->removeCoupon();
     }
 
     #[When('I place my order')]
@@ -123,18 +147,61 @@ final readonly class CheckoutContext implements Context
     #[Then('my order should be placed')]
     public function myOrderShouldBePlaced(): void
     {
-        $this->orderManager->clear();
-
-        $order = $this->orderRepository->findOneByTokenValue($this->sharedStorage->get('cart_token'));
-
-        Assert::isInstanceOf($order, OrderInterface::class, 'Order was not found.');
+        $order = $this->getPlacedOrder();
         Assert::same($order->getCheckoutState(), OrderCheckoutStates::STATE_COMPLETED);
+    }
+
+    #[Then('I should be notified that the order summary has changed')]
+    public function iShouldBeNotifiedThatTheOrderSummaryHasChanged(): void
+    {
+        Assert::true($this->onePageCheckoutPage->hasFlashMessage('The order summary has changed'));
+    }
+
+    #[Then('I should be notified that the coupon code is invalid')]
+    public function iShouldBeNotifiedThatTheCouponCodeIsInvalid(): void
+    {
+        Assert::true($this->onePageCheckoutPage->hasValidationError('Coupon code is invalid'));
+    }
+
+    #[Then('my order should not be placed')]
+    public function myOrderShouldNotBePlaced(): void
+    {
+        $order = $this->getPlacedOrder();
+        Assert::notSame($order->getCheckoutState(), OrderCheckoutStates::STATE_COMPLETED);
+    }
+
+    #[Then('my order should be billed to :street')]
+    public function myOrderShouldBeBilledTo(string $street): void
+    {
+        $order = $this->getPlacedOrder();
+
+        $billingAddress = $order->getBillingAddress();
+
+        Assert::notNull($billingAddress);
+        Assert::same($billingAddress->getStreet(), $street);
+    }
+
+    #[Then('my order should be shipped to :street')]
+    public function myOrderShouldBeShippedTo(string $street): void
+    {
+        $order = $this->getPlacedOrder();
+
+        $shippingAddress = $order->getShippingAddress();
+
+        Assert::notNull($shippingAddress);
+        Assert::same($shippingAddress->getStreet(), $street);
     }
 
     #[Then('I should be given the promotion discount')]
     public function iShouldBeGivenThePromotionDiscount(): void
     {
         Assert::true($this->onePageCheckoutPage->hasPromotionDiscount());
+    }
+
+    #[Then('I should not be given the promotion discount')]
+    public function iShouldNotBeGivenThePromotionDiscount(): void
+    {
+        Assert::false($this->onePageCheckoutPage->hasPromotionDiscount());
     }
 
     #[Then('the :couponCode coupon should be used')]
@@ -146,5 +213,19 @@ final readonly class CheckoutContext implements Context
 
         Assert::isInstanceOf($coupon, PromotionCouponInterface::class, 'Coupon was not found.');
         Assert::same($coupon->getUsed(), 1);
+    }
+
+    private function getPlacedOrder(): OrderInterface
+    {
+        $cart = $this->sharedStorage->get('order');
+        Assert::isInstanceOf($cart, OrderInterface::class);
+
+        $orderId = $cart->getId();
+        $this->orderManager->clear();
+
+        $order = $this->orderRepository->find($orderId);
+        Assert::isInstanceOf($order, OrderInterface::class, 'Order was not found.');
+
+        return $order;
     }
 }

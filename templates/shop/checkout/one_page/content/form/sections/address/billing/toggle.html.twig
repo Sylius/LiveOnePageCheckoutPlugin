@@ -7,9 +7,9 @@
         {% endif %}
 
         <div class="mb-3">
-            {{ form_row(form.differentBillingAddress, {
+            {{ form_row(form.differentBillingAddress, sylius_test_form_attribute('different-billing-address')|sylius_merge_recursive({
                 attr: { 'data-action': 'change->live#action', 'data-live-action-param': 'toggleDifferentBillingAddress' }
-            }) }}
+            })) }}
 
             {{ form_errors(form.differentBillingAddress) }}
         </div>

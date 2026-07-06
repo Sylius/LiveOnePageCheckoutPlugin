@@ -1,5 +1,5 @@
 {% set form = hookable_metadata.context.new_address %}
 
-{{ form_row(form, {
+{{ form_row(form, sylius_test_form_attribute('new-address')|sylius_merge_recursive({
     attr: { 'data-action': 'change->live#action', 'data-live-action-param': hookable_metadata.context.toggle_action }
-}) }}
+})) }}

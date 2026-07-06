@@ -23,6 +23,12 @@ interface OnePageCheckoutPageInterface extends PageInterface
 
     public function specifyShippingProvince(string $province): void;
 
+    public function useDifferentBillingAddress(): void;
+
+    public function specifyBillingAddress(string $fullName, string $street, string $city, string $postcode, string $countryName): void;
+
+    public function useNewShippingAddress(): void;
+
     public function selectShippingAddressFromAddressBook(string $fullName): void;
 
     public function selectShippingMethod(string $shippingMethodName): void;
@@ -31,11 +37,17 @@ interface OnePageCheckoutPageInterface extends PageInterface
 
     public function applyCoupon(string $couponCode): void;
 
+    public function removeCoupon(): void;
+
     public function pay(): void;
 
     public function hasShippingMethod(string $shippingMethodName): bool;
 
     public function hasSelectedShippingMethod(string $shippingMethodName): bool;
+
+    public function hasFlashMessage(string $message): bool;
+
+    public function hasValidationError(string $message): bool;
 
     public function hasPromotionDiscount(): bool;
 
