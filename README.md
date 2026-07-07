@@ -8,15 +8,14 @@
     </a>
 </p>
 
-<h1 align="center">Live One Page Checkout</h1>
+<h1 align="center">Sylius Live One Page Checkout Plugin</h1>
 
-<p align="center">A Sylius 2.x plugin that replaces the multi-step checkout with a single,
-live-updating one page checkout, enabled per channel.</p>
+<p align="center">Replace the default multi-step checkout with a single, live-updating one page checkout. Cart, addresses, shipping, payment and order summary live on one page and update as the customer edits them - enabled per channel, so other channels keep the standard Sylius checkout.</p>
 
 ## What it does
 
 - Puts cart, addresses, shipping, payment and order summary on **one page**, updating live
-  via **Symfony UX Live Components** — no full page reloads as the customer fills the form.
+  via **Symfony UX Live Components** - no full page reloads as the customer fills the form.
 - **Per-channel toggle**: enable "one page checkout" on a channel in the admin panel and only
   that channel switches to the one-page flow; every other channel keeps the standard Sylius
   checkout.
@@ -34,120 +33,193 @@ See [`CLAUDE.md`](CLAUDE.md) for a full architecture breakdown.
 | PHP             | `^8.2`  |
 | `sylius/sylius` | `^2.0`  |
 
-## Installation
+⚙️ Installation
+---------------
 
-1. Require the plugin:
+This guide covers the Live One Page Checkout plugin installation process using Flex recipes and Rector.
 
-   ```bash
-   composer require sylius/live-one-page-checkout-plugin
-   ```
+Prerequisites
+-------------
 
-2. Register the bundle in `config/bundles.php`:
+You need to have installed both SyliusRecipes and SyliusRector. You can find how to install them here:
+- [Sylius/SyliusRecipes](https://github.com/Sylius/SyliusRecipes)
+- [Sylius/SyliusRector](https://github.com/Sylius/SyliusRector)
 
-   ```php
-   Sylius\LiveOnePageCheckoutPlugin\SyliusLiveOnePageCheckoutPlugin::class => ['all' => true],
-   ```
+Installation guide
+------------------
 
-3. Import the plugin config (e.g. `config/packages/sylius_live_one_page_checkout.yaml`):
+1. Run
 
-   ```yaml
-   imports:
-       - { resource: "@SyliusLiveOnePageCheckoutPlugin/config/config.yaml" }
-   ```
+    ```bash
+    composer require sylius/live-one-page-checkout-plugin --no-scripts
+    ```
 
-4. Make your `Channel` entity aware of the flag — implement the plugin interface and use its
-   trait:
+1. Update `<project_root>/rector.php`
 
-   ```php
-   use Sylius\Component\Core\Model\Channel as BaseChannel;
-   use Sylius\LiveOnePageCheckoutPlugin\Model\ChannelInterface;
-   use Sylius\LiveOnePageCheckoutPlugin\Model\ChannelOnePageCheckoutAwareTrait;
+   Depending on your `rector.php` format, apply one of the following:
 
-   class Channel extends BaseChannel implements ChannelInterface
-   {
-       use ChannelOnePageCheckoutAwareTrait;
-   }
-   ```
+   - Closure-based configuration:
 
-   and point the Sylius channel resource at it:
+    ```diff
+   + use Sylius\SyliusRector\Set\SyliusLiveOnePageCheckout;
 
-   ```yaml
-   sylius_channel:
-       resources:
-           channel:
-               classes:
-                   model: App\Entity\Channel\Channel
-   ```
+    return static function (RectorConfig $rectorConfig): void {
+        // ...
+    +    $rectorConfig->sets([
+    +        SyliusLiveOnePageCheckout::LIVE_ONE_PAGE_CHECKOUT_PLUGIN_01,
+    +    ]);
+    };
+    ```
 
-5. Apply the migration adding the `one_page_checkout_enabled` column:
+   - Fluent `RectorConfig::configure()` configuration:
 
-   ```bash
-   bin/console doctrine:migrations:migrate
-   ```
+    ```diff
+   + use Sylius\SyliusRector\Set\SyliusLiveOnePageCheckout;
 
-6. In the admin panel, edit a channel and tick **Enable one page checkout**.
+    return RectorConfig::configure()
+        // ...
+    +    ->withSets([
+    +        SyliusLiveOnePageCheckout::LIVE_ONE_PAGE_CHECKOUT_PLUGIN_01,
+    +    ]);
+    ```
 
-## Local development
+1. Run
 
-This repository ships a **test application** (`sylius/test-application`) so the plugin can be
-run and tested in isolation. Pick either a local Symfony/PHP setup or Docker.
+    ```bash
+    vendor/bin/rector
+    ```
 
-### Traditional (local PHP)
+1. Ensure the modified channel resource is configured in `config/packages/_sylius.yaml`:
 
-```bash
-(cd vendor/sylius/test-application && yarn install && yarn build)
-vendor/bin/console assets:install
+    ```yaml
+    sylius_channel:
+        resources:
+            channel:
+                classes:
+                    model: App\Entity\Channel\Channel
+    ```
 
-vendor/bin/console doctrine:database:create
-vendor/bin/console doctrine:migrations:migrate -n
-vendor/bin/console sylius:fixtures:load -n   # optional demo data
+1. Execute migrations to add the `one_page_checkout_enabled` column:
 
-symfony server:start -d
-```
+    ```bash
+    bin/console doctrine:migrations:migrate
+    ```
 
-Configure database credentials in `tests/TestApplication/.env` and
-`tests/TestApplication/.env.test`. The app is then served by the Symfony CLI (default
-`https://localhost:8000`).
+1. Run `yarn encore dev` or `yarn encore production`
 
-### Docker
+   The recipe registers the bundle, imports the plugin config and routing, and adds the plugin's
+   Shop assets import to `assets/shop/entrypoint.js` for you, so there is nothing to wire by hand.
 
-```bash
-make init            # install deps, build assets, start containers
-make database-init   # create DB + run migrations
-make load-fixtures   # optional demo data
-```
+1. Rebuild the cache to display all new translations correctly:
 
-The app is then available at `http://localhost`.
+    ```bash
+    bin/console cache:clear
+    ```
 
-### Quality & tests
+1. In the admin panel, edit a channel and tick **Enable one page checkout** to switch it to the
+   one page flow.
 
-| Task           | Local                                                       | Docker         |
-|----------------|-------------------------------------------------------------|----------------|
-| PHPUnit        | `vendor/bin/phpunit`                                        | `make phpunit` |
-| Behat (non-JS) | `vendor/bin/behat --strict --tags="~@javascript&&~@mink:chromedriver"` | `make behat` |
-| PHPStan (max)  | `vendor/bin/phpstan analyse -c phpstan.neon`                | `make phpstan` |
-| ECS            | `vendor/bin/ecs check`                                      | `make ecs`     |
+⌛️ Legacy installation
+======================
 
-### Behat JS scenarios
+Don't want to use recipes or Rector? You can still follow the legacy installation guide below:
 
-JS scenarios need a running server and headless Chrome:
+1. Run
 
-```bash
-symfony server:ca:install
-APP_ENV=test symfony server:start --port=8080 --daemon
+    ```bash
+    composer require live-one-page-checkout --no-scripts
+    ```
 
-google-chrome-stable --enable-automation --disable-background-networking --no-first-run \
-  --headless --remote-debugging-port=9222 --window-size=2880,1800 \
-  --proxy-server='direct://' --proxy-bypass-list='*' http://127.0.0.1
+   or
 
-vendor/bin/behat --strict --tags="@javascript,@mink:chromedriver"
-```
+    ```bash
+    composer require sylius/live-one-page-checkout-plugin --no-scripts
+    ```
 
-Non-JS scenarios:
+1. Add the following line to `config/bundles.php`:
 
-```bash
-vendor/bin/behat --strict --tags="~@javascript&&~@mink:chromedriver"
-```
+    ```php
+    Sylius\LiveOnePageCheckoutPlugin\SyliusLiveOnePageCheckoutPlugin::class => ['all' => true],
+    ```
+
+1. The `Channel` entity should implement the following interface:
+
+    ```php
+    Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelInterface
+    ```
+
+   and use trait:
+
+    ```php
+    Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelOnePageCheckoutAwareTrait
+    ```
+
+   Final result:
+
+    ```php
+    <?php
+
+    declare(strict_types=1);
+
+    namespace App\Entity\Channel;
+
+    use Doctrine\ORM\Mapping as ORM;
+    use Sylius\Component\Core\Model\Channel as BaseChannel;
+    use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelInterface;
+    use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelOnePageCheckoutAwareTrait;
+
+    #[ORM\Entity]
+    #[ORM\Table(name: 'sylius_channel')]
+    class Channel extends BaseChannel implements ChannelInterface
+    {
+        use ChannelOnePageCheckoutAwareTrait;
+    }
+    ```
+
+1. Add configuration of the modified channel resource in `config/packages/_sylius.yaml`:
+
+    ```yaml
+    sylius_channel:
+        resources:
+            channel:
+                classes:
+                    model: App\Entity\Channel\Channel
+    ```
+
+1. Import the plugin configuration in `config/packages/_sylius.yaml`:
+
+    ```yaml
+    imports:
+        - { resource: "@SyliusLiveOnePageCheckoutPlugin/config/config.yaml" }
+    ```
+
+1. Configure routing in `config/routes/sylius_live_one_page_checkout.yaml`:
+
+    ```yaml
+    sylius_live_one_page_checkout:
+        resource: "@SyliusLiveOnePageCheckoutPlugin/config/routes.yaml"
+    ```
+
+1. Import the plugin's Shop assets into your application's Shop entry file:
+
+    ```javascript
+    // assets/shop/entrypoint.js
+    import '@vendor/sylius/live-one-page-checkout-plugin/assets/shop/entrypoint';
+    ```
+
+1. Execute migrations to add the `one_page_checkout_enabled` column:
+
+    ```bash
+    bin/console doctrine:migrations:migrate
+    ```
+
+1. Run `yarn encore dev` or `yarn encore production`
+
+1. Rebuild the cache to display all new translations correctly:
+
+    ```bash
+    bin/console cache:clear
+    ```
 
 ## License
 

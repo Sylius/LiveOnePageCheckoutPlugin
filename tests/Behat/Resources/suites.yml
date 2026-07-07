@@ -1,1 +1,6 @@
-# Put your Behat suites definitions here
+# This file is part of the Sylius package.
+# (c) Sylius Sp. z o.o.
+
+imports:
+    - suites/ui/managing_channels.yml
+    - suites/ui/shop_checkout.yml

@@ -16,7 +16,7 @@ namespace Tests\Sylius\LiveOnePageCheckoutPlugin\Unit\Checker;
 use PHPUnit\Framework\TestCase;
 use Sylius\LiveOnePageCheckoutPlugin\Checker\CheckoutEnabledChecker;
 use Sylius\LiveOnePageCheckoutPlugin\Checker\CheckoutEnabledCheckerInterface;
-use Sylius\LiveOnePageCheckoutPlugin\Model\ChannelInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelInterface;
 
 final class CheckoutEnabledCheckerTest extends TestCase
 {

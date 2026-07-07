@@ -2,4 +2,4 @@
 
 {% set form = hookable_metadata.context.form %}
 
-{{ button.primary({ text: 'sylius.ui.pay'|trans, type: 'submit', form: form.vars.id, class: 'w-100' }) }}
+{{ button.primary({ text: 'sylius.ui.pay'|trans, type: 'submit', form: form.vars.id, class: 'w-100', attr: sylius_test_html_attribute('pay') }) }}

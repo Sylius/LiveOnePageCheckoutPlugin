@@ -5,7 +5,7 @@
     "keywords": [
         "sylius",
         "sylius-plugin",
-        "test-appication"
+        "sylius-live-one-page-checkout"
     ],
     "license": "MIT",
     "require": {

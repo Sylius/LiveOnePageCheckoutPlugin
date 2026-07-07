@@ -4,6 +4,7 @@
     {{ form_start(form, { attr: { id: form.vars.id, novalidate: 'novalidate' } }) }}
     <input type="hidden" name="_method" value="PUT"/>
     {{ form_errors(form) }}
+    {{ form_widget(form._token) }}
     {{ form_widget(form.stateHash, { value: stateHash }) }}
 
     {% hook 'form' with { form, resource } %}

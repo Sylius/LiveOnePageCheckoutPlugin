@@ -44,8 +44,8 @@ on top of core Sylius. Every piece gates its behaviour on the per-channel flag t
 `CheckoutEnabledChecker`, so a disabled channel behaves exactly like stock Sylius.
 
 ### 1. Per-channel toggle
-- `Model/ChannelOnePageCheckoutAwareTrait` + `...AwareInterface` add the boolean column
-  `one_page_checkout_enabled` and its accessors. `Model/ChannelInterface` combines the Sylius
+- `Entity/ChannelOnePageCheckoutAwareTrait` + `...AwareInterface` add the boolean column
+  `one_page_checkout_enabled` and its accessors. `Entity/ChannelInterface` combines the Sylius
   `ChannelInterface` with the aware interface; the application's `Channel` entity must
   implement it and use the trait (see Installation in `README.md`).
 - `Form/Extension/Admin/ChannelTypeExtension` adds the admin checkbox to the channel form.
