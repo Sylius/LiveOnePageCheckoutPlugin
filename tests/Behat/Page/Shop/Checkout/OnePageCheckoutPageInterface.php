@@ -29,6 +29,8 @@ interface OnePageCheckoutPageInterface extends PageInterface
 
     public function useNewShippingAddress(): void;
 
+    public function useNewBillingAddress(): void;
+
     public function selectShippingAddressFromAddressBook(string $fullName): void;
 
     public function selectShippingMethod(string $shippingMethodName): void;
@@ -42,6 +44,8 @@ interface OnePageCheckoutPageInterface extends PageInterface
     public function pay(): void;
 
     public function hasShippingMethod(string $shippingMethodName): bool;
+
+    public function hasNoShippingMethodsMessage(): bool;
 
     public function hasSelectedShippingMethod(string $shippingMethodName): bool;
 

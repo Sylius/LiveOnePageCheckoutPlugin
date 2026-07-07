@@ -71,6 +71,12 @@ final readonly class CheckoutContext implements Context
         $this->onePageCheckoutPage->useNewShippingAddress();
     }
 
+    #[When('I want to use a new billing address')]
+    public function iWantToUseANewBillingAddress(): void
+    {
+        $this->onePageCheckoutPage->useNewBillingAddress();
+    }
+
     #[When('I use a different billing address')]
     public function iUseADifferentBillingAddress(): void
     {
@@ -136,6 +142,12 @@ final readonly class CheckoutContext implements Context
     public function theShippingMethodShouldNotBeAvailable(string $shippingMethodName): void
     {
         Assert::false($this->onePageCheckoutPage->hasShippingMethod($shippingMethodName));
+    }
+
+    #[Then('there should be no shipping methods available')]
+    public function thereShouldBeNoShippingMethodsAvailable(): void
+    {
+        Assert::true($this->onePageCheckoutPage->hasNoShippingMethodsMessage());
     }
 
     #[Then('the :shippingMethodName shipping method should be selected')]

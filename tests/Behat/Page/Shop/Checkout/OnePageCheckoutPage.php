@@ -83,6 +83,13 @@ class OnePageCheckoutPage extends Page implements OnePageCheckoutPageInterface
         $this->waitForFormToUpdate();
     }
 
+    public function useNewBillingAddress(): void
+    {
+        $this->getElement('new_billing_address')->check();
+
+        $this->waitForFormToUpdate();
+    }
+
     public function selectShippingAddressFromAddressBook(string $fullName): void
     {
         $this->getElement('shipping_address_book')->selectOption($fullName);
@@ -156,6 +163,11 @@ class OnePageCheckoutPage extends Page implements OnePageCheckoutPageInterface
         return $this->hasElement('shipping_method', ['%name%' => $shippingMethodName]);
     }
 
+    public function hasNoShippingMethodsMessage(): bool
+    {
+        return $this->hasElement('no_shipping_methods');
+    }
+
     public function hasSelectedShippingMethod(string $shippingMethodName): bool
     {
         if (!$this->hasElement('shipping_method', ['%name%' => $shippingMethodName])) {
@@ -196,7 +208,9 @@ class OnePageCheckoutPage extends Page implements OnePageCheckoutPageInterface
             'email' => '[data-test-email]',
             'flash_message' => '[data-test-sylius-flash-message]',
             'form' => '[data-live-name-value="sylius_live_one_page_checkout:checkout:form"]',
+            'new_billing_address' => '[data-test-billing-address] [data-test-new-address]',
             'new_shipping_address' => '[data-test-shipping-address] [data-test-new-address]',
+            'no_shipping_methods' => '[data-test-no-shipping-methods]',
             'pay' => '[data-test-pay]',
             'payment_method' => '[data-test-payment-method="%name%"]',
             'promotion_discount' => '[data-test-promotion-discount]',

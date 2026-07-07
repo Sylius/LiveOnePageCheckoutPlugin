@@ -24,3 +24,21 @@ Feature: Providing a different billing address on the one page checkout
         And I place my order
         Then my order should be placed
         And my order should be billed to "Billing Ave. 7"
+
+    @ui @no-api @javascript
+    Scenario: Placing an order with a new billing address as a logged in customer
+        Given I am a logged in customer
+        And I have an address "John Doe", "Main St. 12", "90210", "Los Angeles", "United States", "Arkansas" in my address book
+        And my default address is of "John Doe"
+        And I added product "PHP T-Shirt" to the cart
+        When I open the one page checkout
+        And I want to use a new shipping address
+        And I provide my shipping address as "Main St. 12", "New York", "10001", "United States" for "John Doe"
+        And I use a different billing address
+        And I want to use a new billing address
+        And I provide my billing address as "Billing Ave. 7", "Boston", "02101", "United States" for "Jane Doe"
+        And I select "UPS" as my shipping method
+        And I select "Offline" as my payment method
+        And I place my order
+        Then my order should be placed
+        And my order should be billed to "Billing Ave. 7"
