@@ -1,5 +1,7 @@
 {% set form = hookable_metadata.context.form %}
 
+{{ form_errors(form.payments) }}
+
 {% for key, formPayment in form.payments %}
     {% hook 'payment' with { 'form': formPayment } %}
 {% else %}

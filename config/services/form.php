@@ -20,7 +20,7 @@ return static function (ContainerConfigurator $container): void {
             'sylius_live_one_page_checkout.form.type.checkout.validation_groups',
             [
                 'sylius',
-                'sylius_checkout_complete'
+                'sylius_checkout_complete',
             ]
         )
     ;
@@ -55,6 +55,7 @@ return static function (ContainerConfigurator $container): void {
             service('sylius.repository.address'),
             tagged_iterator('sylius_shop.modifier.address_form_values'),
             service('sylius.comparator.address'),
+            service('sylius_live_one_page_checkout.ensurer.order_objects'),
         ])
         ->tag('form.type')
     ;

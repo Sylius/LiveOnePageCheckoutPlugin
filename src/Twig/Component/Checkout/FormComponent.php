@@ -15,8 +15,6 @@ namespace Sylius\LiveOnePageCheckoutPlugin\Twig\Component\Checkout;
 
 use Sylius\Bundle\UiBundle\Twig\Component\ResourceFormComponentTrait;
 use Sylius\Bundle\UiBundle\Twig\Component\TemplatePropTrait;
-use Sylius\Component\Core\Factory\AddressFactoryInterface;
-use Sylius\Component\Core\Model\AddressInterface;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Repository\OrderRepositoryInterface;
 use Sylius\Component\Customer\Context\CustomerContextInterface;
@@ -43,7 +41,6 @@ class FormComponent
 
     /**
      * @param OrderRepositoryInterface<OrderInterface> $repository
-     * @param AddressFactoryInterface<AddressInterface> $addressFactory
      */
     public function __construct(
         OrderRepositoryInterface $repository,
@@ -53,7 +50,6 @@ class FormComponent
         private readonly CustomerContextInterface $customerContext,
         private readonly OrderProcessorInterface $orderProcessor,
         private readonly OrderHasherInterface $orderHasher,
-        private readonly AddressFactoryInterface $addressFactory,
     ) {
         $this->initialize($repository, $formFactory, $resourceClass, $formClass);
     }
@@ -76,13 +72,6 @@ class FormComponent
     {
         /** @var OrderInterface $order */
         $order = $this->resource;
-
-        if (null === $order->getShippingAddress()) {
-            $order->setShippingAddress($this->addressFactory->createNew());
-        }
-        if (null === $order->getBillingAddress()) {
-            $order->setBillingAddress($this->addressFactory->createNew());
-        }
 
         return $this->formFactory->create(
             $this->formClass,
@@ -115,7 +104,10 @@ class FormComponent
     public function toggleDifferentBillingAddress(): void
     {
         $this->clearAddressForm('differentBillingAddress', 'defaultBillingAddress', 'billingAddress');
-        $this->formValues['newBillingAddress'] = false;
+
+        if (array_key_exists('newBillingAddress', $this->formValues)) {
+            $this->formValues['newBillingAddress'] = false;
+        }
     }
 
     private function clearAddressForm(string $flagKey, string $defaultKey, string $addressKey): void
@@ -124,12 +116,10 @@ class FormComponent
             return;
         }
 
-        $this->formValues[$defaultKey] = '';
-
-        if (is_array($this->formValues[$addressKey] ?? null)) {
-            foreach (array_keys($this->formValues[$addressKey]) as $key) {
-                $this->formValues[$addressKey][$key] = '';
-            }
+        if (array_key_exists($defaultKey, $this->formValues)) {
+            $this->formValues[$defaultKey] = '';
         }
+
+        $this->formValues[$addressKey] = [];
     }
 }

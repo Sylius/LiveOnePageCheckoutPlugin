@@ -24,6 +24,7 @@ use Sylius\Component\Core\Model\AddressInterface;
 use Sylius\Component\Core\Model\CustomerInterface;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Repository\AddressRepositoryInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Ensurer\OrderObjectsEnsurerInterface;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -51,6 +52,7 @@ final class CheckoutType extends AbstractResourceType
         protected readonly AddressRepositoryInterface $addressRepository,
         protected readonly iterable $addressFormValuesModifiers,
         protected readonly AddressComparatorInterface $addressComparator,
+        protected readonly OrderObjectsEnsurerInterface $orderObjectsEnsurer,
     ) {
         parent::__construct($dataClass, $validationGroups);
     }
@@ -104,6 +106,8 @@ final class CheckoutType extends AbstractResourceType
         /** @var OrderInterface $order */
         $order = $event->getData();
         $channel = $order->getChannel();
+
+        $this->orderObjectsEnsurer->ensure($order);
 
         $form
             ->add('shippingAddress', AddressType::class, [
