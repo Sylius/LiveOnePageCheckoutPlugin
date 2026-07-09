@@ -104,7 +104,10 @@ class FormComponent
     public function toggleDifferentBillingAddress(): void
     {
         $this->clearAddressForm('differentBillingAddress', 'defaultBillingAddress', 'billingAddress');
-        $this->formValues['newBillingAddress'] = false;
+
+        if (array_key_exists('newBillingAddress', $this->formValues)) {
+            $this->formValues['newBillingAddress'] = false;
+        }
     }
 
     private function clearAddressForm(string $flagKey, string $defaultKey, string $addressKey): void
@@ -113,12 +116,10 @@ class FormComponent
             return;
         }
 
-        $this->formValues[$defaultKey] = '';
-
-        if (is_array($this->formValues[$addressKey] ?? null)) {
-            foreach (array_keys($this->formValues[$addressKey]) as $key) {
-                $this->formValues[$addressKey][$key] = '';
-            }
+        if (array_key_exists($defaultKey, $this->formValues)) {
+            $this->formValues[$defaultKey] = '';
         }
+
+        $this->formValues[$addressKey] = [];
     }
 }
