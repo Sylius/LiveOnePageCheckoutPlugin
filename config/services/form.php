@@ -20,7 +20,8 @@ return static function (ContainerConfigurator $container): void {
             'sylius_live_one_page_checkout.form.type.checkout.validation_groups',
             [
                 'sylius',
-                'sylius_checkout_complete'
+                'sylius_checkout_complete',
+                'sylius_live_one_page_checkout_payment',
             ]
         )
     ;

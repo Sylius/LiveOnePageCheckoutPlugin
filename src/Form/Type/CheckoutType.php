@@ -116,6 +116,7 @@ final class CheckoutType extends AbstractResourceType
             ->add('payments', ChangePaymentMethodType::class, [
                 'entry_type' => PaymentType::class,
                 'label' => false,
+                'error_bubbling' => false,
             ])
         ;
 

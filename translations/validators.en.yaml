@@ -1,4 +1,5 @@
 sylius_live_one_page_checkout:
     checkout:
         billing_address_required: 'Please enter the billing address.'
+        payment_method_required: 'A payment method is required to place your order.'
         shipping_address_required: 'Please enter the shipping address.'
