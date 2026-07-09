@@ -56,6 +56,7 @@ return static function (ContainerConfigurator $container): void {
             service('sylius.repository.address'),
             tagged_iterator('sylius_shop.modifier.address_form_values'),
             service('sylius.comparator.address'),
+            service('sylius.factory.address'),
         ])
         ->tag('form.type')
     ;
