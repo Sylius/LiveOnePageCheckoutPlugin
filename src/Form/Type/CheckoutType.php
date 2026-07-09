@@ -20,11 +20,11 @@ use Sylius\Bundle\ResourceBundle\Form\Type\AbstractResourceType;
 use Sylius\Bundle\ShopBundle\Form\Type\AddressType;
 use Sylius\Bundle\ShopBundle\Modifier\AddressFormValuesModifierInterface;
 use Sylius\Component\Addressing\Comparator\AddressComparatorInterface;
-use Sylius\Component\Core\Factory\AddressFactoryInterface;
 use Sylius\Component\Core\Model\AddressInterface;
 use Sylius\Component\Core\Model\CustomerInterface;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Repository\AddressRepositoryInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Ensurer\OrderObjectsEnsurerInterface;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -45,7 +45,6 @@ final class CheckoutType extends AbstractResourceType
     /**
      * @param string[] $validationGroups
      * @param iterable<AddressFormValuesModifierInterface> $addressFormValuesModifiers
-     * @param AddressFactoryInterface<AddressInterface> $addressFactory
      */
     public function __construct(
         string $dataClass,
@@ -53,7 +52,7 @@ final class CheckoutType extends AbstractResourceType
         protected readonly AddressRepositoryInterface $addressRepository,
         protected readonly iterable $addressFormValuesModifiers,
         protected readonly AddressComparatorInterface $addressComparator,
-        protected readonly AddressFactoryInterface $addressFactory,
+        protected readonly OrderObjectsEnsurerInterface $orderObjectsEnsurer,
     ) {
         parent::__construct($dataClass, $validationGroups);
     }
@@ -108,7 +107,7 @@ final class CheckoutType extends AbstractResourceType
         $order = $event->getData();
         $channel = $order->getChannel();
 
-        $this->ensureAddresses($order);
+        $this->orderObjectsEnsurer->ensure($order);
 
         $form
             ->add('shippingAddress', AddressType::class, [
@@ -121,7 +120,6 @@ final class CheckoutType extends AbstractResourceType
             ->add('payments', ChangePaymentMethodType::class, [
                 'entry_type' => PaymentType::class,
                 'label' => false,
-                'error_bubbling' => false,
             ])
         ;
 
@@ -138,17 +136,6 @@ final class CheckoutType extends AbstractResourceType
                     'label' => false,
                 ])
             ;
-        }
-    }
-
-    private function ensureAddresses(OrderInterface $order): void
-    {
-        if (null === $order->getShippingAddress()) {
-            $order->setShippingAddress($this->addressFactory->createNew());
-        }
-
-        if (null === $order->getBillingAddress()) {
-            $order->setBillingAddress($this->addressFactory->createNew());
         }
     }
 
