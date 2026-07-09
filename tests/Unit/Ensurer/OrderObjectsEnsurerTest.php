@@ -60,13 +60,15 @@ final class OrderObjectsEnsurerTest extends TestCase
     public function testCreatesMissingAddresses(): void
     {
         $address = $this->createMock(AddressInterface::class);
-        $this->addressFactory->method('createNew')->willReturn($address);
 
         $order = $this->createMock(OrderInterface::class);
         $order->method('getShippingAddress')->willReturn(null);
         $order->method('getBillingAddress')->willReturn(null);
         $order->method('isShippingRequired')->willReturn(false);
         $order->method('getCurrencyCode')->willReturn(null);
+
+        $this->addressFactory->method('createNew')->willReturn($address);
+
         $order->expects(self::once())->method('setShippingAddress')->with($address);
         $order->expects(self::once())->method('setBillingAddress')->with($address);
 
@@ -75,12 +77,12 @@ final class OrderObjectsEnsurerTest extends TestCase
 
     public function testDoesNotOverwriteExistingAddresses(): void
     {
-        $this->addressFactory->expects(self::never())->method('createNew');
-
         $order = $this->createOrder(
             shippingAddress: $this->createMock(AddressInterface::class),
             billingAddress: $this->createMock(AddressInterface::class),
         );
+
+        $this->addressFactory->expects(self::never())->method('createNew');
         $order->expects(self::never())->method('setShippingAddress');
         $order->expects(self::never())->method('setBillingAddress');
 
@@ -90,9 +92,10 @@ final class OrderObjectsEnsurerTest extends TestCase
     public function testAddsShipmentWhenShippingRequiredAndNoShipments(): void
     {
         $shipment = $this->createMock(ShipmentInterface::class);
+        $order = $this->createOrder(shippingRequired: true, shipments: []);
+
         $this->shipmentFactory->method('createNew')->willReturn($shipment);
 
-        $order = $this->createOrder(shippingRequired: true, shipments: []);
         $order->expects(self::once())->method('addShipment')->with($shipment);
 
         $this->ensurer->ensure($order);
@@ -100,9 +103,9 @@ final class OrderObjectsEnsurerTest extends TestCase
 
     public function testDoesNotAddShipmentWhenShippingNotRequired(): void
     {
-        $this->shipmentFactory->expects(self::never())->method('createNew');
-
         $order = $this->createOrder(shippingRequired: false);
+
+        $this->shipmentFactory->expects(self::never())->method('createNew');
         $order->expects(self::never())->method('addShipment');
 
         $this->ensurer->ensure($order);
@@ -110,12 +113,12 @@ final class OrderObjectsEnsurerTest extends TestCase
 
     public function testDoesNotAddShipmentWhenShipmentAlreadyPresent(): void
     {
-        $this->shipmentFactory->expects(self::never())->method('createNew');
-
         $order = $this->createOrder(
             shippingRequired: true,
             shipments: [$this->createMock(ShipmentInterface::class)],
         );
+
+        $this->shipmentFactory->expects(self::never())->method('createNew');
         $order->expects(self::never())->method('addShipment');
 
         $this->ensurer->ensure($order);
@@ -124,14 +127,14 @@ final class OrderObjectsEnsurerTest extends TestCase
     public function testAddsPaymentWhenCurrencySetAndNoPayments(): void
     {
         $payment = $this->createMock(PaymentInterface::class);
+        $order = $this->createOrder(currencyCode: 'USD', total: 1500, payments: []);
+
         $this->paymentFactory
             ->expects(self::once())
             ->method('createWithAmountAndCurrencyCode')
             ->with(1500, 'USD')
             ->willReturn($payment)
         ;
-
-        $order = $this->createOrder(currencyCode: 'USD', total: 1500, payments: []);
         $order->expects(self::once())->method('addPayment')->with($payment);
 
         $this->ensurer->ensure($order);
@@ -139,9 +142,9 @@ final class OrderObjectsEnsurerTest extends TestCase
 
     public function testDoesNotAddPaymentWhenPaymentAlreadyPresent(): void
     {
-        $this->paymentFactory->expects(self::never())->method('createWithAmountAndCurrencyCode');
-
         $order = $this->createOrder(currencyCode: 'USD', payments: [$this->createMock(PaymentInterface::class)]);
+
+        $this->paymentFactory->expects(self::never())->method('createWithAmountAndCurrencyCode');
         $order->expects(self::never())->method('addPayment');
 
         $this->ensurer->ensure($order);
@@ -149,9 +152,9 @@ final class OrderObjectsEnsurerTest extends TestCase
 
     public function testDoesNotAddPaymentWhenCurrencyCodeIsNull(): void
     {
-        $this->paymentFactory->expects(self::never())->method('createWithAmountAndCurrencyCode');
-
         $order = $this->createOrder(currencyCode: null);
+
+        $this->paymentFactory->expects(self::never())->method('createWithAmountAndCurrencyCode');
         $order->expects(self::never())->method('addPayment');
 
         $this->ensurer->ensure($order);
