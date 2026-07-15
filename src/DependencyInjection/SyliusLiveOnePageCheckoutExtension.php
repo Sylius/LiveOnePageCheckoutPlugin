@@ -39,7 +39,7 @@ final class SyliusLiveOnePageCheckoutExtension extends AbstractResourceExtension
 
     protected function getMigrationsNamespace(): string
     {
-        return 'DoctrineMigrations';
+        return 'Sylius\LiveOnePageCheckoutPlugin\Migrations';
     }
 
     protected function getMigrationsDirectory(): string
