@@ -41,6 +41,10 @@ final readonly class DefaultShippingAddressCartContext implements ResettableCart
             return $cart;
         }
 
+        if (null !== $cart->getShippingAddress()) {
+            return $cart;
+        }
+
         $customer = $cart->getCustomer();
 
         if (!$customer instanceof CustomerInterface) {

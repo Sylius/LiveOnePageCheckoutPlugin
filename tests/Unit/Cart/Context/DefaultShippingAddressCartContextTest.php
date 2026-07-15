@@ -54,6 +54,18 @@ final class DefaultShippingAddressCartContextTest extends TestCase
         self::assertSame($cart, $this->context->getCart());
     }
 
+    public function testReturnsCartUntouchedWhenCartAlreadyHasShippingAddress(): void
+    {
+        $cart = $this->createCart();
+        $cart->method('getShippingAddress')->willReturn($this->createMock(AddressInterface::class));
+        $cart->expects(self::never())->method('getCustomer');
+        $cart->expects(self::never())->method('setShippingAddress');
+
+        $this->checkoutEnabledChecker->method('isEnabled')->willReturn(true);
+
+        self::assertSame($cart, $this->context->getCart());
+    }
+
     public function testReturnsCartUntouchedWhenCartHasNoCustomer(): void
     {
         $cart = $this->createCart();
