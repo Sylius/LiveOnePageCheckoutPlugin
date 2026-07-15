@@ -77,5 +77,4 @@ final class OrderSummaryFactoryTest extends TestCase
         self::assertSame(0, $result->promotionTotal);
         self::assertSame(3850, $result->total);
     }
-
 }

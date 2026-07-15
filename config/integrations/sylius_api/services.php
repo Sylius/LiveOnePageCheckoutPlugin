@@ -31,7 +31,6 @@ return static function (ContainerConfigurator $container): void {
         ->set('sylius_live_one_page_checkout.api.checkout_preview.class', CheckoutPreview::class)
     ;
 
-
     $services
         ->set('sylius_live_one_page_checkout.api.applier.address', AddressApplier::class)
         ->tag('sylius_live_one_page_checkout.api.checkout_applier', ['priority' => 30])
