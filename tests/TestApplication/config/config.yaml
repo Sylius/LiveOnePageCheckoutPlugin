@@ -2,9 +2,8 @@ imports:
     - { resource: "@SyliusLiveOnePageCheckoutPlugin/config/config.yaml" }
     - { resource: "services_test.php" }
 
-twig:
-    paths:
-        '%kernel.project_dir%/../../../tests/TestApplication/templates': ~
+parameters:
+    sylius_one_page_checkout_api_resources_path: '%kernel.project_dir%/../../../config/api_platform/'
 
 sylius_channel:
     resources:

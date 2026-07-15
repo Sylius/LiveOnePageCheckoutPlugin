@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+
+ This file is part of the Sylius package.
+
+ (c) Sylius Sp. z o.o.
+
+ For the full copyright and license information, please view the LICENSE
+ file that was distributed with this source code.
+
+-->
+
+<resources
+    xmlns="https://api-platform.com/schema/metadata/resources-3.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="https://api-platform.com/schema/metadata/resources-3.0 https://api-platform.com/schema/metadata/resources-3.0.xsd"
+>
+    <resource class="%sylius_live_one_page_checkout.api.checkout_preview.class%" shortName="OnePageCheckout">
+        <operations>
+            <operation
+                name="sylius_api_shop_one_page_checkout_preview"
+                class="ApiPlatform\Metadata\Post"
+                uriTemplate="/shop/orders/{tokenValue}/one-page/preview"
+                status="200"
+                read="false"
+                input="Sylius\LiveOnePageCheckoutPlugin\Api\Command\Checkout"
+                processor="sylius_live_one_page_checkout.api.state_processor.preview_checkout"
+                securityPostDenormalize="is_granted('SYLIUS_ONE_PAGE_CHECKOUT_AVAILABLE', object)"
+            >
+                <uriVariables>
+                    <uriVariable parameterName="tokenValue" fromClass="%sylius.model.order.class%" />
+                </uriVariables>
+                <denormalizationContext>
+                    <values>
+                        <value name="groups">
+                            <values>
+                                <value>sylius_live_one_page_checkout:shop:checkout:update</value>
+                            </values>
+                        </value>
+                    </values>
+                </denormalizationContext>
+                <normalizationContext>
+                    <values>
+                        <value name="groups">
+                            <values>
+                                <value>sylius_live_one_page_checkout:shop:checkout:show</value>
+                            </values>
+                        </value>
+                    </values>
+                </normalizationContext>
+            </operation>
+        </operations>
+    </resource>
+</resources>

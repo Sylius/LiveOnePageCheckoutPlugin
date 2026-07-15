@@ -1,0 +1,90 @@
+{
+    "@context": "\/api\/v2\/contexts\/OnePageCheckout",
+    "@id": "@string@",
+    "@type": "OnePageCheckout",
+    "order": {
+        "@type": "OrderSummary",
+        "@id": "@string@",
+        "itemsTotal": 4000,
+        "shippingTotal": 500,
+        "taxTotal": 0,
+        "promotionTotal": 0,
+        "total": 4500,
+        "promotionCoupon": null
+    },
+    "shipments": [
+        {
+            "@type": "ShipmentPreview",
+            "@id": "@string@",
+            "selectedMethodCode": "UPS",
+            "availableMethods": [
+                {
+                    "@id": "\/api\/v2\/shop\/shipping-methods\/DHL",
+                    "@type": "ShippingMethod",
+                    "code": "DHL",
+                    "name": "DHL",
+                    "description": "DHL Express"
+                }
+            ]
+        }
+    ],
+    "payments": [
+        {
+            "@type": "PaymentPreview",
+            "@id": "@string@",
+            "selectedMethodCode": "CASH_ON_DELIVERY",
+            "availableMethods": [
+                {
+                    "@id": "\/api\/v2\/shop\/payment-methods\/CASH_ON_DELIVERY",
+                    "@type": "PaymentMethod",
+                    "code": "CASH_ON_DELIVERY",
+                    "name": "Cash on delivery",
+                    "description": "Pay on delivery"
+                },
+                {
+                    "@id": "\/api\/v2\/shop\/payment-methods\/STRIPE",
+                    "@type": "PaymentMethod",
+                    "code": "STRIPE",
+                    "name": "Credit Card (Stripe)",
+                    "description": "Pay by credit card"
+                },
+                {
+                    "@id": "\/api\/v2\/shop\/payment-methods\/PAYPAL",
+                    "@type": "PaymentMethod",
+                    "code": "PAYPAL",
+                    "name": "PayPal",
+                    "description": "Pay via PayPal"
+                }
+            ]
+        }
+    ],
+    "hash": "9cf78d6076435842391e3cf1f99811c2",
+    "billingAddress": {
+        "@type": "AddressPreview",
+        "@id": "@string@",
+        "firstName": null,
+        "lastName": null,
+        "company": null,
+        "street": null,
+        "city": null,
+        "postcode": null,
+        "countryCode": null,
+        "provinceCode": null,
+        "provinceName": null,
+        "phoneNumber": null
+    },
+    "shippingAddress": {
+        "@type": "AddressPreview",
+        "@id": "@string@",
+        "firstName": "Hans",
+        "lastName": "Mueller",
+        "company": null,
+        "street": "Hauptstrasse",
+        "city": "Berlin",
+        "postcode": "10115",
+        "countryCode": "DE",
+        "provinceCode": null,
+        "provinceName": null,
+        "phoneNumber": null
+    }
+}

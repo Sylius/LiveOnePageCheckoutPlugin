@@ -1,0 +1,27 @@
+Sylius\Component\Addressing\Model\Country:
+    country_US:
+        code: 'US'
+    country_DE:
+        code: 'DE'
+    country_FR:
+        code: 'FR'
+
+Sylius\Component\Addressing\Model\ZoneMember:
+    zone_member_US:
+        code: 'US'
+    zone_member_DE:
+        code: 'DE'
+    zone_member_FR:
+        code: 'FR'
+
+Sylius\Component\Addressing\Model\Zone:
+    zone_us:
+        code: 'US'
+        name: 'United States'
+        type: 'country'
+        members: ['@zone_member_US']
+    zone_eu:
+        code: 'EU'
+        name: 'European Union'
+        type: 'country'
+        members: ['@zone_member_DE', '@zone_member_FR']
