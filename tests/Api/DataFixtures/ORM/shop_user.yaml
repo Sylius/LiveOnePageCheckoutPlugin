@@ -1,0 +1,11 @@
+Sylius\Component\Core\Model\ShopUser:
+    shop_user_one:
+        username: 'john@example.com'
+        plainPassword: 'sylius'
+        customer: '@customer_one'
+        enabled: true
+    shop_user_two:
+        username: 'jane@example.com'
+        plainPassword: 'sylius'
+        customer: '@customer_two'
+        enabled: true
