@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace DoctrineMigrations;
+namespace Sylius\LiveOnePageCheckoutPlugin\Migrations;
 
 use Doctrine\DBAL\Schema\Schema;
 use Sylius\Bundle\CoreBundle\Doctrine\Migrations\AbstractMigration;
