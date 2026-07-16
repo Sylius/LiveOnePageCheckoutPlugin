@@ -115,7 +115,7 @@ final class CheckoutPreviewFactoryTest extends TestCase
         $result = $this->factory->create($order);
 
         self::assertInstanceOf(CheckoutPreview::class, $result);
-        self::assertSame($orderSummary, $result->order);
+        self::assertSame($orderSummary, $result->summary);
         self::assertSame($shipmentPreviews, $result->shipments);
         self::assertSame($paymentPreviews, $result->payments);
         self::assertSame($hash, $result->hash);

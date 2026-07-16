@@ -16,7 +16,7 @@
             xsi:schemaLocation="http://symfony.com/schema/dic/serializer-mapping https://symfony.com/schema/dic/serializer-mapping/serializer-mapping-1.0.xsd"
 >
     <class name="Sylius\LiveOnePageCheckoutPlugin\Api\DTO\CheckoutPreview">
-        <attribute name="order">
+        <attribute name="summary">
             <group>sylius_live_one_page_checkout:shop:checkout:show</group>
         </attribute>
         <attribute name="shipments">

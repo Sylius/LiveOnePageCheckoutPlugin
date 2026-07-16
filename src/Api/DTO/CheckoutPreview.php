@@ -20,12 +20,12 @@ class CheckoutPreview
      * @param list<PaymentPreview> $payments
      */
     public function __construct(
-        public readonly OrderSummary $order,
+        public readonly OrderSummary $summary,
+        public readonly ?AddressPreview $billingAddress,
+        public readonly ?AddressPreview $shippingAddress,
         public readonly array $shipments,
         public readonly array $payments,
         public readonly string $hash,
-        public readonly ?AddressPreview $billingAddress,
-        public readonly ?AddressPreview $shippingAddress,
     ) {
     }
 }

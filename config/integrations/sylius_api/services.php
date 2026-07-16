@@ -6,8 +6,10 @@ use Sylius\LiveOnePageCheckoutPlugin\Api\Applier\AddressApplier;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Applier\CheckoutApplierInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Applier\CompositeCheckoutApplier;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Applier\CouponApplier;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Applier\CustomerApplier;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Applier\PaymentMethodApplier;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Applier\ShippingMethodApplier;
+use Sylius\LiveOnePageCheckoutPlugin\Api\CommandHandler\CompleteCheckoutHandler;
 use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\CheckoutPreview;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\AddressPreviewFactory;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\AddressPreviewFactoryInterface;
@@ -29,6 +31,14 @@ return static function (ContainerConfigurator $container): void {
     $services = $container->services();
     $container->parameters()
         ->set('sylius_live_one_page_checkout.api.checkout_preview.class', CheckoutPreview::class)
+    ;
+
+    $services
+        ->set('sylius_live_one_page_checkout.api.applier.customer', CustomerApplier::class)
+        ->args([
+            service('sylius.resolver.customer'),
+        ])
+        ->tag('sylius_live_one_page_checkout.api.checkout_applier', ['priority' => 40])
     ;
 
     $services
@@ -120,6 +130,20 @@ return static function (ContainerConfigurator $container): void {
             service('sylius_live_one_page_checkout.api.factory.checkout_preview'),
         ])
         ->tag('api_platform.state_processor')
+    ;
+
+    $services
+        ->set('sylius_live_one_page_checkout.api.command_handler.complete_checkout', CompleteCheckoutHandler::class)
+        ->args([
+            service('sylius.repository.order'),
+            service('sylius_live_one_page_checkout.ensurer.order_objects'),
+            service('sylius_live_one_page_checkout.api.applier.checkout'),
+            service('sylius.order_processing.order_processor'),
+            service('sylius_live_one_page_checkout.checker.order_consistency'),
+            service('sylius_abstraction.state_machine'),
+            service('sylius_live_one_page_checkout.api.factory.checkout_preview'),
+        ])
+        ->tag('messenger.message_handler', ['bus' => 'sylius.command_bus'])
     ;
 
     $services

@@ -38,8 +38,6 @@ final readonly class CouponApplier implements CheckoutApplierInterface
             return;
         }
 
-        $coupon = $this->promotionCouponRepository->findOneBy(['code' => $couponCode]);
-
-        $order->setPromotionCoupon($coupon instanceof PromotionCouponInterface ? $coupon : null);
+        $order->setPromotionCoupon($this->promotionCouponRepository->findOneBy(['code' => $couponCode]));
     }
 }

@@ -2,7 +2,7 @@
     "@context": "\/api\/v2\/contexts\/OnePageCheckout",
     "@id": "@string@",
     "@type": "OnePageCheckout",
-    "order": {
+    "summary": {
         "@type": "OrderSummary",
         "@id": "@string@",
         "itemsTotal": 4000,

@@ -32,11 +32,11 @@ final readonly class CheckoutPreviewFactory implements CheckoutPreviewFactoryInt
     {
         return new CheckoutPreview(
             $this->orderSummaryFactory->create($order),
+            $this->addressPreviewFactory->create($order->getBillingAddress()),
+            $this->addressPreviewFactory->create($order->getShippingAddress()),
             $this->shipmentPreviewFactory->create($order),
             $this->paymentPreviewFactory->create($order),
             $this->orderHasher->hash($order),
-            $this->addressPreviewFactory->create($order->getBillingAddress()),
-            $this->addressPreviewFactory->create($order->getShippingAddress()),
         );
     }
 }

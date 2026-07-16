@@ -5,3 +5,5 @@ api_platform:
     mapping:
         paths:
             - '%sylius_one_page_checkout_api_resources_path%'
+    exception_to_status:
+        Sylius\LiveOnePageCheckoutPlugin\Api\Exception\OrderStateMismatchException: 409
