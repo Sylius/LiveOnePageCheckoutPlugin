@@ -1,13 +1,24 @@
 <?php
 
+/*
+ * This file is part of the Sylius package.
+ *
+ * (c) Sylius Sp. z o.o.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 declare(strict_types=1);
 
 use Sylius\LiveOnePageCheckoutPlugin\Api\Applier\AddressApplier;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Applier\CheckoutApplierInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Applier\CompositeCheckoutApplier;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Applier\CouponApplier;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Applier\CustomerApplier;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Applier\PaymentMethodApplier;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Applier\ShippingMethodApplier;
+use Sylius\LiveOnePageCheckoutPlugin\Api\CommandHandler\CompleteCheckoutHandler;
 use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\CheckoutPreview;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\AddressPreviewFactory;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\AddressPreviewFactoryInterface;
@@ -21,6 +32,7 @@ use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ShipmentPreviewFactory;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ShipmentPreviewFactoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Security\Voter\CheckoutAvailabilityVoter;
 use Sylius\LiveOnePageCheckoutPlugin\Api\StateProcessor\PreviewCheckoutProcessor;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\PromotionCouponEligibilityValidator;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\tagged_iterator;
@@ -29,6 +41,14 @@ return static function (ContainerConfigurator $container): void {
     $services = $container->services();
     $container->parameters()
         ->set('sylius_live_one_page_checkout.api.checkout_preview.class', CheckoutPreview::class)
+    ;
+
+    $services
+        ->set('sylius_live_one_page_checkout.api.applier.customer', CustomerApplier::class)
+        ->args([
+            service('sylius.resolver.customer'),
+        ])
+        ->tag('sylius_live_one_page_checkout.api.checkout_applier', ['priority' => 40])
     ;
 
     $services
@@ -123,11 +143,35 @@ return static function (ContainerConfigurator $container): void {
     ;
 
     $services
+        ->set('sylius_live_one_page_checkout.api.command_handler.complete_checkout', CompleteCheckoutHandler::class)
+        ->args([
+            service('sylius.repository.order'),
+            service('sylius_live_one_page_checkout.ensurer.order_objects'),
+            service('sylius_live_one_page_checkout.api.applier.checkout'),
+            service('sylius.order_processing.order_processor'),
+            service('sylius_live_one_page_checkout.checker.order_consistency'),
+            service('sylius_abstraction.state_machine'),
+            service('sylius.event_bus'),
+        ])
+        ->tag('messenger.message_handler', ['bus' => 'sylius.command_bus'])
+    ;
+
+    $services
         ->set('sylius_live_one_page_checkout.api.security.voter.checkout_availability', CheckoutAvailabilityVoter::class)
         ->args([
             service('sylius.repository.order'),
             service('sylius_live_one_page_checkout.checker.checkout_enabled'),
         ])
         ->tag('security.voter')
+    ;
+
+    $services
+        ->set('sylius_live_one_page_checkout.api.validator.promotion_coupon_eligibility', PromotionCouponEligibilityValidator::class)
+        ->args([
+            service('sylius.repository.promotion_coupon'),
+            service('sylius.repository.order'),
+            service('sylius_api.checker.applied_coupon_eligibility'),
+        ])
+        ->tag('validator.constraint_validator', ['alias' => 'sylius_live_one_page_checkout_api_promotion_coupon_eligibility'])
     ;
 };
