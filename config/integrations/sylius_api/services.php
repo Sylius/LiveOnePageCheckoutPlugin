@@ -151,7 +151,7 @@ return static function (ContainerConfigurator $container): void {
             service('sylius.order_processing.order_processor'),
             service('sylius_live_one_page_checkout.checker.order_consistency'),
             service('sylius_abstraction.state_machine'),
-            service('sylius_live_one_page_checkout.api.factory.checkout_preview'),
+            service('sylius.event_bus'),
         ])
         ->tag('messenger.message_handler', ['bus' => 'sylius.command_bus'])
     ;
