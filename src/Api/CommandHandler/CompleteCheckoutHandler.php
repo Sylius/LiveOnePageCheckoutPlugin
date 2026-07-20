@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Sylius\LiveOnePageCheckoutPlugin\Api\CommandHandler;
 
 use Sylius\Abstraction\StateMachine\StateMachineInterface;
+use Sylius\Bundle\ApiBundle\Event\OrderCompleted;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\OrderCheckoutTransitions;
 use Sylius\Component\Core\Repository\OrderRepositoryInterface;
@@ -24,6 +25,8 @@ use Sylius\LiveOnePageCheckoutPlugin\Api\Exception\OrderStateMismatchException;
 use Sylius\LiveOnePageCheckoutPlugin\Checker\OrderConsistencyCheckerInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Ensurer\OrderObjectsEnsurerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Stamp\DispatchAfterCurrentBusStamp;
 use Webmozart\Assert\Assert;
 
 final readonly class CompleteCheckoutHandler
@@ -38,10 +41,11 @@ final readonly class CompleteCheckoutHandler
         private OrderProcessorInterface $orderProcessor,
         private OrderConsistencyCheckerInterface $consistencyChecker,
         private StateMachineInterface $stateMachine,
+        private MessageBusInterface $eventBus,
     ) {
     }
 
-    public function __invoke(Checkout $command): void
+    public function __invoke(Checkout $command): OrderInterface
     {
         $order = $this->orderRepository->findCartByTokenValue($command->orderTokenValue);
 
@@ -51,6 +55,9 @@ final readonly class CompleteCheckoutHandler
 
         $this->orderObjectsEnsurer->ensure($order);
         $this->checkoutApplier->apply($order, $command);
+
+        Assert::notNull($order->getCustomer(), 'Please enter your email before completing the order.');
+
         $this->orderProcessor->process($order);
 
         if (!$this->consistencyChecker->isConsistent($order, $command->hash ?? '')) {
@@ -63,5 +70,9 @@ final readonly class CompleteCheckoutHandler
         );
 
         $this->stateMachine->apply($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_COMPLETE);
+
+        $this->eventBus->dispatch(new OrderCompleted($command->orderTokenValue), [new DispatchAfterCurrentBusStamp()]);
+
+        return $order;
     }
 }

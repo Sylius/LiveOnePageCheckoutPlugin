@@ -22,7 +22,7 @@ final class PromotionCouponEligibility extends Constraint
 
     public function validatedBy(): string
     {
-        return 'sylius_live_one_page_checkout_promotion_coupon_eligibility';
+        return 'sylius_live_one_page_checkout_api_promotion_coupon_eligibility';
     }
 
     public function getTargets(): string

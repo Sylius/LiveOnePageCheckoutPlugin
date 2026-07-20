@@ -64,11 +64,11 @@
                 name="sylius_api_shop_one_page_checkout_complete"
                 class="ApiPlatform\Metadata\Post"
                 uriTemplate="/shop/orders/{tokenValue}/one-page/complete"
-                status="204"
+                status="200"
                 read="false"
-                output="false"
                 messenger="input"
                 input="Sylius\LiveOnePageCheckoutPlugin\Api\Command\Checkout"
+                output="Sylius\Component\Core\Model\OrderInterface"
                 securityPostDenormalize="is_granted('SYLIUS_ONE_PAGE_CHECKOUT_AVAILABLE', object)"
             >
                 <uriVariables>
@@ -83,6 +83,15 @@
                         </value>
                     </values>
                 </denormalizationContext>
+                <normalizationContext>
+                    <values>
+                        <value name="groups">
+                            <values>
+                                <value>sylius:shop:cart:show</value>
+                            </values>
+                        </value>
+                    </values>
+                </normalizationContext>
                 <validationContext>
                     <values>
                         <value name="groups">

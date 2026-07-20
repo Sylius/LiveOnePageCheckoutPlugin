@@ -34,6 +34,7 @@ final class Checkout
         public readonly array $payments = [],
         public readonly ?string $couponCode = null,
         public readonly ?string $hash = null,
+        public readonly ?string $notes = null,
     ) {
     }
 }
