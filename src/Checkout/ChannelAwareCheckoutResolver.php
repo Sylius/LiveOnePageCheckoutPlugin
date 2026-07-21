@@ -17,7 +17,7 @@ use Sylius\Bundle\CoreBundle\Checkout\CheckoutResolver;
 use Sylius\Component\Channel\Context\ChannelContextInterface;
 use Sylius\Component\Channel\Context\ChannelNotFoundException;
 use Sylius\LiveOnePageCheckoutPlugin\Checker\CheckoutEnabledCheckerInterface;
-use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelOnePageCheckoutAwareInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\RequestMatcherInterface;
@@ -64,7 +64,7 @@ final readonly class ChannelAwareCheckoutResolver implements EventSubscriberInte
     private function isOnePageEnabled(): bool
     {
         try {
-            /** @var ChannelInterface $channel */
+            /** @var ChannelOnePageCheckoutAwareInterface $channel */
             $channel = $this->channelContext->getChannel();
         } catch (ChannelNotFoundException) {
             return false;

@@ -1,7 +1,15 @@
 {% import '@SyliusShop/shared/macro/money.html.twig' as money %}
 
 {% set item = hookable_metadata.context.item %}
+{% set original_price_to_display = sylius_order_item_original_price_to_display(item) %}
 
 <small class="text-body-tertiary">
-    {{ item.quantity }} x {{ money.convertAndFormat(item.unitPrice) }}
+    <span>
+        {{ item.quantity }} x {{ money.convertAndFormat(item.discountedUnitPrice) }}
+    </span>
+    {% if original_price_to_display is not null %}
+        <span>
+            <del>{{ money.convertAndFormat(original_price_to_display) }}</del>
+        </span>
+    {% endif %}
 </small>

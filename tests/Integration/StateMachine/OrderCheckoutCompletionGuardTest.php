@@ -14,10 +14,10 @@ declare(strict_types=1);
 namespace Tests\Sylius\LiveOnePageCheckoutPlugin\Integration\StateMachine;
 
 use Sylius\Abstraction\StateMachine\StateMachineInterface;
-use Sylius\Component\Core\Model\Order;
 use Sylius\Component\Core\OrderCheckoutTransitions;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Tests\Sylius\LiveOnePageCheckoutPlugin\Entity\Channel;
+use Tests\Sylius\LiveOnePageCheckoutPlugin\Entity\Order;
 
 final class OrderCheckoutCompletionGuardTest extends KernelTestCase
 {

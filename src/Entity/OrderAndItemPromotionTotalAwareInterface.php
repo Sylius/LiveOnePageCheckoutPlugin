@@ -13,8 +13,7 @@ declare(strict_types=1);
 
 namespace Sylius\LiveOnePageCheckoutPlugin\Entity;
 
-use Sylius\Component\Core\Model\ChannelInterface as BaseChannelInterface;
-
-interface ChannelInterface extends BaseChannelInterface, ChannelOnePageCheckoutAwareInterface
+interface OrderAndItemPromotionTotalAwareInterface
 {
+    public function getOrderAndItemPromotionTotal(): int;
 }

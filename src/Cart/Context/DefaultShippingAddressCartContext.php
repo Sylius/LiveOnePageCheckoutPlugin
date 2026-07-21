@@ -18,7 +18,7 @@ use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Order\Context\ResettableCartContextInterface;
 use Sylius\Component\Order\Model\OrderInterface as BaseOrderInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Checker\CheckoutEnabledCheckerInterface;
-use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelOnePageCheckoutAwareInterface;
 use Webmozart\Assert\Assert;
 
 final readonly class DefaultShippingAddressCartContext implements ResettableCartContextInterface
@@ -35,7 +35,7 @@ final readonly class DefaultShippingAddressCartContext implements ResettableCart
         Assert::isInstanceOf($cart, OrderInterface::class);
 
         $channel = $cart->getChannel();
-        Assert::isInstanceOf($channel, ChannelInterface::class);
+        Assert::isInstanceOf($channel, ChannelOnePageCheckoutAwareInterface::class);
 
         if (false === $this->checkoutEnabledChecker->isEnabled($channel)) {
             return $cart;

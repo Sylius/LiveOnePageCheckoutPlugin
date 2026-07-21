@@ -89,7 +89,7 @@ Installation guide
     vendor/bin/rector
     ```
 
-1. Ensure the modified channel resource is configured in `config/packages/_sylius.yaml`:
+1. Ensure the modified resources are configured in `config/packages/_sylius.yaml`:
 
     ```yaml
     sylius_channel:
@@ -97,6 +97,12 @@ Installation guide
             channel:
                 classes:
                     model: App\Entity\Channel\Channel
+   
+    sylius_order:
+        resources:
+            order:
+                classes:
+                    model: App\Entity\Order\Order
     ```
 
 1. Execute migrations to add the `one_page_checkout_enabled` column:
@@ -145,7 +151,7 @@ Don't want to use recipes or Rector? You can still follow the legacy installatio
 1. The `Channel` entity should implement the following interface:
 
     ```php
-    Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelInterface
+    Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelOnePageCheckoutAwareInterface
     ```
 
    and use trait:
@@ -165,12 +171,12 @@ Don't want to use recipes or Rector? You can still follow the legacy installatio
 
     use Doctrine\ORM\Mapping as ORM;
     use Sylius\Component\Core\Model\Channel as BaseChannel;
-    use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelInterface;
+    use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelOnePageCheckoutAwareInterface;
     use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelOnePageCheckoutAwareTrait;
 
     #[ORM\Entity]
     #[ORM\Table(name: 'sylius_channel')]
-    class Channel extends BaseChannel implements ChannelInterface
+    class Channel extends BaseChannel implements ChannelOnePageCheckoutAwareInterface
     {
         use ChannelOnePageCheckoutAwareTrait;
     }
@@ -184,6 +190,50 @@ Don't want to use recipes or Rector? You can still follow the legacy installatio
             channel:
                 classes:
                     model: App\Entity\Channel\Channel
+    ```
+
+1. The `Order` entity should implement the following interface:
+
+    ```php
+    Sylius\LiveOnePageCheckoutPlugin\Entity\OrderAndItemPromotionTotalAwareInterface
+    ```
+
+   and use trait:
+
+    ```php
+    Sylius\LiveOnePageCheckoutPlugin\Entity\OrderAndItemPromotionTotalAwareTrait
+    ```
+
+   Final result:
+
+    ```php
+    <?php
+
+    declare(strict_types=1);
+
+    namespace App\Entity\Order;
+
+    use Doctrine\ORM\Mapping as ORM;
+    use Sylius\Component\Core\Model\Order as BaseOrder;
+    use Sylius\LiveOnePageCheckoutPlugin\Entity\OrderAndItemPromotionTotalAwareInterface;
+    use Sylius\LiveOnePageCheckoutPlugin\Entity\OrderAndItemPromotionTotalAwareTrait;
+
+    #[ORM\Entity]
+    #[ORM\Table(name: 'sylius_order')]
+    class Order extends BaseOrder implements OrderAndItemPromotionTotalAwareInterface
+    {
+        use OrderAndItemPromotionTotalAwareTrait;
+    }
+    ```
+
+1. Add configuration of the modified order resource in `config/packages/_sylius.yaml`:
+
+    ```yaml
+    sylius_order:
+        resources:
+            order:
+                classes:
+                    model: App\Entity\Order\Order
     ```
 
 1. Import the plugin configuration in `config/packages/_sylius.yaml`:

@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace Sylius\LiveOnePageCheckoutPlugin\Checker;
 
-use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelOnePageCheckoutAwareInterface;
 
 interface CheckoutEnabledCheckerInterface
 {
-    public function isEnabled(ChannelInterface $channel): bool;
+    public function isEnabled(ChannelOnePageCheckoutAwareInterface $channel): bool;
 }

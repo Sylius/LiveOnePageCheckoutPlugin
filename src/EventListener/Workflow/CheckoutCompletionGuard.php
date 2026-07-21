@@ -16,7 +16,7 @@ namespace Sylius\LiveOnePageCheckoutPlugin\EventListener\Workflow;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\OrderCheckoutStates;
 use Sylius\LiveOnePageCheckoutPlugin\Checker\CheckoutEnabledCheckerInterface;
-use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelOnePageCheckoutAwareInterface;
 use Symfony\Component\Workflow\Event\GuardEvent;
 use Webmozart\Assert\Assert;
 
@@ -37,7 +37,7 @@ final readonly class CheckoutCompletionGuard
         Assert::isInstanceOf($order, OrderInterface::class);
 
         $channel = $order->getChannel();
-        Assert::isInstanceOf($channel, ChannelInterface::class);
+        Assert::isInstanceOf($channel, ChannelOnePageCheckoutAwareInterface::class);
 
         if ($this->checkoutEnabledChecker->isEnabled($channel)) {
             return;
