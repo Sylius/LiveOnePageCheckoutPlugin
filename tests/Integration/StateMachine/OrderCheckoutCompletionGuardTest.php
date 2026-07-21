@@ -14,10 +14,10 @@ declare(strict_types=1);
 namespace Tests\Sylius\LiveOnePageCheckoutPlugin\Integration\StateMachine;
 
 use Sylius\Abstraction\StateMachine\StateMachineInterface;
-use Sylius\Component\Core\Model\Order;
 use Sylius\Component\Core\OrderCheckoutTransitions;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Tests\Sylius\LiveOnePageCheckoutPlugin\Entity\Channel;
+use Tests\Sylius\LiveOnePageCheckoutPlugin\Entity\Order;
 
 final class OrderCheckoutCompletionGuardTest extends KernelTestCase
 {
@@ -59,7 +59,7 @@ final class OrderCheckoutCompletionGuardTest extends KernelTestCase
     private function createCartOrder(bool $onePageCheckoutEnabled): Order
     {
         $channel = new Channel();
-        $channel->setOnePageCheckoutEnabled($onePageCheckoutEnabled);
+        $channel->setOnePageCheckoutEnabled($oneUsPageCheckoutEnabled);
 
         $order = new Order();
         $order->setChannel($channel);
