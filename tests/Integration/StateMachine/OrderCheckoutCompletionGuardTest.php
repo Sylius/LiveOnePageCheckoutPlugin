@@ -59,7 +59,7 @@ final class OrderCheckoutCompletionGuardTest extends KernelTestCase
     private function createCartOrder(bool $onePageCheckoutEnabled): Order
     {
         $channel = new Channel();
-        $channel->setOnePageCheckoutEnabled($oneUsPageCheckoutEnabled);
+        $channel->setOnePageCheckoutEnabled($onePageCheckoutEnabled);
 
         $order = new Order();
         $order->setChannel($channel);

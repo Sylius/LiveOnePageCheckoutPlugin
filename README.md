@@ -151,7 +151,7 @@ Don't want to use recipes or Rector? You can still follow the legacy installatio
 1. The `Channel` entity should implement the following interface:
 
     ```php
-    Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelInterface
+    Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelOnePageCheckoutAwareInterface
     ```
 
    and use trait:
@@ -171,12 +171,12 @@ Don't want to use recipes or Rector? You can still follow the legacy installatio
 
     use Doctrine\ORM\Mapping as ORM;
     use Sylius\Component\Core\Model\Channel as BaseChannel;
-    use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelInterface;
+    use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelOnePageCheckoutAwareInterface;
     use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelOnePageCheckoutAwareTrait;
 
     #[ORM\Entity]
     #[ORM\Table(name: 'sylius_channel')]
-    class Channel extends BaseChannel implements ChannelInterface
+    class Channel extends BaseChannel implements ChannelOnePageCheckoutAwareInterface
     {
         use ChannelOnePageCheckoutAwareTrait;
     }
@@ -195,7 +195,7 @@ Don't want to use recipes or Rector? You can still follow the legacy installatio
 1. The `Order` entity should implement the following interface:
 
     ```php
-    Sylius\LiveOnePageCheckoutPlugin\Entity\OrderInterface
+    Sylius\LiveOnePageCheckoutPlugin\Entity\OrderAndItemPromotionTotalAwareInterface
     ```
 
    and use trait:
@@ -215,12 +215,12 @@ Don't want to use recipes or Rector? You can still follow the legacy installatio
 
     use Doctrine\ORM\Mapping as ORM;
     use Sylius\Component\Core\Model\Order as BaseOrder;
+    use Sylius\LiveOnePageCheckoutPlugin\Entity\OrderAndItemPromotionTotalAwareInterface;
     use Sylius\LiveOnePageCheckoutPlugin\Entity\OrderAndItemPromotionTotalAwareTrait;
-    use Sylius\LiveOnePageCheckoutPlugin\Entity\OrderInterface;
 
     #[ORM\Entity]
     #[ORM\Table(name: 'sylius_order')]
-    class Order extends BaseOrder implements OrderInterface
+    class Order extends BaseOrder implements OrderAndItemPromotionTotalAwareInterface
     {
         use OrderAndItemPromotionTotalAwareTrait;
     }

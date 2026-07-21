@@ -19,7 +19,7 @@ use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\OrderCheckoutStates;
 use Sylius\Component\Core\OrderCheckoutTransitions;
 use Sylius\LiveOnePageCheckoutPlugin\Checker\CheckoutEnabledCheckerInterface;
-use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelOnePageCheckoutAwareInterface;
 use Sylius\LiveOnePageCheckoutPlugin\EventListener\Workflow\CheckoutCompletionGuard;
 use Symfony\Component\Workflow\Event\GuardEvent;
 use Symfony\Component\Workflow\Marking;
@@ -39,7 +39,7 @@ final class CheckoutCompletionGuardTest extends TestCase
 
     public function testBlocksCartCompletionWhenChannelHasOnePageCheckoutDisabled(): void
     {
-        $channel = $this->createMock(ChannelInterface::class);
+        $channel = $this->createMock(ChannelOnePageCheckoutAwareInterface::class);
         $this->checkoutEnabledChecker->method('isEnabled')->with($channel)->willReturn(false);
 
         $event = $this->createCartCompletionEvent($channel);
@@ -51,7 +51,7 @@ final class CheckoutCompletionGuardTest extends TestCase
 
     public function testDoesNotBlockCartCompletionWhenChannelHasOnePageCheckoutEnabled(): void
     {
-        $channel = $this->createMock(ChannelInterface::class);
+        $channel = $this->createMock(ChannelOnePageCheckoutAwareInterface::class);
         $this->checkoutEnabledChecker->method('isEnabled')->with($channel)->willReturn(true);
 
         $event = $this->createCartCompletionEvent($channel);
@@ -107,7 +107,7 @@ final class CheckoutCompletionGuardTest extends TestCase
         ($this->guard)($event);
     }
 
-    private function createCartCompletionEvent(?ChannelInterface $channel): GuardEvent
+    private function createCartCompletionEvent(?ChannelOnePageCheckoutAwareInterface $channel): GuardEvent
     {
         $order = $this->createMock(OrderInterface::class);
         $order->method('getChannel')->willReturn($channel);

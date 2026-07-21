@@ -21,7 +21,7 @@ use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Order\Processor\OrderProcessorInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Checker\CheckoutEnabledCheckerInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Checker\OrderConsistencyCheckerInterface;
-use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelOnePageCheckoutAwareInterface;
 use Sylius\LiveOnePageCheckoutPlugin\EventListener\OrderIntegrityChecker;
 use Sylius\LiveOnePageCheckoutPlugin\Provider\SubmittedHashProviderInterface;
 use Sylius\Resource\Symfony\EventDispatcher\GenericEvent;
@@ -122,7 +122,7 @@ final class OrderIntegrityCheckerTest extends TestCase
     private function createEvent(): GenericEvent
     {
         $order = $this->createMock(OrderInterface::class);
-        $order->method('getChannel')->willReturn($this->createMock(ChannelInterface::class));
+        $order->method('getChannel')->willReturn($this->createMock(ChannelOnePageCheckoutAwareInterface::class));
 
         return new GenericEvent($order);
     }

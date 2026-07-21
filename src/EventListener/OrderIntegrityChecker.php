@@ -19,7 +19,7 @@ use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Order\Processor\OrderProcessorInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Checker\CheckoutEnabledCheckerInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Checker\OrderConsistencyCheckerInterface;
-use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelOnePageCheckoutAwareInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Provider\SubmittedHashProviderInterface;
 use Sylius\Resource\Symfony\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -45,7 +45,7 @@ final readonly class OrderIntegrityChecker implements OrderIntegrityCheckerInter
         Assert::isInstanceOf($order, OrderInterface::class);
 
         $channel = $order->getChannel();
-        Assert::isInstanceOf($channel, ChannelInterface::class);
+        Assert::isInstanceOf($channel, ChannelOnePageCheckoutAwareInterface::class);
 
         if (false === $this->checkoutEnabledChecker->isEnabled($channel)) {
             $this->decoratedChecker->check($event);
