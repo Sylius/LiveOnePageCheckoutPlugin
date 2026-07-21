@@ -17,7 +17,7 @@ use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Repository\OrderRepositoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Command\Checkout;
 use Sylius\LiveOnePageCheckoutPlugin\Checker\CheckoutEnabledCheckerInterface;
-use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelOnePageCheckoutAwareInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\CacheableVoterInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
@@ -62,7 +62,7 @@ final class CheckoutAvailabilityVoter extends Voter implements CacheableVoterInt
             return false;
         }
 
-        /** @var ChannelInterface $channel */
+        /** @var ChannelOnePageCheckoutAwareInterface $channel */
         $channel = $order->getChannel();
 
         return $this->checkoutEnabledChecker->isEnabled($channel);

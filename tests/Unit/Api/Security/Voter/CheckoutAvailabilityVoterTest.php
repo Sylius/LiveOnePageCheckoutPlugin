@@ -20,10 +20,10 @@ use Sylius\Component\Core\Repository\OrderRepositoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Command\Checkout;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Security\Voter\CheckoutAvailabilityVoter;
 use Sylius\LiveOnePageCheckoutPlugin\Checker\CheckoutEnabledCheckerInterface;
-use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\CacheableVoterInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\VoterInterface;
+use Tests\Sylius\LiveOnePageCheckoutPlugin\Entity\Channel;
 
 final class CheckoutAvailabilityVoterTest extends TestCase
 {
@@ -72,7 +72,7 @@ final class CheckoutAvailabilityVoterTest extends TestCase
 
     public function testVotesGrantWhenCheckoutIsEnabled(): void
     {
-        $channel = $this->createMock(ChannelInterface::class);
+        $channel = $this->createMock(Channel::class);
         $order = $this->createMock(OrderInterface::class);
         $order->method('getChannel')->willReturn($channel);
 
@@ -96,7 +96,7 @@ final class CheckoutAvailabilityVoterTest extends TestCase
 
     public function testVotesDenyWhenCheckoutIsDisabled(): void
     {
-        $channel = $this->createMock(ChannelInterface::class);
+        $channel = $this->createMock(Channel::class);
         $order = $this->createMock(OrderInterface::class);
         $order->method('getChannel')->willReturn($channel);
 
