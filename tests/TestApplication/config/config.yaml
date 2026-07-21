@@ -12,6 +12,12 @@ sylius_channel:
             classes:
                 model: Tests\Sylius\LiveOnePageCheckoutPlugin\Entity\Channel
 
+sylius_order:
+    resources:
+        order:
+            classes:
+                model: Tests\Sylius\LiveOnePageCheckoutPlugin\Entity\Order
+
 
 doctrine:
     orm:

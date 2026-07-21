@@ -105,6 +105,40 @@ Installation guide
     bin/console doctrine:migrations:migrate
     ```
 
+1. The `Order` entity should implement `Sylius\LiveOnePageCheckoutPlugin\Entity\OrderInterface` and use
+   trait `Sylius\LiveOnePageCheckoutPlugin\Entity\OrderAndItemPromotionTotalAwareTrait` (no migration
+   needed, this only adds a computed method used by the one page checkout summary):
+
+    ```php
+    <?php
+
+    declare(strict_types=1);
+
+    namespace App\Entity\Order;
+
+    use Doctrine\ORM\Mapping as ORM;
+    use Sylius\Component\Core\Model\Order as BaseOrder;
+    use Sylius\LiveOnePageCheckoutPlugin\Entity\OrderAndItemPromotionTotalAwareTrait;
+    use Sylius\LiveOnePageCheckoutPlugin\Entity\OrderInterface;
+
+    #[ORM\Entity]
+    #[ORM\Table(name: 'sylius_order')]
+    class Order extends BaseOrder implements OrderInterface
+    {
+        use OrderAndItemPromotionTotalAwareTrait;
+    }
+    ```
+
+   Ensure the modified order resource is configured in `config/packages/_sylius.yaml`:
+
+    ```yaml
+    sylius_order:
+        resources:
+            order:
+                classes:
+                    model: App\Entity\Order\Order
+    ```
+
 1. Run `yarn encore dev` or `yarn encore production`
 
    The recipe registers the bundle, imports the plugin config and routing, and adds the plugin's
@@ -184,6 +218,50 @@ Don't want to use recipes or Rector? You can still follow the legacy installatio
             channel:
                 classes:
                     model: App\Entity\Channel\Channel
+    ```
+
+1. The `Order` entity should implement the following interface:
+
+    ```php
+    Sylius\LiveOnePageCheckoutPlugin\Entity\OrderInterface
+    ```
+
+   and use trait:
+
+    ```php
+    Sylius\LiveOnePageCheckoutPlugin\Entity\OrderAndItemPromotionTotalAwareTrait
+    ```
+
+   Final result:
+
+    ```php
+    <?php
+
+    declare(strict_types=1);
+
+    namespace App\Entity\Order;
+
+    use Doctrine\ORM\Mapping as ORM;
+    use Sylius\Component\Core\Model\Order as BaseOrder;
+    use Sylius\LiveOnePageCheckoutPlugin\Entity\OrderAndItemPromotionTotalAwareTrait;
+    use Sylius\LiveOnePageCheckoutPlugin\Entity\OrderInterface;
+
+    #[ORM\Entity]
+    #[ORM\Table(name: 'sylius_order')]
+    class Order extends BaseOrder implements OrderInterface
+    {
+        use OrderAndItemPromotionTotalAwareTrait;
+    }
+    ```
+
+1. Add configuration of the modified order resource in `config/packages/_sylius.yaml`:
+
+    ```yaml
+    sylius_order:
+        resources:
+            order:
+                classes:
+                    model: App\Entity\Order\Order
     ```
 
 1. Import the plugin configuration in `config/packages/_sylius.yaml`:
