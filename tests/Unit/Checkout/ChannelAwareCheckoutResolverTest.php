@@ -23,14 +23,13 @@ use Sylius\Component\Channel\Context\ChannelNotFoundException;
 use Sylius\Component\Order\Context\CartContextInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Checker\CheckoutEnabledCheckerInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Checkout\ChannelAwareCheckoutResolver;
-use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelOnePageCheckoutAwareInterface;
-use Tests\Sylius\LiveOnePageCheckoutPlugin\Entity\Channel;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestMatcherInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\Routing\RouterInterface;
+use Tests\Sylius\LiveOnePageCheckoutPlugin\Entity\Channel;
 
 final class ChannelAwareCheckoutResolverTest extends TestCase
 {

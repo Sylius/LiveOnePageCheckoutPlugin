@@ -19,8 +19,8 @@ use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\OrderCheckoutStates;
 use Sylius\LiveOnePageCheckoutPlugin\Checker\CheckoutEnabledCheckerInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelOnePageCheckoutAwareInterface;
-use Tests\Sylius\LiveOnePageCheckoutPlugin\Entity\Channel;
 use Sylius\LiveOnePageCheckoutPlugin\WinzouStateMachine\CheckoutCompletionGuard;
+use Tests\Sylius\LiveOnePageCheckoutPlugin\Entity\Channel;
 
 final class CheckoutCompletionGuardTest extends TestCase
 {

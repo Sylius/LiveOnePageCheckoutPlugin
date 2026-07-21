@@ -22,7 +22,6 @@ use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Order\Context\ResettableCartContextInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Cart\Context\DefaultShippingAddressCartContext;
 use Sylius\LiveOnePageCheckoutPlugin\Checker\CheckoutEnabledCheckerInterface;
-use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelOnePageCheckoutAwareInterface;
 use Tests\Sylius\LiveOnePageCheckoutPlugin\Entity\Channel;
 
 final class DefaultShippingAddressCartContextTest extends TestCase
