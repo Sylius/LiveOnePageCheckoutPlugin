@@ -1,5 +1,5 @@
 {% set limit = hookable_metadata.configuration.limit|default(3) %}
 
-<div data-live-ignore>
+<div>
     {% hook 'items' with { limit } %}
 </div>
