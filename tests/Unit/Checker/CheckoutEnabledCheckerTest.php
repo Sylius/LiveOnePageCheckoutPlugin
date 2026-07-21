@@ -16,7 +16,7 @@ namespace Tests\Sylius\LiveOnePageCheckoutPlugin\Unit\Checker;
 use PHPUnit\Framework\TestCase;
 use Sylius\LiveOnePageCheckoutPlugin\Checker\CheckoutEnabledChecker;
 use Sylius\LiveOnePageCheckoutPlugin\Checker\CheckoutEnabledCheckerInterface;
-use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelOnePageCheckoutAwareInterface;
 
 final class CheckoutEnabledCheckerTest extends TestCase
 {
@@ -34,7 +34,7 @@ final class CheckoutEnabledCheckerTest extends TestCase
 
     public function testReturnsTrueWhenChannelHasOnePageCheckoutEnabled(): void
     {
-        $channel = $this->createMock(ChannelInterface::class);
+        $channel = $this->createMock(ChannelOnePageCheckoutAwareInterface::class);
         $channel->method('isOnePageCheckoutEnabled')->willReturn(true);
 
         self::assertTrue($this->checker->isEnabled($channel));
@@ -42,7 +42,7 @@ final class CheckoutEnabledCheckerTest extends TestCase
 
     public function testReturnsFalseWhenChannelHasOnePageCheckoutDisabled(): void
     {
-        $channel = $this->createMock(ChannelInterface::class);
+        $channel = $this->createMock(ChannelOnePageCheckoutAwareInterface::class);
         $channel->method('isOnePageCheckoutEnabled')->willReturn(false);
 
         self::assertFalse($this->checker->isEnabled($channel));

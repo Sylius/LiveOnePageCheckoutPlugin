@@ -16,7 +16,7 @@ namespace Sylius\LiveOnePageCheckoutPlugin\WinzouStateMachine;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\OrderCheckoutStates;
 use Sylius\LiveOnePageCheckoutPlugin\Checker\CheckoutEnabledCheckerInterface;
-use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelOnePageCheckoutAwareInterface;
 use Webmozart\Assert\Assert;
 
 final readonly class CheckoutCompletionGuard
@@ -33,7 +33,7 @@ final readonly class CheckoutCompletionGuard
         }
 
         $channel = $order->getChannel();
-        Assert::isInstanceOf($channel, ChannelInterface::class);
+        Assert::isInstanceOf($channel, ChannelOnePageCheckoutAwareInterface::class);
 
         return $this->checkoutEnabledChecker->isEnabled($channel);
     }

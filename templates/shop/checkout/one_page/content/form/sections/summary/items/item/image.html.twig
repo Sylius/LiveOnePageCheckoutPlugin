@@ -1,6 +1,6 @@
 {% set item = hookable_metadata.context.item %}
 
-<div class="flex-shrink-0 summary-item-image">
+<div class="flex-shrink-0 summary-item-image" data-live-ignore>
     <div class="overflow-hidden bg-light rounded-3 summary-item-thumb">
         {{ component('sylius_shop:main_image', {
             product: item.variant.hasImages ? item.variant : item.variant.product,

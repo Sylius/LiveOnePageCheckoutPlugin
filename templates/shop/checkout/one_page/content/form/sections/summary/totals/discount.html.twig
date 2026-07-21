@@ -2,12 +2,12 @@
 
 {% set order = hookable_metadata.context.resource %}
 
-{% if order.orderPromotionTotal %}
+{% if order.orderAndItemPromotionTotal %}
     <div class="d-flex align-items-center mb-2 text-success" {{ sylius_test_html_attribute('promotion-discount') }}>
         <div class="d-flex align-items-center gap-2">
             {{ ux_icon('tabler:discount', { class: 'icon icon-sm' }) }}
             {{ 'sylius.ui.discount'|trans }}
         </div>
-        <div class="ms-auto">{{ money.convertAndFormat(order.orderPromotionTotal) }}</div>
+        <div class="ms-auto">{{ money.convertAndFormat(order.orderAndItemPromotionTotal) }}</div>
     </div>
 {% endif %}

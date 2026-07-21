@@ -17,7 +17,7 @@ use Behat\Behat\Context\Context;
 use Behat\Step\Given;
 use Doctrine\Persistence\ObjectManager;
 use Sylius\Behat\Service\SharedStorageInterface;
-use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelOnePageCheckoutAwareInterface;
 
 final readonly class ChannelContext implements Context
 {
@@ -30,7 +30,7 @@ final readonly class ChannelContext implements Context
     #[Given('one page checkout is enabled for this channel')]
     public function onePageCheckoutIsEnabledForThisChannel(): void
     {
-        /** @var ChannelInterface $channel */
+        /** @var ChannelOnePageCheckoutAwareInterface $channel */
         $channel = $this->sharedStorage->get('channel');
         $channel->setOnePageCheckoutEnabled(true);
 
