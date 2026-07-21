@@ -19,6 +19,7 @@ use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\OrderCheckoutStates;
 use Sylius\LiveOnePageCheckoutPlugin\Checker\CheckoutEnabledCheckerInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelOnePageCheckoutAwareInterface;
+use Tests\Sylius\LiveOnePageCheckoutPlugin\Entity\Channel;
 use Sylius\LiveOnePageCheckoutPlugin\WinzouStateMachine\CheckoutCompletionGuard;
 
 final class CheckoutCompletionGuardTest extends TestCase
@@ -46,7 +47,7 @@ final class CheckoutCompletionGuardTest extends TestCase
 
     public function testAllowsCartCompletionWhenChannelHasOnePageCheckoutEnabled(): void
     {
-        $channel = $this->createMock(ChannelOnePageCheckoutAwareInterface::class);
+        $channel = new Channel();
         $this->checkoutEnabledChecker->method('isEnabled')->with($channel)->willReturn(true);
 
         self::assertTrue(($this->guard)($this->createCartOrder($channel)));
@@ -54,7 +55,7 @@ final class CheckoutCompletionGuardTest extends TestCase
 
     public function testBlocksCartCompletionWhenChannelHasOnePageCheckoutDisabled(): void
     {
-        $channel = $this->createMock(ChannelOnePageCheckoutAwareInterface::class);
+        $channel = new Channel();
         $this->checkoutEnabledChecker->method('isEnabled')->with($channel)->willReturn(false);
 
         self::assertFalse(($this->guard)($this->createCartOrder($channel)));

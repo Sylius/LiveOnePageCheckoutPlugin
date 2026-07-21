@@ -24,6 +24,7 @@ use Sylius\Component\Order\Context\CartContextInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Checker\CheckoutEnabledCheckerInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Checkout\ChannelAwareCheckoutResolver;
 use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelOnePageCheckoutAwareInterface;
+use Tests\Sylius\LiveOnePageCheckoutPlugin\Entity\Channel;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestMatcherInterface;
@@ -88,7 +89,7 @@ final class ChannelAwareCheckoutResolverTest extends TestCase
 
     public function testRedirectsToOnePageWhenEnabledAndOnMultiStepCheckout(): void
     {
-        $this->channelContext->method('getChannel')->willReturn($this->createMock(ChannelOnePageCheckoutAwareInterface::class));
+        $this->channelContext->method('getChannel')->willReturn(new Channel());
         $this->checkoutEnabledChecker->method('isEnabled')->willReturn(true);
         $this->multiStepCheckoutMatcher->method('matches')->willReturn(true);
         $this->router->method('generate')->with(self::ONE_PAGE_ROUTE)->willReturn(self::ONE_PAGE_URL);
@@ -104,7 +105,7 @@ final class ChannelAwareCheckoutResolverTest extends TestCase
 
     public function testDelegatesWhenEnabledButAlreadyOnOnePageRoute(): void
     {
-        $this->channelContext->method('getChannel')->willReturn($this->createMock(ChannelOnePageCheckoutAwareInterface::class));
+        $this->channelContext->method('getChannel')->willReturn(new Channel());
         $this->checkoutEnabledChecker->method('isEnabled')->willReturn(true);
         $this->multiStepCheckoutMatcher->method('matches')->willReturn(false);
         $this->router->expects(self::never())->method('generate');
@@ -119,7 +120,7 @@ final class ChannelAwareCheckoutResolverTest extends TestCase
 
     public function testDelegatesWhenOnePageDisabled(): void
     {
-        $this->channelContext->method('getChannel')->willReturn($this->createMock(ChannelOnePageCheckoutAwareInterface::class));
+        $this->channelContext->method('getChannel')->willReturn(new Channel());
         $this->checkoutEnabledChecker->method('isEnabled')->willReturn(false);
         $this->multiStepCheckoutMatcher->expects(self::never())->method('matches');
         $this->router->expects(self::never())->method('generate');

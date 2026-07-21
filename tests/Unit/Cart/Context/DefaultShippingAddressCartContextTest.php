@@ -23,6 +23,7 @@ use Sylius\Component\Order\Context\ResettableCartContextInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Cart\Context\DefaultShippingAddressCartContext;
 use Sylius\LiveOnePageCheckoutPlugin\Checker\CheckoutEnabledCheckerInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelOnePageCheckoutAwareInterface;
+use Tests\Sylius\LiveOnePageCheckoutPlugin\Entity\Channel;
 
 final class DefaultShippingAddressCartContextTest extends TestCase
 {
@@ -128,7 +129,7 @@ final class DefaultShippingAddressCartContextTest extends TestCase
     private function createCart(): OrderInterface&MockObject
     {
         $cart = $this->createMock(OrderInterface::class);
-        $cart->method('getChannel')->willReturn($this->createMock(ChannelOnePageCheckoutAwareInterface::class));
+        $cart->method('getChannel')->willReturn(new Channel());
 
         $this->decoratedContext->method('getCart')->willReturn($cart);
 
