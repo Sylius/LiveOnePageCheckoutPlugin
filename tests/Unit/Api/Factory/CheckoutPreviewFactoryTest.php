@@ -19,12 +19,14 @@ use Sylius\Component\Core\Model\AddressInterface;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\AddressPreview;
 use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\CheckoutPreview;
+use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\ItemPreview;
 use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\OrderSummary;
 use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\PaymentPreview;
 use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\ShipmentPreview;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\AddressPreviewFactoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\CheckoutPreviewFactory;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\CheckoutPreviewFactoryInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ItemPreviewFactoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\OrderSummaryFactoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\PaymentPreviewFactoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ShipmentPreviewFactoryInterface;
@@ -33,6 +35,8 @@ use Sylius\LiveOnePageCheckoutPlugin\Hasher\OrderHasherInterface;
 final class CheckoutPreviewFactoryTest extends TestCase
 {
     private OrderSummaryFactoryInterface&MockObject $orderSummaryFactory;
+
+    private ItemPreviewFactoryInterface&MockObject $itemPreviewFactory;
 
     private ShipmentPreviewFactoryInterface&MockObject $shipmentPreviewFactory;
 
@@ -47,6 +51,7 @@ final class CheckoutPreviewFactoryTest extends TestCase
     protected function setUp(): void
     {
         $this->orderSummaryFactory = $this->createMock(OrderSummaryFactoryInterface::class);
+        $this->itemPreviewFactory = $this->createMock(ItemPreviewFactoryInterface::class);
         $this->shipmentPreviewFactory = $this->createMock(ShipmentPreviewFactoryInterface::class);
         $this->paymentPreviewFactory = $this->createMock(PaymentPreviewFactoryInterface::class);
         $this->orderHasher = $this->createMock(OrderHasherInterface::class);
@@ -54,6 +59,7 @@ final class CheckoutPreviewFactoryTest extends TestCase
 
         $this->factory = new CheckoutPreviewFactory(
             $this->orderSummaryFactory,
+            $this->itemPreviewFactory,
             $this->shipmentPreviewFactory,
             $this->paymentPreviewFactory,
             $this->orderHasher,
@@ -75,6 +81,9 @@ final class CheckoutPreviewFactoryTest extends TestCase
         $order->method('getShippingAddress')->willReturn($shippingAddress);
 
         $orderSummary = $this->createMock(OrderSummary::class);
+        $itemPreviews = [
+            $this->createMock(ItemPreview::class),
+        ];
         $shipmentPreviews = [
             $this->createMock(ShipmentPreview::class),
             $this->createMock(ShipmentPreview::class),
@@ -90,6 +99,11 @@ final class CheckoutPreviewFactoryTest extends TestCase
             ->method('create')
             ->with($order)
             ->willReturn($orderSummary);
+
+        $this->itemPreviewFactory->expects(self::once())
+            ->method('create')
+            ->with($order)
+            ->willReturn($itemPreviews);
 
         $this->shipmentPreviewFactory->expects(self::once())
             ->method('create')
@@ -116,6 +130,7 @@ final class CheckoutPreviewFactoryTest extends TestCase
 
         self::assertInstanceOf(CheckoutPreview::class, $result);
         self::assertSame($orderSummary, $result->summary);
+        self::assertSame($itemPreviews, $result->items);
         self::assertSame($shipmentPreviews, $result->shipments);
         self::assertSame($paymentPreviews, $result->payments);
         self::assertSame($hash, $result->hash);
@@ -133,6 +148,7 @@ final class CheckoutPreviewFactoryTest extends TestCase
         $hash = 'hash123';
 
         $this->orderSummaryFactory->method('create')->willReturn($orderSummary);
+        $this->itemPreviewFactory->method('create')->willReturn([]);
         $this->shipmentPreviewFactory->method('create')->willReturn([]);
         $this->paymentPreviewFactory->method('create')->willReturn([]);
         $this->orderHasher->method('hash')->willReturn($hash);
@@ -140,6 +156,7 @@ final class CheckoutPreviewFactoryTest extends TestCase
 
         $result = $this->factory->create($order);
 
+        self::assertCount(0, $result->items);
         self::assertCount(0, $result->shipments);
         self::assertCount(0, $result->payments);
         self::assertNull($result->billingAddress);
@@ -157,6 +174,12 @@ final class CheckoutPreviewFactoryTest extends TestCase
             $calls[] = 'orderSummaryFactory';
 
             return $this->createMock(OrderSummary::class);
+        });
+
+        $this->itemPreviewFactory->method('create')->willReturnCallback(function () use (&$calls) {
+            $calls[] = 'itemPreviewFactory';
+
+            return [];
         });
 
         $this->shipmentPreviewFactory->method('create')->willReturnCallback(function () use (&$calls) {
@@ -181,6 +204,6 @@ final class CheckoutPreviewFactoryTest extends TestCase
 
         $this->factory->create($order);
 
-        self::assertCount(4, $calls);
+        self::assertCount(5, $calls);
     }
 }

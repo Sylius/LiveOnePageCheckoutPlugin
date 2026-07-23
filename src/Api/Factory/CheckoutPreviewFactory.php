@@ -21,6 +21,7 @@ final readonly class CheckoutPreviewFactory implements CheckoutPreviewFactoryInt
 {
     public function __construct(
         private OrderSummaryFactoryInterface $orderSummaryFactory,
+        private ItemPreviewFactoryInterface $itemPreviewFactory,
         private ShipmentPreviewFactoryInterface $shipmentPreviewFactory,
         private PaymentPreviewFactoryInterface $paymentPreviewFactory,
         private OrderHasherInterface $orderHasher,
@@ -32,6 +33,7 @@ final readonly class CheckoutPreviewFactory implements CheckoutPreviewFactoryInt
     {
         return new CheckoutPreview(
             $this->orderSummaryFactory->create($order),
+            $this->itemPreviewFactory->create($order),
             $this->addressPreviewFactory->create($order->getBillingAddress()),
             $this->addressPreviewFactory->create($order->getShippingAddress()),
             $this->shipmentPreviewFactory->create($order),

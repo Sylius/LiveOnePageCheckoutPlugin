@@ -271,6 +271,30 @@ Don't want to use recipes or Rector? You can still follow the legacy installatio
     bin/console cache:clear
     ```
 
+## API
+
+The plugin exposes the same one-page checkout flow over Sylius' Shop API (API Platform), so a
+headless/mobile client can drive it without the Live Component.
+
+### `POST /shop/orders/{tokenValue}/one-page/preview`
+
+Applies the submitted form data (address, selected shipping/payment method, coupon) to the cart
+**without persisting anything**, recalculates the order (prices, promotions, taxes, available
+shipping/payment methods) and returns a snapshot plus an anti-tamper `hash`. Call it on every
+form change, the same way the shop `FormComponent` recalculates on every re-render.
+
+The response (`CheckoutPreview`) only contains data that can change between renders: order
+summary totals, per-item prices (`unitPrice`, `originalUnitPrice`, `discountedUnitPrice`,
+`subtotal`, `total`), addresses, available shipping/payment methods and the state `hash`. It
+intentionally does **not** repeat data that stays constant for the whole checkout (item name,
+image, quantity) - see below.
+
+### `POST /shop/orders/{tokenValue}/one-page/complete`
+
+Finalizes the checkout: re-validates the submitted `hash` against the order's current state
+(rejects stale submissions the same way the shop flow does), transitions the order to
+`completed` and returns the full `Order` resource (`sylius:shop:cart:show` group).
+
 ## License
 
 Released under the [MIT License](LICENSE).
