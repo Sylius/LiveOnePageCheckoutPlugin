@@ -16,11 +16,13 @@ namespace Sylius\LiveOnePageCheckoutPlugin\Api\DTO;
 class CheckoutPreview
 {
     /**
+     * @param list<ItemPreview> $items
      * @param list<ShipmentPreview> $shipments
      * @param list<PaymentPreview> $payments
      */
     public function __construct(
         public readonly OrderSummary $summary,
+        public readonly array $items,
         public readonly ?AddressPreview $billingAddress,
         public readonly ?AddressPreview $shippingAddress,
         public readonly array $shipments,

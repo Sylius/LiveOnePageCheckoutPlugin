@@ -271,6 +271,45 @@ Don't want to use recipes or Rector? You can still follow the legacy installatio
     bin/console cache:clear
     ```
 
+## API
+
+The plugin exposes the same one-page checkout flow over Sylius' Shop API (API Platform), so a
+headless/mobile client can drive it without the Live Component.
+
+### `POST /shop/orders/{tokenValue}/one-page/preview`
+
+Applies the submitted form data (address, selected shipping/payment method, coupon) to the cart
+**without persisting anything**, recalculates the order (prices, promotions, taxes, available
+shipping/payment methods) and returns a snapshot plus an anti-tamper `hash`. Call it on every
+form change, the same way the shop `FormComponent` recalculates on every re-render.
+
+The response (`CheckoutPreview`) only contains data that can change between renders: order
+summary totals, per-item prices (`unitPrice`, `originalUnitPrice`, `discountedUnitPrice`,
+`subtotal`, `total`), addresses, available shipping/payment methods and the state `hash`. It
+intentionally does **not** repeat data that stays constant for the whole checkout (item name,
+image, quantity) - see below.
+
+### `POST /shop/orders/{tokenValue}/one-page/complete`
+
+Finalizes the checkout: re-validates the submitted `hash` against the order's current state
+(rejects stale submissions the same way the shop flow does), transitions the order to
+`completed` and returns the full `Order` resource (`sylius:shop:cart:show` group).
+
+### `GET /shop/orders/{tokenValue}` - constant order data
+
+This is Sylius core's own endpoint, no plugin-specific route needed. Use it once (e.g. on page
+load) to get everything that does **not** change while the customer edits the checkout form:
+channel, currency, locale, customer and the order items (`id`, `productName`, `variantName`,
+`quantity`). Re-fetch prices from `preview` instead of polling this endpoint.
+
+On channels with one page checkout **enabled**, each order item in the response also gets an
+extra `image` field: an absolute, cached thumbnail URL resolved the same way the checkout
+summary does (`variant` images if the variant has any, otherwise the `product`'s images,
+filtered to the `thumbnail` type). Pass `?imageFilter=<filter_name>` to request a different Liip
+Imagine filter than the default (`sylius_shop_product_small_thumbnail`). On channels with the
+feature **disabled**, the response is byte-for-byte identical to stock Sylius - no `image` field
+is added.
+
 ## License
 
 Released under the [MIT License](LICENSE).

@@ -1,0 +1,27 @@
+Sylius\Component\Currency\Model\Currency:
+    currency_usd:
+        code: 'USD'
+
+Sylius\Component\Locale\Model\Locale:
+    locale_en:
+        code: 'en_US'
+
+Sylius\Component\Core\Model\ChannelPriceHistoryConfig:
+    web_price_history_config:
+        lowestPriceForDiscountedProductsVisible: false
+
+Tests\Sylius\LiveOnePageCheckoutPlugin\Entity\Channel:
+    channel_web:
+        code: 'WEB'
+        name: 'Web Channel'
+        hostname: 'localhost'
+        contactEmail: 'web@sylius.com'
+        description: 'Lorem ipsum'
+        baseCurrency: '@currency_usd'
+        defaultLocale: '@locale_en'
+        locales: ['@locale_en']
+        color: 'black'
+        enabled: true
+        taxCalculationStrategy: 'order_items_based'
+        channelPriceHistoryConfig: '@web_price_history_config'
+        onePageCheckoutEnabled: false

@@ -12,6 +12,18 @@
         "total": 4000,
         "promotionCoupon": null
     },
+    "items": [
+        {
+            "@type": "ItemPreview",
+            "@id": "@string@",
+            "id": "@integer@",
+            "unitPrice": 2000,
+            "originalUnitPrice": 2000,
+            "total": 4000,
+            "discountedUnitPrice": 2000,
+            "subtotal": 4000
+        }
+    ],
     "shipments": [
         {
             "@type": "ShipmentPreview",

@@ -19,6 +19,9 @@
         <attribute name="summary">
             <group>sylius_live_one_page_checkout:shop:checkout:show</group>
         </attribute>
+        <attribute name="items">
+            <group>sylius_live_one_page_checkout:shop:checkout:show</group>
+        </attribute>
         <attribute name="shipments">
             <group>sylius_live_one_page_checkout:shop:checkout:show</group>
         </attribute>
