@@ -18,5 +18,7 @@ use Sylius\Component\Core\Model\OrderItemInterface;
 
 interface OrderItemImageProviderInterface
 {
+    public const THUMBNAIL_TYPE = 'thumbnail';
+
     public function provide(OrderItemInterface $item): ?ImageInterface;
 }
