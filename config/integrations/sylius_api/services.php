@@ -24,6 +24,7 @@ use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\AddressPreviewFactory;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\AddressPreviewFactoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\CheckoutPreviewFactory;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\CheckoutPreviewFactoryInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\DefaultShippingAddressOrderFactory;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ItemPreviewFactory;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ItemPreviewFactoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\OrderSummaryFactory;
@@ -203,5 +204,14 @@ return static function (ContainerConfigurator $container): void {
             'sylius_shop_product_small_thumbnail',
         ])
         ->tag('serializer.normalizer', ['priority' => 64])
+    ;
+
+    $services
+        ->set('sylius_live_one_page_checkout.api.factory.order.default_shipping_address', DefaultShippingAddressOrderFactory::class)
+        ->decorate('sylius.custom_factory.order')
+        ->args([
+            service('.inner'),
+            service('sylius_live_one_page_checkout.applier.default_shipping_address'),
+        ])
     ;
 };
