@@ -13,10 +13,8 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\LiveOnePageCheckoutPlugin\Api\Shop;
 
-use Doctrine\Persistence\ObjectRepository;
 use Sylius\Bundle\ApiBundle\Command\Cart\AddItemToCart;
 use Sylius\Bundle\ApiBundle\Command\Cart\PickupCart;
-use Sylius\Component\Core\Model\ShopUserInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Tests\Sylius\LiveOnePageCheckoutPlugin\Api\JsonApiTestCase;
 
@@ -99,12 +97,7 @@ final class OnePageCheckoutPreviewTest extends JsonApiTestCase
 
         $tokenValue = $this->pickUpCartWithItem();
 
-        /** @var ObjectRepository<ShopUserInterface> $shopUserRepository */
-        $shopUserRepository = $this->getRepository('Sylius\Component\Core\Model\ShopUser');
-        /** @var ShopUserInterface $shopUser */
-        $shopUser = $shopUserRepository->findOneBy(['username' => 'john@example.com']);
-
-        $token = $this->generateJwtTokenForUser($shopUser);
+        $token = $this->generateJwtTokenForShopUserEmail('john@example.com');
 
         $this->requestPost(
             uri: sprintf('/api/v2/shop/orders/%s/one-page/preview', $tokenValue),
@@ -129,12 +122,7 @@ final class OnePageCheckoutPreviewTest extends JsonApiTestCase
 
         $tokenValue = $this->pickUpCartWithItem();
 
-        /** @var ObjectRepository<ShopUserInterface> $shopUserRepository */
-        $shopUserRepository = $this->getRepository('Sylius\Component\Core\Model\ShopUser');
-        /** @var ShopUserInterface $shopUser */
-        $shopUser = $shopUserRepository->findOneBy(['username' => 'jane@example.com']);
-
-        $token = $this->generateJwtTokenForUser($shopUser);
+        $token = $this->generateJwtTokenForShopUserEmail('jane@example.com');
 
         $this->requestPost(
             uri: sprintf('/api/v2/shop/orders/%s/one-page/preview', $tokenValue),

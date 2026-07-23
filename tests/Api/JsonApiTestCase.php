@@ -18,6 +18,7 @@ use Doctrine\Persistence\ObjectRepository;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use PHPUnit\Framework\Attributes\Before;
 use Sylius\Component\Core\Model\ShopUserInterface;
+use Sylius\Component\User\Repository\UserRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Component\DomCrawler\Crawler;
 use Webmozart\Assert\Assert;
@@ -85,6 +86,16 @@ abstract class JsonApiTestCase extends BaseJsonApiTestCase
         $jwtManager = $this->get(JWTTokenManagerInterface::class);
 
         return $jwtManager->create($user);
+    }
+
+    protected function generateJwtTokenForShopUserEmail(string $email): string
+    {
+        /** @var UserRepositoryInterface<ShopUserInterface> $shopUserRepository */
+        $shopUserRepository = $this->get('sylius.repository.shop_user');
+        $shopUser = $shopUserRepository->findOneByEmail($email);
+        Assert::isInstanceOf($shopUser, ShopUserInterface::class);
+
+        return $this->generateJwtTokenForUser($shopUser);
     }
 
     /**
