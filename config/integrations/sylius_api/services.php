@@ -32,7 +32,10 @@ use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\PaymentPreviewFactory;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\PaymentPreviewFactoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ShipmentPreviewFactory;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ShipmentPreviewFactoryInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Provider\OrderItemImageProvider;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Provider\OrderItemImageProviderInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Security\Voter\CheckoutAvailabilityVoter;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Serializer\Normalizer\OrderItemImageNormalizer;
 use Sylius\LiveOnePageCheckoutPlugin\Api\StateProcessor\PreviewCheckoutProcessor;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\PromotionCouponEligibilityValidator;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -182,5 +185,23 @@ return static function (ContainerConfigurator $container): void {
             service('sylius_api.checker.applied_coupon_eligibility'),
         ])
         ->tag('validator.constraint_validator', ['alias' => 'sylius_live_one_page_checkout_api_promotion_coupon_eligibility'])
+    ;
+
+    $services
+        ->set('sylius_live_one_page_checkout.api.provider.order_item_image', OrderItemImageProvider::class)
+    ;
+
+    $services->alias(OrderItemImageProviderInterface::class, 'sylius_live_one_page_checkout.api.provider.order_item_image');
+
+    $services
+        ->set('sylius_live_one_page_checkout.api.normalizer.order_item_image', OrderItemImageNormalizer::class)
+        ->args([
+            service('liip_imagine.cache.manager'),
+            service('request_stack'),
+            service('sylius_live_one_page_checkout.checker.checkout_enabled'),
+            service('sylius_live_one_page_checkout.api.provider.order_item_image'),
+            'sylius_shop_product_small_thumbnail',
+        ])
+        ->tag('serializer.normalizer', ['priority' => 64])
     ;
 };
