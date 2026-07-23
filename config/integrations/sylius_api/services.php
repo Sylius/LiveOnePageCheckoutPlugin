@@ -46,6 +46,7 @@ use Sylius\LiveOnePageCheckoutPlugin\Api\StateProcessor\PreviewCheckoutProcessor
 use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\CheckoutEmailNotAllowedValidator;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\GuestEmailRequiredValidator;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\PromotionCouponEligibilityValidator;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\StandardCheckoutStepBlockedValidator;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\tagged_iterator;
@@ -222,6 +223,15 @@ return static function (ContainerConfigurator $container): void {
             service(UserContextInterface::class),
         ])
         ->tag('validator.constraint_validator', ['alias' => 'sylius_live_one_page_checkout_api_checkout_email_not_allowed'])
+    ;
+
+    $services
+        ->set('sylius_live_one_page_checkout.api.validator.standard_checkout_step_blocked', StandardCheckoutStepBlockedValidator::class)
+        ->args([
+            service('sylius.repository.order'),
+            service('sylius_live_one_page_checkout.checker.checkout_enabled'),
+        ])
+        ->tag('validator.constraint_validator', ['alias' => 'sylius_live_one_page_checkout_api_standard_checkout_step_blocked'])
     ;
 
     $services
