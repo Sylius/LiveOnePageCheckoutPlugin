@@ -48,18 +48,31 @@ final class DefaultShippingAddressCartContextTest extends TestCase
         $cart = $this->createCart();
         $cart->expects(self::never())->method('getCustomer');
         $cart->expects(self::never())->method('setShippingAddress');
+        $cart->expects(self::never())->method('setBillingAddress');
 
         $this->checkoutEnabledChecker->method('isEnabled')->willReturn(false);
 
         self::assertSame($cart, $this->context->getCart());
     }
 
-    public function testReturnsCartUntouchedWhenCartAlreadyHasShippingAddress(): void
+    public function testReturnsCartUntouchedWhenShippingAddressRequiredAndCartAlreadyHasShippingAddress(): void
     {
-        $cart = $this->createCart();
+        $cart = $this->createCart(shippingAddressRequired: true);
         $cart->method('getShippingAddress')->willReturn($this->createMock(AddressInterface::class));
         $cart->expects(self::never())->method('getCustomer');
         $cart->expects(self::never())->method('setShippingAddress');
+
+        $this->checkoutEnabledChecker->method('isEnabled')->willReturn(true);
+
+        self::assertSame($cart, $this->context->getCart());
+    }
+
+    public function testReturnsCartUntouchedWhenBillingAddressRequiredAndCartAlreadyHasBillingAddress(): void
+    {
+        $cart = $this->createCart(shippingAddressRequired: false);
+        $cart->method('getBillingAddress')->willReturn($this->createMock(AddressInterface::class));
+        $cart->expects(self::never())->method('getCustomer');
+        $cart->expects(self::never())->method('setBillingAddress');
 
         $this->checkoutEnabledChecker->method('isEnabled')->willReturn(true);
 
@@ -71,6 +84,7 @@ final class DefaultShippingAddressCartContextTest extends TestCase
         $cart = $this->createCart();
         $cart->method('getCustomer')->willReturn(null);
         $cart->expects(self::never())->method('setShippingAddress');
+        $cart->expects(self::never())->method('setBillingAddress');
 
         $this->checkoutEnabledChecker->method('isEnabled')->willReturn(true);
 
@@ -85,13 +99,14 @@ final class DefaultShippingAddressCartContextTest extends TestCase
         $cart = $this->createCart();
         $cart->method('getCustomer')->willReturn($customer);
         $cart->expects(self::never())->method('setShippingAddress');
+        $cart->expects(self::never())->method('setBillingAddress');
 
         $this->checkoutEnabledChecker->method('isEnabled')->willReturn(true);
 
         self::assertSame($cart, $this->context->getCart());
     }
 
-    public function testSetsClonedDefaultAddressDetachedFromCustomerAsShippingAddress(): void
+    public function testSetsClonedDefaultAddressDetachedFromCustomerAsShippingAddressWhenShippingIsRequired(): void
     {
         $defaultAddress = new Address();
         $defaultAddress->setCustomer($this->createMock(CustomerInterface::class));
@@ -101,13 +116,44 @@ final class DefaultShippingAddressCartContextTest extends TestCase
 
         $capturedAddress = null;
 
-        $cart = $this->createCart();
+        $cart = $this->createCart(shippingAddressRequired: true);
         $cart->method('getCustomer')->willReturn($customer);
         $cart->expects(self::once())
             ->method('setShippingAddress')
             ->willReturnCallback(static function (AddressInterface $address) use (&$capturedAddress): void {
                 $capturedAddress = $address;
-            });
+            })
+        ;
+        $cart->expects(self::never())->method('setBillingAddress');
+
+        $this->checkoutEnabledChecker->method('isEnabled')->willReturn(true);
+
+        self::assertSame($cart, $this->context->getCart());
+        self::assertInstanceOf(AddressInterface::class, $capturedAddress);
+        self::assertNotSame($defaultAddress, $capturedAddress);
+        self::assertNull($capturedAddress->getCustomer());
+        self::assertNotNull($defaultAddress->getCustomer());
+    }
+
+    public function testSetsClonedDefaultAddressDetachedFromCustomerAsBillingAddressWhenShippingIsNotRequired(): void
+    {
+        $defaultAddress = new Address();
+        $defaultAddress->setCustomer($this->createMock(CustomerInterface::class));
+
+        $customer = $this->createMock(CustomerInterface::class);
+        $customer->method('getDefaultAddress')->willReturn($defaultAddress);
+
+        $capturedAddress = null;
+
+        $cart = $this->createCart(shippingAddressRequired: false);
+        $cart->method('getCustomer')->willReturn($customer);
+        $cart->expects(self::once())
+            ->method('setBillingAddress')
+            ->willReturnCallback(static function (AddressInterface $address) use (&$capturedAddress): void {
+                $capturedAddress = $address;
+            })
+        ;
+        $cart->expects(self::never())->method('setShippingAddress');
 
         $this->checkoutEnabledChecker->method('isEnabled')->willReturn(true);
 
@@ -125,10 +171,13 @@ final class DefaultShippingAddressCartContextTest extends TestCase
         $this->context->reset();
     }
 
-    private function createCart(): OrderInterface&MockObject
+    private function createCart(bool $shippingAddressRequired = false): OrderInterface&MockObject
     {
+        $channel = new Channel();
+        $channel->setShippingAddressInCheckoutRequired($shippingAddressRequired);
+
         $cart = $this->createMock(OrderInterface::class);
-        $cart->method('getChannel')->willReturn(new Channel());
+        $cart->method('getChannel')->willReturn($channel);
 
         $this->decoratedContext->method('getCart')->willReturn($cart);
 

@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Sylius\LiveOnePageCheckoutPlugin\Cart\Context;
 
+use Sylius\Component\Core\Model\AddressInterface;
 use Sylius\Component\Core\Model\CustomerInterface;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Order\Context\ResettableCartContextInterface;
@@ -41,7 +42,13 @@ final readonly class DefaultShippingAddressCartContext implements ResettableCart
             return $cart;
         }
 
-        if (null !== $cart->getShippingAddress()) {
+        $shippingAddressRequired = $channel->isShippingAddressInCheckoutRequired();
+
+        if (true === $shippingAddressRequired && null !== $cart->getShippingAddress()) {
+            return $cart;
+        }
+
+        if (false === $shippingAddressRequired && null !== $cart->getBillingAddress()) {
             return $cart;
         }
 
@@ -57,9 +64,11 @@ final readonly class DefaultShippingAddressCartContext implements ResettableCart
             return $cart;
         }
 
-        $clonedAddress = clone $defaultAddress;
-        $clonedAddress->setCustomer(null);
-        $cart->setShippingAddress($clonedAddress);
+        if (true === $shippingAddressRequired) {
+            $cart->setShippingAddress($this->cloneWithoutCustomer($defaultAddress));
+        } else {
+            $cart->setBillingAddress($this->cloneWithoutCustomer($defaultAddress));
+        }
 
         return $cart;
     }
@@ -67,5 +76,13 @@ final readonly class DefaultShippingAddressCartContext implements ResettableCart
     public function reset(): void
     {
         $this->decoratedContext->reset();
+    }
+
+    private function cloneWithoutCustomer(AddressInterface $address): AddressInterface
+    {
+        $clonedAddress = clone $address;
+        $clonedAddress->setCustomer(null);
+
+        return $clonedAddress;
     }
 }
