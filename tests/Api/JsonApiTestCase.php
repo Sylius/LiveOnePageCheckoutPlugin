@@ -21,6 +21,7 @@ use Sylius\Component\Core\Model\ShopUserInterface;
 use Sylius\Component\User\Repository\UserRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\HttpFoundation\Response;
 use Webmozart\Assert\Assert;
 
 abstract class JsonApiTestCase extends BaseJsonApiTestCase
@@ -104,5 +105,75 @@ abstract class JsonApiTestCase extends BaseJsonApiTestCase
     protected function getRepository(string $className): ObjectRepository
     {
         return $this->get('doctrine.orm.entity_manager')->getRepository($className);
+    }
+
+    /**
+     * Asserts that response contains exactly the expected violations (exact match).
+     *
+     * @param array<array-key, mixed> $expectedViolations
+     *
+     * @throws \Exception
+     */
+    protected function assertResponseViolations(array $expectedViolations): void
+    {
+        $this->assertViolationResponseHeaders();
+
+        $response = $this->client()->getResponse();
+        $responseContent = $response->getContent() ?: '';
+        $this->assertNotEmpty($responseContent);
+
+        $decoded = json_decode($responseContent, true);
+        Assert::isArray($decoded);
+
+        $actualViolations = $decoded['violations'];
+        Assert::isArray($actualViolations);
+
+        $actualDescription = $decoded['hydra:description'];
+
+        array_walk($actualViolations, function (&$item): void {
+            unset($item['code']);
+        });
+
+        $mappedViolations = array_map(function (mixed $violation): string {
+            Assert::isArray($violation);
+
+            if (empty($violation['propertyPath'])) {
+                return $violation['message'];
+            }
+
+            return $violation['propertyPath'] . ': ' . $violation['message'];
+        }, $expectedViolations);
+
+        $expectedDescription = implode("\n", $mappedViolations);
+
+        $expected = [
+            '@context' => '/api/v2/contexts/ConstraintViolationList',
+            '@type' => 'ConstraintViolationList',
+            'hydra:title' => 'An error occurred',
+            'hydra:description' => $expectedDescription,
+            'violations' => $expectedViolations,
+        ];
+
+        $actual = [
+            '@context' => '/api/v2/contexts/ConstraintViolationList',
+            '@type' => 'ConstraintViolationList',
+            'hydra:title' => 'An error occurred',
+            'hydra:description' => $actualDescription,
+            'violations' => $actualViolations,
+        ];
+
+        $this->assertSame($expected, $actual);
+    }
+
+    private function assertViolationResponseHeaders(): void
+    {
+        $response = $this->client()->getResponse();
+
+        if (isset($_SERVER['OPEN_ERROR_IN_BROWSER']) && true === $_SERVER['OPEN_ERROR_IN_BROWSER']) {
+            $this->showErrorInBrowserIfOccurred($response);
+        }
+
+        $this->assertResponseCode($response, Response::HTTP_UNPROCESSABLE_ENTITY);
+        $this->assertJsonHeader($response);
     }
 }
