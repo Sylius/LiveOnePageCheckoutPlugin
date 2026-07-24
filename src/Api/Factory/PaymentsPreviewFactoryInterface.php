@@ -18,8 +18,6 @@ use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\PaymentPreview;
 
 interface PaymentsPreviewFactoryInterface
 {
-    /**
-     * @return list<PaymentPreview>
-     */
+    /** @return list<PaymentPreview> */
     public function create(OrderInterface $order): array;
 }

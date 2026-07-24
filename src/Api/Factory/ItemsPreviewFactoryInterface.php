@@ -18,8 +18,6 @@ use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\ItemPreview;
 
 interface ItemsPreviewFactoryInterface
 {
-    /**
-     * @return list<ItemPreview>
-     */
+    /** @return list<ItemPreview> */
     public function create(OrderInterface $order): array;
 }
