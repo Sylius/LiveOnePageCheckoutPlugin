@@ -17,11 +17,18 @@ use ApiTestCase\JsonApiTestCase as BaseJsonApiTestCase;
 use Doctrine\Persistence\ObjectRepository;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use PHPUnit\Framework\Attributes\Before;
+use Sylius\Bundle\ApiBundle\Command\Cart\AddItemToCart;
+use Sylius\Bundle\ApiBundle\Command\Cart\PickupCart;
+use Sylius\Component\Core\Model\CustomerInterface;
+use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\ShopUserInterface;
+use Sylius\Component\Core\Repository\CustomerRepositoryInterface;
+use Sylius\Component\Core\Repository\OrderRepositoryInterface;
 use Sylius\Component\User\Repository\UserRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Webmozart\Assert\Assert;
 
 abstract class JsonApiTestCase extends BaseJsonApiTestCase
@@ -105,6 +112,51 @@ abstract class JsonApiTestCase extends BaseJsonApiTestCase
     protected function getRepository(string $className): ObjectRepository
     {
         return $this->get('doctrine.orm.entity_manager')->getRepository($className);
+    }
+
+    protected function pickUpCartWithItem(
+        string $tokenValue = 'CART_TOKEN',
+        string $productVariantCode = 'MUG',
+        int $quantity = 1,
+        ?string $customerEmail = null,
+    ): string {
+        /** @var MessageBusInterface $commandBus */
+        $commandBus = $this->get('sylius.command_bus');
+
+        $commandBus->dispatch(new PickupCart(
+            channelCode: 'WEB',
+            localeCode: 'en_US',
+            tokenValue: $tokenValue,
+        ));
+
+        $commandBus->dispatch(new AddItemToCart(
+            orderTokenValue: $tokenValue,
+            productVariantCode: $productVariantCode,
+            quantity: $quantity,
+        ));
+
+        if (null !== $customerEmail) {
+            $this->assignCustomerToCart($tokenValue, $customerEmail);
+        }
+
+        return $tokenValue;
+    }
+
+    protected function assignCustomerToCart(string $tokenValue, string $customerEmail): void
+    {
+        /** @var OrderRepositoryInterface<OrderInterface> $orderRepository */
+        $orderRepository = $this->get('sylius.repository.order');
+        $order = $orderRepository->findCartByTokenValue($tokenValue);
+        Assert::isInstanceOf($order, OrderInterface::class);
+
+        /** @var CustomerRepositoryInterface<CustomerInterface> $customerRepository */
+        $customerRepository = $this->get('sylius.repository.customer');
+        $customer = $customerRepository->findOneBy(['email' => $customerEmail]);
+        Assert::isInstanceOf($customer, CustomerInterface::class);
+
+        $order->setCustomerWithAuthorization($customer);
+
+        $this->get('doctrine.orm.entity_manager')->flush();
     }
 
     /**
