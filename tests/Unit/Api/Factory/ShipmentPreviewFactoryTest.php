@@ -21,19 +21,24 @@ use Sylius\Component\Core\Model\ShippingMethodInterface;
 use Sylius\Component\Shipping\Model\ShipmentInterface;
 use Sylius\Component\Shipping\Resolver\ShippingMethodsResolverInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\ShipmentPreview;
+use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\ShippingMethodPreview;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ShipmentPreviewFactory;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ShipmentPreviewFactoryInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ShippingMethodPreviewFactoryInterface;
 
 final class ShipmentPreviewFactoryTest extends TestCase
 {
     private ShippingMethodsResolverInterface&MockObject $shippingMethodsResolver;
+
+    private ShippingMethodPreviewFactoryInterface&MockObject $shippingMethodPreviewFactory;
 
     private ShipmentPreviewFactory $factory;
 
     protected function setUp(): void
     {
         $this->shippingMethodsResolver = $this->createMock(ShippingMethodsResolverInterface::class);
-        $this->factory = new ShipmentPreviewFactory($this->shippingMethodsResolver);
+        $this->shippingMethodPreviewFactory = $this->createMock(ShippingMethodPreviewFactoryInterface::class);
+        $this->factory = new ShipmentPreviewFactory($this->shippingMethodsResolver, $this->shippingMethodPreviewFactory);
     }
 
     public function testImplementsShipmentPreviewFactoryInterface(): void
@@ -67,6 +72,19 @@ final class ShipmentPreviewFactoryTest extends TestCase
                 [$shipment2, [$supportedMethod3, $supportedMethod4]],
             ]);
 
+        $preview1 = new ShippingMethodPreview('DHL', 'DHL name', 'DHL description', 500);
+        $preview2 = new ShippingMethodPreview('DPD', 'DPD name', 'DPD description', 700);
+        $preview3 = new ShippingMethodPreview('DHL', 'DHL name', 'DHL description', 500);
+        $preview4 = new ShippingMethodPreview('DPD', 'DPD name', 'DPD description', 700);
+
+        $this->shippingMethodPreviewFactory->method('create')
+            ->willReturnMap([
+                [$shipment1, $supportedMethod1, $preview1],
+                [$shipment1, $supportedMethod2, $preview2],
+                [$shipment2, $supportedMethod3, $preview3],
+                [$shipment2, $supportedMethod4, $preview4],
+            ]);
+
         $result = $this->factory->create($order);
 
         self::assertCount(2, $result);
@@ -74,8 +92,8 @@ final class ShipmentPreviewFactoryTest extends TestCase
         self::assertInstanceOf(ShipmentPreview::class, $result[1]);
         self::assertSame('FEDEX', $result[0]->selectedMethodCode);
         self::assertSame('UPS', $result[1]->selectedMethodCode);
-        self::assertSame([$supportedMethod1, $supportedMethod2], $result[0]->availableMethods);
-        self::assertSame([$supportedMethod3, $supportedMethod4], $result[1]->availableMethods);
+        self::assertSame([$preview1, $preview2], $result[0]->availableMethods);
+        self::assertSame([$preview3, $preview4], $result[1]->availableMethods);
     }
 
     public function testCreatesShipmentPreviewWhenShipmentHasNoMethod(): void
@@ -87,17 +105,20 @@ final class ShipmentPreviewFactoryTest extends TestCase
         $order->method('getShipments')->willReturn(new ArrayCollection([$shipment]));
 
         $supportedMethod = $this->createMock(ShippingMethodInterface::class);
+        $preview = new ShippingMethodPreview('DHL', 'DHL name', 'DHL description', 500);
 
         $this->shippingMethodsResolver->expects(self::once())
             ->method('getSupportedMethods')
             ->with($shipment)
             ->willReturn([$supportedMethod]);
 
+        $this->shippingMethodPreviewFactory->method('create')->with($shipment, $supportedMethod)->willReturn($preview);
+
         $result = $this->factory->create($order);
 
         self::assertCount(1, $result);
         self::assertNull($result[0]->selectedMethodCode);
-        self::assertSame([$supportedMethod], $result[0]->availableMethods);
+        self::assertSame([$preview], $result[0]->availableMethods);
     }
 
     public function testHandlesEmptyShipments(): void
@@ -110,25 +131,5 @@ final class ShipmentPreviewFactoryTest extends TestCase
         $result = $this->factory->create($order);
 
         self::assertCount(0, $result);
-    }
-
-    public function testArrayValuesResultsAreReturned(): void
-    {
-        $supportedMethod1 = $this->createMock(ShippingMethodInterface::class);
-        $supportedMethod2 = $this->createMock(ShippingMethodInterface::class);
-
-        $shipment = $this->createMock(ShipmentInterface::class);
-        $shipment->method('getMethod')->willReturn(null);
-
-        $order = $this->createMock(OrderInterface::class);
-        $order->method('getShipments')->willReturn(new ArrayCollection([$shipment]));
-
-        $this->shippingMethodsResolver->expects(self::once())
-            ->method('getSupportedMethods')
-            ->willReturn([$supportedMethod1, $supportedMethod2]);
-
-        $result = $this->factory->create($order);
-
-        self::assertSame([$supportedMethod1, $supportedMethod2], $result[0]->availableMethods);
     }
 }

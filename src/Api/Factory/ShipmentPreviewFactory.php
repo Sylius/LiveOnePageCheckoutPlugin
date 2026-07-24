@@ -21,6 +21,7 @@ final readonly class ShipmentPreviewFactory implements ShipmentPreviewFactoryInt
 {
     public function __construct(
         private ShippingMethodsResolverInterface $shippingMethodsResolver,
+        private ShippingMethodPreviewFactoryInterface $shippingMethodPreviewFactory,
     ) {
     }
 
@@ -29,9 +30,14 @@ final readonly class ShipmentPreviewFactory implements ShipmentPreviewFactoryInt
         $previews = [];
 
         foreach ($order->getShipments() as $shipment) {
+            $availableMethods = [];
+            foreach ($this->shippingMethodsResolver->getSupportedMethods($shipment) as $shippingMethod) {
+                $availableMethods[] = $this->shippingMethodPreviewFactory->create($shipment, $shippingMethod);
+            }
+
             $previews[] = new ShipmentPreview(
                 $shipment->getMethod()?->getCode(),
-                array_values($this->shippingMethodsResolver->getSupportedMethods($shipment)),
+                $availableMethods,
             );
         }
 

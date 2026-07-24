@@ -31,11 +31,12 @@
             "selectedMethodCode": "UPS",
             "availableMethods": [
                 {
-                    "@id": "\/api\/v2\/shop\/shipping-methods\/UPS",
-                    "@type": "ShippingMethod",
+                    "@type": "ShippingMethodPreview",
+                    "@id": "@string@",
                     "code": "UPS",
                     "name": "UPS",
-                    "description": "United Parcel Service"
+                    "description": "United Parcel Service",
+                    "cost": 500
                 }
             ]
         }

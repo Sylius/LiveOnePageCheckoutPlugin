@@ -33,6 +33,8 @@ use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\PaymentPreviewFactory;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\PaymentPreviewFactoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ShipmentPreviewFactory;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ShipmentPreviewFactoryInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ShippingMethodPreviewFactory;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ShippingMethodPreviewFactoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Provider\OrderItemImageProvider;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Provider\OrderItemImageProviderInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Security\Voter\CheckoutAvailabilityVoter;
@@ -112,9 +114,19 @@ return static function (ContainerConfigurator $container): void {
     $services->alias(ItemPreviewFactoryInterface::class, 'sylius_live_one_page_checkout.api.factory.item_preview');
 
     $services
+        ->set('sylius_live_one_page_checkout.api.factory.shipping_method_preview', ShippingMethodPreviewFactory::class)
+        ->args([
+            service('sylius.registry.shipping_calculator'),
+        ])
+    ;
+
+    $services->alias(ShippingMethodPreviewFactoryInterface::class, 'sylius_live_one_page_checkout.api.factory.shipping_method_preview');
+
+    $services
         ->set('sylius_live_one_page_checkout.api.factory.shipment_preview', ShipmentPreviewFactory::class)
         ->args([
             service('sylius.resolver.shipping_methods'),
+            service(ShippingMethodPreviewFactoryInterface::class),
         ])
     ;
 

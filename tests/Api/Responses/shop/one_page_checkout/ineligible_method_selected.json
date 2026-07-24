@@ -31,11 +31,12 @@
             "selectedMethodCode": null,
             "availableMethods": [
                 {
-                    "@id": "\/api\/v2\/shop\/shipping-methods\/DHL",
-                    "@type": "ShippingMethod",
+                    "@type": "ShippingMethodPreview",
+                    "@id": "@string@",
                     "code": "DHL",
                     "name": "DHL",
-                    "description": "DHL Express"
+                    "description": "DHL Express",
+                    "cost": 800
                 }
             ]
         }
