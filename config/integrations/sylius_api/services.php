@@ -29,6 +29,8 @@ use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ItemsPreviewFactory;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ItemsPreviewFactoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\OrderSummaryFactory;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\OrderSummaryFactoryInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\PaymentMethodPreviewFactory;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\PaymentMethodPreviewFactoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\PaymentsPreviewFactory;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\PaymentsPreviewFactoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ShipmentsPreviewFactory;
@@ -133,9 +135,16 @@ return static function (ContainerConfigurator $container): void {
     $services->alias(ShipmentsPreviewFactoryInterface::class, 'sylius_live_one_page_checkout.api.factory.shipment_preview');
 
     $services
+        ->set('sylius_live_one_page_checkout.api.factory.payment_method_preview', PaymentMethodPreviewFactory::class)
+    ;
+
+    $services->alias(PaymentMethodPreviewFactoryInterface::class, 'sylius_live_one_page_checkout.api.factory.payment_method_preview');
+
+    $services
         ->set('sylius_live_one_page_checkout.api.factory.payment_preview', PaymentsPreviewFactory::class)
         ->args([
             service('sylius.resolver.payment_methods'),
+            service(PaymentMethodPreviewFactoryInterface::class),
         ])
     ;
 

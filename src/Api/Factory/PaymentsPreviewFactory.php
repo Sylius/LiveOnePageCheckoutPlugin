@@ -21,6 +21,7 @@ final readonly class PaymentsPreviewFactory implements PaymentsPreviewFactoryInt
 {
     public function __construct(
         private PaymentMethodsResolverInterface $paymentMethodsResolver,
+        private PaymentMethodPreviewFactoryInterface $paymentMethodPreviewFactory,
     ) {
     }
 
@@ -29,9 +30,14 @@ final readonly class PaymentsPreviewFactory implements PaymentsPreviewFactoryInt
         $previews = [];
 
         foreach ($order->getPayments() as $payment) {
+            $availableMethods = [];
+            foreach ($this->paymentMethodsResolver->getSupportedMethods($payment) as $paymentMethod) {
+                $availableMethods[] = $this->paymentMethodPreviewFactory->create($paymentMethod);
+            }
+
             $previews[] = new PaymentPreview(
                 $payment->getMethod()?->getCode(),
-                array_values($this->paymentMethodsResolver->getSupportedMethods($payment)),
+                $availableMethods,
             );
         }
 

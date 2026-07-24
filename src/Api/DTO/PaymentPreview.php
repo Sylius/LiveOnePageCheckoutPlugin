@@ -13,12 +13,10 @@ declare(strict_types=1);
 
 namespace Sylius\LiveOnePageCheckoutPlugin\Api\DTO;
 
-use Sylius\Component\Payment\Model\PaymentMethodInterface;
-
 class PaymentPreview
 {
     /**
-     * @param list<PaymentMethodInterface> $availableMethods
+     * @param list<PaymentMethodPreview> $availableMethods
      */
     public function __construct(
         public readonly ?string $selectedMethodCode,
