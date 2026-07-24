@@ -19,16 +19,34 @@
         <attribute name="itemsTotal">
             <group>sylius_live_one_page_checkout:shop:checkout:show</group>
         </attribute>
-        <attribute name="shippingTotal">
+        <attribute name="itemsSubtotal">
+            <group>sylius_live_one_page_checkout:shop:checkout:show</group>
+        </attribute>
+        <attribute name="total">
             <group>sylius_live_one_page_checkout:shop:checkout:show</group>
         </attribute>
         <attribute name="taxTotal">
             <group>sylius_live_one_page_checkout:shop:checkout:show</group>
         </attribute>
-        <attribute name="promotionTotal">
+        <attribute name="shippingTaxTotal">
             <group>sylius_live_one_page_checkout:shop:checkout:show</group>
         </attribute>
-        <attribute name="total">
+        <attribute name="taxExcludedTotal">
+            <group>sylius_live_one_page_checkout:shop:checkout:show</group>
+        </attribute>
+        <attribute name="taxIncludedTotal">
+            <group>sylius_live_one_page_checkout:shop:checkout:show</group>
+        </attribute>
+        <attribute name="shippingTotal">
+            <group>sylius_live_one_page_checkout:shop:checkout:show</group>
+        </attribute>
+        <attribute name="orderPromotionTotal">
+            <group>sylius_live_one_page_checkout:shop:checkout:show</group>
+        </attribute>
+        <attribute name="orderAndItemPromotionTotal">
+            <group>sylius_live_one_page_checkout:shop:checkout:show</group>
+        </attribute>
+        <attribute name="shippingPromotionTotal">
             <group>sylius_live_one_page_checkout:shop:checkout:show</group>
         </attribute>
         <attribute name="promotionCoupon">

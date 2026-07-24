@@ -18,8 +18,6 @@ use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\ShipmentPreview;
 
 interface ShipmentsPreviewFactoryInterface
 {
-    /**
-     * @return list<ShipmentPreview>
-     */
+    /** @return list<ShipmentPreview> */
     public function create(OrderInterface $order): array;
 }

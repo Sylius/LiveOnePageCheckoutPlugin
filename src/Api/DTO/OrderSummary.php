@@ -17,10 +17,16 @@ class OrderSummary
 {
     public function __construct(
         public readonly int $itemsTotal,
-        public readonly int $shippingTotal,
-        public readonly int $taxTotal,
-        public readonly int $promotionTotal,
+        public readonly int $itemsSubtotal,
         public readonly int $total,
+        public readonly int $taxTotal,
+        public readonly int $shippingTaxTotal,
+        public readonly int $taxExcludedTotal,
+        public readonly int $taxIncludedTotal,
+        public readonly int $shippingTotal,
+        public readonly int $orderPromotionTotal,
+        public readonly int $orderAndItemPromotionTotal,
+        public readonly int $shippingPromotionTotal,
         public readonly ?string $promotionCoupon,
     ) {
     }
