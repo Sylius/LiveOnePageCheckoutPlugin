@@ -22,28 +22,28 @@ use Sylius\Component\Shipping\Model\ShipmentInterface;
 use Sylius\Component\Shipping\Resolver\ShippingMethodsResolverInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\ShipmentPreview;
 use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\ShippingMethodPreview;
-use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ShipmentPreviewFactory;
-use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ShipmentPreviewFactoryInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ShipmentsPreviewFactory;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ShipmentsPreviewFactoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ShippingMethodPreviewFactoryInterface;
 
-final class ShipmentPreviewFactoryTest extends TestCase
+final class ShipmentsPreviewFactoryTest extends TestCase
 {
     private ShippingMethodsResolverInterface&MockObject $shippingMethodsResolver;
 
     private ShippingMethodPreviewFactoryInterface&MockObject $shippingMethodPreviewFactory;
 
-    private ShipmentPreviewFactory $factory;
+    private ShipmentsPreviewFactory $factory;
 
     protected function setUp(): void
     {
         $this->shippingMethodsResolver = $this->createMock(ShippingMethodsResolverInterface::class);
         $this->shippingMethodPreviewFactory = $this->createMock(ShippingMethodPreviewFactoryInterface::class);
-        $this->factory = new ShipmentPreviewFactory($this->shippingMethodsResolver, $this->shippingMethodPreviewFactory);
+        $this->factory = new ShipmentsPreviewFactory($this->shippingMethodsResolver, $this->shippingMethodPreviewFactory);
     }
 
-    public function testImplementsShipmentPreviewFactoryInterface(): void
+    public function testImplementsShipmentsPreviewFactoryInterface(): void
     {
-        self::assertInstanceOf(ShipmentPreviewFactoryInterface::class, $this->factory);
+        self::assertInstanceOf(ShipmentsPreviewFactoryInterface::class, $this->factory);
     }
 
     public function testCreatesShipmentPreviewsForAllShipments(): void

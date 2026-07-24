@@ -28,8 +28,8 @@ use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\CheckoutPreviewFactory;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\CheckoutPreviewFactoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ItemsPreviewFactoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\OrderSummaryFactoryInterface;
-use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\PaymentPreviewFactoryInterface;
-use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ShipmentPreviewFactoryInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\PaymentsPreviewFactoryInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ShipmentsPreviewFactoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Hasher\OrderHasherInterface;
 
 final class CheckoutPreviewFactoryTest extends TestCase
@@ -38,9 +38,9 @@ final class CheckoutPreviewFactoryTest extends TestCase
 
     private ItemsPreviewFactoryInterface&MockObject $itemPreviewFactory;
 
-    private ShipmentPreviewFactoryInterface&MockObject $shipmentPreviewFactory;
+    private ShipmentsPreviewFactoryInterface&MockObject $shipmentPreviewFactory;
 
-    private PaymentPreviewFactoryInterface&MockObject $paymentPreviewFactory;
+    private PaymentsPreviewFactoryInterface&MockObject $paymentPreviewFactory;
 
     private OrderHasherInterface&MockObject $orderHasher;
 
@@ -52,8 +52,8 @@ final class CheckoutPreviewFactoryTest extends TestCase
     {
         $this->orderSummaryFactory = $this->createMock(OrderSummaryFactoryInterface::class);
         $this->itemPreviewFactory = $this->createMock(ItemsPreviewFactoryInterface::class);
-        $this->shipmentPreviewFactory = $this->createMock(ShipmentPreviewFactoryInterface::class);
-        $this->paymentPreviewFactory = $this->createMock(PaymentPreviewFactoryInterface::class);
+        $this->shipmentPreviewFactory = $this->createMock(ShipmentsPreviewFactoryInterface::class);
+        $this->paymentPreviewFactory = $this->createMock(PaymentsPreviewFactoryInterface::class);
         $this->orderHasher = $this->createMock(OrderHasherInterface::class);
         $this->addressPreviewFactory = $this->createMock(AddressPreviewFactoryInterface::class);
 

@@ -17,7 +17,7 @@ use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Payment\Resolver\PaymentMethodsResolverInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\PaymentPreview;
 
-final readonly class PaymentPreviewFactory implements PaymentPreviewFactoryInterface
+final readonly class PaymentsPreviewFactory implements PaymentsPreviewFactoryInterface
 {
     public function __construct(
         private PaymentMethodsResolverInterface $paymentMethodsResolver,

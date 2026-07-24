@@ -29,10 +29,10 @@ use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ItemsPreviewFactory;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ItemsPreviewFactoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\OrderSummaryFactory;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\OrderSummaryFactoryInterface;
-use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\PaymentPreviewFactory;
-use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\PaymentPreviewFactoryInterface;
-use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ShipmentPreviewFactory;
-use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ShipmentPreviewFactoryInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\PaymentsPreviewFactory;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\PaymentsPreviewFactoryInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ShipmentsPreviewFactory;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ShipmentsPreviewFactoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ShippingMethodPreviewFactory;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ShippingMethodPreviewFactoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Provider\OrderItemImageProvider;
@@ -123,23 +123,23 @@ return static function (ContainerConfigurator $container): void {
     $services->alias(ShippingMethodPreviewFactoryInterface::class, 'sylius_live_one_page_checkout.api.factory.shipping_method_preview');
 
     $services
-        ->set('sylius_live_one_page_checkout.api.factory.shipment_preview', ShipmentPreviewFactory::class)
+        ->set('sylius_live_one_page_checkout.api.factory.shipment_preview', ShipmentsPreviewFactory::class)
         ->args([
             service('sylius.resolver.shipping_methods'),
             service(ShippingMethodPreviewFactoryInterface::class),
         ])
     ;
 
-    $services->alias(ShipmentPreviewFactoryInterface::class, 'sylius_live_one_page_checkout.api.factory.shipment_preview');
+    $services->alias(ShipmentsPreviewFactoryInterface::class, 'sylius_live_one_page_checkout.api.factory.shipment_preview');
 
     $services
-        ->set('sylius_live_one_page_checkout.api.factory.payment_preview', PaymentPreviewFactory::class)
+        ->set('sylius_live_one_page_checkout.api.factory.payment_preview', PaymentsPreviewFactory::class)
         ->args([
             service('sylius.resolver.payment_methods'),
         ])
     ;
 
-    $services->alias(PaymentPreviewFactoryInterface::class, 'sylius_live_one_page_checkout.api.factory.payment_preview');
+    $services->alias(PaymentsPreviewFactoryInterface::class, 'sylius_live_one_page_checkout.api.factory.payment_preview');
 
     $services
         ->set('sylius_live_one_page_checkout.api.factory.checkout_preview', CheckoutPreviewFactory::class)

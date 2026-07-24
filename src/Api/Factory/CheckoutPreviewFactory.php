@@ -22,8 +22,8 @@ final readonly class CheckoutPreviewFactory implements CheckoutPreviewFactoryInt
     public function __construct(
         private OrderSummaryFactoryInterface $orderSummaryFactory,
         private ItemsPreviewFactoryInterface $itemPreviewFactory,
-        private ShipmentPreviewFactoryInterface $shipmentPreviewFactory,
-        private PaymentPreviewFactoryInterface $paymentPreviewFactory,
+        private ShipmentsPreviewFactoryInterface $shipmentPreviewFactory,
+        private PaymentsPreviewFactoryInterface $paymentPreviewFactory,
         private OrderHasherInterface $orderHasher,
         private AddressPreviewFactoryInterface $addressPreviewFactory,
     ) {

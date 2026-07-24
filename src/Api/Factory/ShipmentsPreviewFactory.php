@@ -17,7 +17,7 @@ use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Shipping\Resolver\ShippingMethodsResolverInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\ShipmentPreview;
 
-final readonly class ShipmentPreviewFactory implements ShipmentPreviewFactoryInterface
+final readonly class ShipmentsPreviewFactory implements ShipmentsPreviewFactoryInterface
 {
     public function __construct(
         private ShippingMethodsResolverInterface $shippingMethodsResolver,

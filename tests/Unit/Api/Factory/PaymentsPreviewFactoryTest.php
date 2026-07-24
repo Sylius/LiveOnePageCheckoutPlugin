@@ -21,24 +21,24 @@ use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\Component\Payment\Model\PaymentInterface;
 use Sylius\Component\Payment\Resolver\PaymentMethodsResolverInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\PaymentPreview;
-use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\PaymentPreviewFactory;
-use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\PaymentPreviewFactoryInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\PaymentsPreviewFactory;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\PaymentsPreviewFactoryInterface;
 
-final class PaymentPreviewFactoryTest extends TestCase
+final class PaymentsPreviewFactoryTest extends TestCase
 {
     private PaymentMethodsResolverInterface&MockObject $paymentMethodsResolver;
 
-    private PaymentPreviewFactory $factory;
+    private PaymentsPreviewFactory $factory;
 
     protected function setUp(): void
     {
         $this->paymentMethodsResolver = $this->createMock(PaymentMethodsResolverInterface::class);
-        $this->factory = new PaymentPreviewFactory($this->paymentMethodsResolver);
+        $this->factory = new PaymentsPreviewFactory($this->paymentMethodsResolver);
     }
 
-    public function testImplementsPaymentPreviewFactoryInterface(): void
+    public function testImplementsPaymentsPreviewFactoryInterface(): void
     {
-        self::assertInstanceOf(PaymentPreviewFactoryInterface::class, $this->factory);
+        self::assertInstanceOf(PaymentsPreviewFactoryInterface::class, $this->factory);
     }
 
     public function testCreatesPaymentPreviewsForAllPayments(): void
