@@ -15,17 +15,27 @@ namespace Sylius\LiveOnePageCheckoutPlugin\Api\Factory;
 
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\OrderSummary;
+use Sylius\LiveOnePageCheckoutPlugin\Entity\OrderAndItemPromotionTotalAwareInterface;
+use Webmozart\Assert\Assert;
 
 final readonly class OrderSummaryFactory implements OrderSummaryFactoryInterface
 {
     public function create(OrderInterface $order): OrderSummary
     {
+        Assert::isInstanceOf($order, OrderAndItemPromotionTotalAwareInterface::class);
+
         return new OrderSummary(
             $order->getItemsTotal(),
-            $order->getShippingTotal(),
-            $order->getTaxTotal(),
-            $order->getOrderPromotionTotal(),
+            $order->getItemsSubtotal(),
             $order->getTotal(),
+            $order->getTaxTotal(),
+            $order->getShippingTaxTotal(),
+            $order->getTaxExcludedTotal(),
+            $order->getTaxIncludedTotal(),
+            $order->getShippingTotal(),
+            $order->getOrderPromotionTotal(),
+            $order->getOrderAndItemPromotionTotal(),
+            $order->getShippingPromotionTotal(),
             $order->getPromotionCoupon()?->getCode(),
         );
     }
