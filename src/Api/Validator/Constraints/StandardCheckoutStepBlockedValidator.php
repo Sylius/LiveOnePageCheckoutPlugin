@@ -47,17 +47,9 @@ final class StandardCheckoutStepBlockedValidator extends ConstraintValidator
         /** @var StandardCheckoutStepBlocked $constraint */
         Assert::isInstanceOf($constraint, StandardCheckoutStepBlocked::class);
 
-        if ($value instanceof UpdateCart && null === $value->billingAddress && null === $value->shippingAddress) {
-            return;
-        }
-
         $order = $this->orderRepository->findCartByTokenValue($value->orderTokenValue);
 
         if (!$order instanceof OrderInterface) {
-            return;
-        }
-
-        if ($value instanceof ChoosePaymentMethod && $order->getState() !== OrderInterface::STATE_CART) {
             return;
         }
 
