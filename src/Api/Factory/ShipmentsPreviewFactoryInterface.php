@@ -16,7 +16,7 @@ namespace Sylius\LiveOnePageCheckoutPlugin\Api\Factory;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\ShipmentPreview;
 
-interface ShipmentPreviewFactoryInterface
+interface ShipmentsPreviewFactoryInterface
 {
     /**
      * @return list<ShipmentPreview>

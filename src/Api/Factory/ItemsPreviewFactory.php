@@ -16,7 +16,7 @@ namespace Sylius\LiveOnePageCheckoutPlugin\Api\Factory;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\ItemPreview;
 
-final readonly class ItemPreviewFactory implements ItemPreviewFactoryInterface
+final readonly class ItemsPreviewFactory implements ItemsPreviewFactoryInterface
 {
     public function create(OrderInterface $order): array
     {

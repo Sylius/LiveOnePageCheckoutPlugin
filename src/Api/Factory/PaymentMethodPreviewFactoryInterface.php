@@ -13,13 +13,10 @@ declare(strict_types=1);
 
 namespace Sylius\LiveOnePageCheckoutPlugin\Api\Factory;
 
-use Sylius\Component\Core\Model\OrderInterface;
-use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\ItemPreview;
+use Sylius\Component\Payment\Model\PaymentMethodInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\PaymentMethodPreview;
 
-interface ItemPreviewFactoryInterface
+interface PaymentMethodPreviewFactoryInterface
 {
-    /**
-     * @return list<ItemPreview>
-     */
-    public function create(OrderInterface $order): array;
+    public function create(PaymentMethodInterface $paymentMethod): PaymentMethodPreview;
 }

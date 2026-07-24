@@ -20,25 +20,30 @@ use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\Component\Payment\Model\PaymentInterface;
 use Sylius\Component\Payment\Resolver\PaymentMethodsResolverInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\PaymentMethodPreview;
 use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\PaymentPreview;
-use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\PaymentPreviewFactory;
-use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\PaymentPreviewFactoryInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\PaymentMethodPreviewFactoryInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\PaymentsPreviewFactory;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\PaymentsPreviewFactoryInterface;
 
-final class PaymentPreviewFactoryTest extends TestCase
+final class PaymentsPreviewFactoryTest extends TestCase
 {
     private PaymentMethodsResolverInterface&MockObject $paymentMethodsResolver;
 
-    private PaymentPreviewFactory $factory;
+    private PaymentMethodPreviewFactoryInterface&MockObject $paymentMethodPreviewFactory;
+
+    private PaymentsPreviewFactory $factory;
 
     protected function setUp(): void
     {
         $this->paymentMethodsResolver = $this->createMock(PaymentMethodsResolverInterface::class);
-        $this->factory = new PaymentPreviewFactory($this->paymentMethodsResolver);
+        $this->paymentMethodPreviewFactory = $this->createMock(PaymentMethodPreviewFactoryInterface::class);
+        $this->factory = new PaymentsPreviewFactory($this->paymentMethodsResolver, $this->paymentMethodPreviewFactory);
     }
 
-    public function testImplementsPaymentPreviewFactoryInterface(): void
+    public function testImplementsPaymentsPreviewFactoryInterface(): void
     {
-        self::assertInstanceOf(PaymentPreviewFactoryInterface::class, $this->factory);
+        self::assertInstanceOf(PaymentsPreviewFactoryInterface::class, $this->factory);
     }
 
     public function testCreatesPaymentPreviewsForAllPayments(): void
@@ -67,6 +72,19 @@ final class PaymentPreviewFactoryTest extends TestCase
                 [$payment2, [$supportedMethod3, $supportedMethod4]],
             ]);
 
+        $preview1 = new PaymentMethodPreview('BANK_TRANSFER', 'Bank transfer', null);
+        $preview2 = new PaymentMethodPreview('CASH_ON_DELIVERY', 'Cash on delivery', null);
+        $preview3 = new PaymentMethodPreview('BANK_TRANSFER', 'Bank transfer', null);
+        $preview4 = new PaymentMethodPreview('CASH_ON_DELIVERY', 'Cash on delivery', null);
+
+        $this->paymentMethodPreviewFactory->method('create')
+            ->willReturnMap([
+                [$supportedMethod1, $preview1],
+                [$supportedMethod2, $preview2],
+                [$supportedMethod3, $preview3],
+                [$supportedMethod4, $preview4],
+            ]);
+
         $result = $this->factory->create($order);
 
         self::assertCount(2, $result);
@@ -74,8 +92,8 @@ final class PaymentPreviewFactoryTest extends TestCase
         self::assertInstanceOf(PaymentPreview::class, $result[1]);
         self::assertSame('BANK_TRANSFER', $result[0]->selectedMethodCode);
         self::assertSame('CASH_ON_DELIVERY', $result[1]->selectedMethodCode);
-        self::assertSame([$supportedMethod1, $supportedMethod2], $result[0]->availableMethods);
-        self::assertSame([$supportedMethod3, $supportedMethod4], $result[1]->availableMethods);
+        self::assertSame([$preview1, $preview2], $result[0]->availableMethods);
+        self::assertSame([$preview3, $preview4], $result[1]->availableMethods);
     }
 
     public function testCreatesPaymentPreviewWhenPaymentHasNoMethod(): void
@@ -87,17 +105,20 @@ final class PaymentPreviewFactoryTest extends TestCase
         $order->method('getPayments')->willReturn(new ArrayCollection([$payment]));
 
         $supportedMethod = $this->createMock(PaymentMethodInterface::class);
+        $preview = new PaymentMethodPreview('CASH_ON_DELIVERY', 'Cash on delivery', null);
 
         $this->paymentMethodsResolver->expects(self::once())
             ->method('getSupportedMethods')
             ->with($payment)
             ->willReturn([$supportedMethod]);
 
+        $this->paymentMethodPreviewFactory->method('create')->with($supportedMethod)->willReturn($preview);
+
         $result = $this->factory->create($order);
 
         self::assertCount(1, $result);
         self::assertNull($result[0]->selectedMethodCode);
-        self::assertSame([$supportedMethod], $result[0]->availableMethods);
+        self::assertSame([$preview], $result[0]->availableMethods);
     }
 
     public function testHandlesEmptyPayments(): void
@@ -110,25 +131,5 @@ final class PaymentPreviewFactoryTest extends TestCase
         $result = $this->factory->create($order);
 
         self::assertCount(0, $result);
-    }
-
-    public function testArrayValuesResultsAreReturned(): void
-    {
-        $supportedMethod1 = $this->createMock(PaymentMethodInterface::class);
-        $supportedMethod2 = $this->createMock(PaymentMethodInterface::class);
-
-        $payment = $this->createMock(PaymentInterface::class);
-        $payment->method('getMethod')->willReturn(null);
-
-        $order = $this->createMock(OrderInterface::class);
-        $order->method('getPayments')->willReturn(new ArrayCollection([$payment]));
-
-        $this->paymentMethodsResolver->expects(self::once())
-            ->method('getSupportedMethods')
-            ->willReturn([$supportedMethod1, $supportedMethod2]);
-
-        $result = $this->factory->create($order);
-
-        self::assertSame([$supportedMethod1, $supportedMethod2], $result[0]->availableMethods);
     }
 }

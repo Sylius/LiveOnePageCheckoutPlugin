@@ -18,21 +18,21 @@ use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\OrderItemInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\ItemPreview;
-use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ItemPreviewFactory;
-use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ItemPreviewFactoryInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ItemsPreviewFactory;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ItemsPreviewFactoryInterface;
 
-final class ItemPreviewFactoryTest extends TestCase
+final class ItemsPreviewFactoryTest extends TestCase
 {
-    private ItemPreviewFactory $factory;
+    private ItemsPreviewFactory $factory;
 
     protected function setUp(): void
     {
-        $this->factory = new ItemPreviewFactory();
+        $this->factory = new ItemsPreviewFactory();
     }
 
-    public function testImplementsItemPreviewFactoryInterface(): void
+    public function testImplementsItemsPreviewFactoryInterface(): void
     {
-        self::assertInstanceOf(ItemPreviewFactoryInterface::class, $this->factory);
+        self::assertInstanceOf(ItemsPreviewFactoryInterface::class, $this->factory);
     }
 
     public function testCreatesItemPreviewsForAllItems(): void

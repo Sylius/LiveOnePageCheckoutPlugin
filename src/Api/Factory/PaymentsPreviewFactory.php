@@ -17,10 +17,11 @@ use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Payment\Resolver\PaymentMethodsResolverInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\PaymentPreview;
 
-final readonly class PaymentPreviewFactory implements PaymentPreviewFactoryInterface
+final readonly class PaymentsPreviewFactory implements PaymentsPreviewFactoryInterface
 {
     public function __construct(
         private PaymentMethodsResolverInterface $paymentMethodsResolver,
+        private PaymentMethodPreviewFactoryInterface $paymentMethodPreviewFactory,
     ) {
     }
 
@@ -29,9 +30,14 @@ final readonly class PaymentPreviewFactory implements PaymentPreviewFactoryInter
         $previews = [];
 
         foreach ($order->getPayments() as $payment) {
+            $availableMethods = [];
+            foreach ($this->paymentMethodsResolver->getSupportedMethods($payment) as $paymentMethod) {
+                $availableMethods[] = $this->paymentMethodPreviewFactory->create($paymentMethod);
+            }
+
             $previews[] = new PaymentPreview(
                 $payment->getMethod()?->getCode(),
-                array_values($this->paymentMethodsResolver->getSupportedMethods($payment)),
+                $availableMethods,
             );
         }
 

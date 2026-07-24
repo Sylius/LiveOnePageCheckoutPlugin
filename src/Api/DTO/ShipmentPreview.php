@@ -13,12 +13,10 @@ declare(strict_types=1);
 
 namespace Sylius\LiveOnePageCheckoutPlugin\Api\DTO;
 
-use Sylius\Component\Shipping\Model\ShippingMethodInterface;
-
 class ShipmentPreview
 {
     /**
-     * @param list<ShippingMethodInterface> $availableMethods
+     * @param list<ShippingMethodPreview> $availableMethods
      */
     public function __construct(
         public readonly ?string $selectedMethodCode,
