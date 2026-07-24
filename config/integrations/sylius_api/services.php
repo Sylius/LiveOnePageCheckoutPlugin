@@ -25,8 +25,8 @@ use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\AddressPreviewFactoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\CheckoutPreviewFactory;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\CheckoutPreviewFactoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\DefaultShippingAddressOrderFactory;
-use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ItemPreviewFactory;
-use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ItemPreviewFactoryInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ItemsPreviewFactory;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ItemsPreviewFactoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\OrderSummaryFactory;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\OrderSummaryFactoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\PaymentPreviewFactory;
@@ -108,10 +108,10 @@ return static function (ContainerConfigurator $container): void {
     $services->alias(OrderSummaryFactoryInterface::class, 'sylius_live_one_page_checkout.api.factory.order_summary');
 
     $services
-        ->set('sylius_live_one_page_checkout.api.factory.item_preview', ItemPreviewFactory::class)
+        ->set('sylius_live_one_page_checkout.api.factory.item_preview', ItemsPreviewFactory::class)
     ;
 
-    $services->alias(ItemPreviewFactoryInterface::class, 'sylius_live_one_page_checkout.api.factory.item_preview');
+    $services->alias(ItemsPreviewFactoryInterface::class, 'sylius_live_one_page_checkout.api.factory.item_preview');
 
     $services
         ->set('sylius_live_one_page_checkout.api.factory.shipping_method_preview', ShippingMethodPreviewFactory::class)

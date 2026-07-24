@@ -26,7 +26,7 @@ use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\ShipmentPreview;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\AddressPreviewFactoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\CheckoutPreviewFactory;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\CheckoutPreviewFactoryInterface;
-use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ItemPreviewFactoryInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ItemsPreviewFactoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\OrderSummaryFactoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\PaymentPreviewFactoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ShipmentPreviewFactoryInterface;
@@ -36,7 +36,7 @@ final class CheckoutPreviewFactoryTest extends TestCase
 {
     private OrderSummaryFactoryInterface&MockObject $orderSummaryFactory;
 
-    private ItemPreviewFactoryInterface&MockObject $itemPreviewFactory;
+    private ItemsPreviewFactoryInterface&MockObject $itemPreviewFactory;
 
     private ShipmentPreviewFactoryInterface&MockObject $shipmentPreviewFactory;
 
@@ -51,7 +51,7 @@ final class CheckoutPreviewFactoryTest extends TestCase
     protected function setUp(): void
     {
         $this->orderSummaryFactory = $this->createMock(OrderSummaryFactoryInterface::class);
-        $this->itemPreviewFactory = $this->createMock(ItemPreviewFactoryInterface::class);
+        $this->itemPreviewFactory = $this->createMock(ItemsPreviewFactoryInterface::class);
         $this->shipmentPreviewFactory = $this->createMock(ShipmentPreviewFactoryInterface::class);
         $this->paymentPreviewFactory = $this->createMock(PaymentPreviewFactoryInterface::class);
         $this->orderHasher = $this->createMock(OrderHasherInterface::class);
