@@ -20,4 +20,4 @@ Sylius\Component\Core\Model\Customer:
         firstName: 'Jane'
         lastName: 'Smith'
         phoneNumber: '555-5678'
-        addresses: ['@customer_address_default']
+        defaultAddress: '@customer_address_default'
