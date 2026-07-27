@@ -88,6 +88,38 @@ abstract class JsonApiTestCase extends BaseJsonApiTestCase
         );
     }
 
+    /**
+     * @param array<string, mixed>|null $body
+     * @param array<string, string> $headers
+     */
+    protected function requestPut(string $uri, ?array $body = null, array $headers = []): Crawler
+    {
+        $headers = array_merge($this->defaultPostHeaders, $headers);
+
+        return $this->client()->request(
+            method: 'PUT',
+            uri: $uri,
+            server: $headers,
+            content: is_array($body) ? json_encode($body, \JSON_THROW_ON_ERROR) : null,
+        );
+    }
+
+    /**
+     * @param array<string, mixed>|null $body
+     * @param array<string, string> $headers
+     */
+    protected function requestPatch(string $uri, ?array $body = null, array $headers = []): Crawler
+    {
+        $headers = array_merge($this->defaultPostHeaders, ['CONTENT_TYPE' => 'application/merge-patch+json'], $headers);
+
+        return $this->client()->request(
+            method: 'PATCH',
+            uri: $uri,
+            server: $headers,
+            content: is_array($body) ? json_encode($body, \JSON_THROW_ON_ERROR) : null,
+        );
+    }
+
     protected function generateJwtTokenForUser(ShopUserInterface $user): string
     {
         /** @var JWTTokenManagerInterface $jwtManager */
