@@ -35,9 +35,7 @@ final class OrderItemImageNormalizer implements NormalizerInterface, NormalizerA
 
     private const ALREADY_CALLED = 'sylius_live_one_page_checkout_order_item_image_normalizer_already_called';
 
-    /**
-     * @param array<string> $serializationGroups
-     */
+    /** @param array<string> $serializationGroups */
     public function __construct(
         private readonly CacheManager $cacheManager,
         private readonly RequestStack $requestStack,
