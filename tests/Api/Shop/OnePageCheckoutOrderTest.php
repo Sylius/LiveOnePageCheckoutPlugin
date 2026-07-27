@@ -13,9 +13,6 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\LiveOnePageCheckoutPlugin\Api\Shop;
 
-use Sylius\Bundle\ApiBundle\Command\Cart\AddItemToCart;
-use Sylius\Bundle\ApiBundle\Command\Cart\PickupCart;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Tests\Sylius\LiveOnePageCheckoutPlugin\Api\JsonApiTestCase;
 
 final class OnePageCheckoutOrderTest extends JsonApiTestCase
@@ -37,7 +34,7 @@ final class OnePageCheckoutOrderTest extends JsonApiTestCase
             'payment_method.yaml',
         ]);
 
-        $tokenValue = $this->pickUpCartWithItem();
+        $tokenValue = $this->pickUpCartWithItem(tokenValue: 'ONE_PAGE_ORDER_TOKEN');
 
         $this->requestGet(sprintf('/api/v2/shop/orders/%s/one-page', $tokenValue));
 
@@ -54,27 +51,5 @@ final class OnePageCheckoutOrderTest extends JsonApiTestCase
         $this->requestGet('/api/v2/shop/orders/NOT_EXISTING_TOKEN/one-page');
 
         self::assertResponseStatusCodeSame(404);
-    }
-
-    private function pickUpCartWithItem(): string
-    {
-        /** @var MessageBusInterface $commandBus */
-        $commandBus = $this->get('sylius.command_bus');
-
-        $tokenValue = 'ONE_PAGE_ORDER_TOKEN';
-
-        $commandBus->dispatch(new PickupCart(
-            channelCode: 'WEB',
-            localeCode: 'en_US',
-            tokenValue: $tokenValue,
-        ));
-
-        $commandBus->dispatch(new AddItemToCart(
-            orderTokenValue: $tokenValue,
-            productVariantCode: 'MUG',
-            quantity: 1,
-        ));
-
-        return $tokenValue;
     }
 }
