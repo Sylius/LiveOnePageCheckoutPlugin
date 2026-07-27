@@ -18,9 +18,7 @@ use Sylius\LiveOnePageCheckoutPlugin\Api\Command\Checkout;
 
 final readonly class CompositeCheckoutApplier implements CheckoutApplierInterface
 {
-    /**
-     * @param iterable<CheckoutApplierInterface> $appliers
-     */
+    /** @param iterable<CheckoutApplierInterface> $appliers */
     public function __construct(private iterable $appliers)
     {
     }

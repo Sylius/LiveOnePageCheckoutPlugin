@@ -15,9 +15,7 @@ namespace Sylius\LiveOnePageCheckoutPlugin\Api\DTO;
 
 class PaymentPreview
 {
-    /**
-     * @param list<PaymentMethodPreview> $availableMethods
-     */
+    /** @param list<PaymentMethodPreview> $availableMethods */
     public function __construct(
         public readonly ?string $selectedMethodCode,
         public readonly array $availableMethods,

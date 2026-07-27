@@ -39,9 +39,7 @@ class FormComponent
     #[ExposeInTemplate]
     public ?string $stateHash = null;
 
-    /**
-     * @param OrderRepositoryInterface<OrderInterface> $repository
-     */
+    /** @param OrderRepositoryInterface<OrderInterface> $repository */
     public function __construct(
         OrderRepositoryInterface $repository,
         FormFactoryInterface $formFactory,

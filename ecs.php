@@ -1,6 +1,7 @@
 <?php
 
 use PhpCsFixer\Fixer\Comment\HeaderCommentFixer;
+use PhpCsFixer\Fixer\Phpdoc\PhpdocLineSpanFixer;
 use PhpCsFixer\Fixer\Phpdoc\PhpdocSeparationFixer;
 use SlevomatCodingStandard\Sniffs\Commenting\InlineDocCommentDeclarationSniff;
 use Symplify\EasyCodingStandard\Config\ECSConfig;
@@ -18,6 +19,11 @@ return static function (ECSConfig $containerConfigurator): void
         '**/var/*',
     ]);
     $containerConfigurator->ruleWithConfiguration(PhpdocSeparationFixer::class, ['groups' => [['Given', 'When', 'Then']]]);
+    $containerConfigurator->ruleWithConfiguration(PhpdocLineSpanFixer::class, [
+        'const' => 'single',
+        'property' => 'single',
+        'method' => 'single',
+    ]);
 
     $containerConfigurator->ruleWithConfiguration(
         HeaderCommentFixer::class,

@@ -115,9 +115,7 @@ final class OrderItemImageProviderTest extends TestCase
         self::assertNull($this->provider->provide($item));
     }
 
-    /**
-     * @return OrderItemInterface&MockObject
-     */
+    /** @return OrderItemInterface&MockObject */
     private function createItemWithVariant(ProductVariantInterface $variant): OrderItemInterface
     {
         $item = $this->createMock(OrderItemInterface::class);

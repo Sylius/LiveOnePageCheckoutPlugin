@@ -31,9 +31,7 @@ use Webmozart\Assert\Assert;
 
 final readonly class CompleteCheckoutHandler
 {
-    /**
-     * @param OrderRepositoryInterface<OrderInterface> $orderRepository
-     */
+    /** @param OrderRepositoryInterface<OrderInterface> $orderRepository */
     public function __construct(
         private OrderRepositoryInterface $orderRepository,
         private OrderObjectsEnsurerInterface $orderObjectsEnsurer,

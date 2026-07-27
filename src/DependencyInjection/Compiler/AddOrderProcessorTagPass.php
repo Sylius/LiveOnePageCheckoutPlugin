@@ -18,9 +18,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 final class AddOrderProcessorTagPass implements CompilerPassInterface
 {
-    /**
-     * @param array<string, int> $serviceIds map of service id => priority
-     */
+    /** @param array<string, int> $serviceIds map of service id => priority */
     public function __construct(
         private readonly array $serviceIds,
     ) {

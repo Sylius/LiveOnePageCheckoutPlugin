@@ -70,9 +70,7 @@ final class OrderItemImageNormalizer implements NormalizerInterface, NormalizerA
         return $data;
     }
 
-    /**
-     * @param array<string, mixed> $context
-     */
+    /** @param array<string, mixed> $context */
     public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         if (isset($context[self::ALREADY_CALLED])) {
@@ -86,9 +84,7 @@ final class OrderItemImageNormalizer implements NormalizerInterface, NormalizerA
         ;
     }
 
-    /**
-     * @return array<class-string, bool>
-     */
+    /** @return array<class-string, bool> */
     public function getSupportedTypes(?string $format): array
     {
         return [OrderItemInterface::class => false];

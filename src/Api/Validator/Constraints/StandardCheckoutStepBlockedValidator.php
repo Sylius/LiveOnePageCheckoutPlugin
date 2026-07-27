@@ -26,9 +26,7 @@ use Webmozart\Assert\Assert;
 
 final class StandardCheckoutStepBlockedValidator extends ConstraintValidator
 {
-    /**
-     * @param OrderRepositoryInterface<OrderInterface> $orderRepository
-     */
+    /** @param OrderRepositoryInterface<OrderInterface> $orderRepository */
     public function __construct(
         private OrderRepositoryInterface $orderRepository,
         private CheckoutEnabledCheckerInterface $checkoutEnabledChecker,

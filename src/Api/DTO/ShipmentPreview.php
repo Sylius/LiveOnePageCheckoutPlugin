@@ -15,9 +15,7 @@ namespace Sylius\LiveOnePageCheckoutPlugin\Api\DTO;
 
 class ShipmentPreview
 {
-    /**
-     * @param list<ShippingMethodPreview> $availableMethods
-     */
+    /** @param list<ShippingMethodPreview> $availableMethods */
     public function __construct(
         public readonly ?string $selectedMethodCode,
         public readonly array $availableMethods,
