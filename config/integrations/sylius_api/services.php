@@ -220,8 +220,11 @@ return static function (ContainerConfigurator $container): void {
         ->args([
             service('liip_imagine.cache.manager'),
             service('request_stack'),
-            service('sylius_live_one_page_checkout.checker.checkout_enabled'),
+            service('sylius.section_resolver.uri_based'),
             service('sylius_live_one_page_checkout.api.provider.order_item_image'),
+            [
+                'sylius_live_one_page_checkout:shop:order:show',
+            ],
             'sylius_shop_product_small_thumbnail',
         ])
         ->tag('serializer.normalizer', ['priority' => 64])
