@@ -17,10 +17,18 @@ use ApiTestCase\JsonApiTestCase as BaseJsonApiTestCase;
 use Doctrine\Persistence\ObjectRepository;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use PHPUnit\Framework\Attributes\Before;
+use Sylius\Bundle\ApiBundle\Command\Cart\AddItemToCart;
+use Sylius\Bundle\ApiBundle\Command\Cart\PickupCart;
+use Sylius\Component\Core\Model\CustomerInterface;
+use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\ShopUserInterface;
+use Sylius\Component\Core\Repository\CustomerRepositoryInterface;
+use Sylius\Component\Core\Repository\OrderRepositoryInterface;
 use Sylius\Component\User\Repository\UserRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Webmozart\Assert\Assert;
 
 abstract class JsonApiTestCase extends BaseJsonApiTestCase
@@ -104,5 +112,120 @@ abstract class JsonApiTestCase extends BaseJsonApiTestCase
     protected function getRepository(string $className): ObjectRepository
     {
         return $this->get('doctrine.orm.entity_manager')->getRepository($className);
+    }
+
+    protected function pickUpCartWithItem(
+        string $tokenValue = 'CART_TOKEN',
+        string $productVariantCode = 'MUG',
+        int $quantity = 1,
+        ?string $customerEmail = null,
+    ): string {
+        /** @var MessageBusInterface $commandBus */
+        $commandBus = $this->get('sylius.command_bus');
+
+        $commandBus->dispatch(new PickupCart(
+            channelCode: 'WEB',
+            localeCode: 'en_US',
+            tokenValue: $tokenValue,
+        ));
+
+        $commandBus->dispatch(new AddItemToCart(
+            orderTokenValue: $tokenValue,
+            productVariantCode: $productVariantCode,
+            quantity: $quantity,
+        ));
+
+        if (null !== $customerEmail) {
+            $this->assignCustomerToCart($tokenValue, $customerEmail);
+        }
+
+        return $tokenValue;
+    }
+
+    protected function assignCustomerToCart(string $tokenValue, string $customerEmail): void
+    {
+        /** @var OrderRepositoryInterface<OrderInterface> $orderRepository */
+        $orderRepository = $this->get('sylius.repository.order');
+        $order = $orderRepository->findCartByTokenValue($tokenValue);
+        Assert::isInstanceOf($order, OrderInterface::class);
+
+        /** @var CustomerRepositoryInterface<CustomerInterface> $customerRepository */
+        $customerRepository = $this->get('sylius.repository.customer');
+        $customer = $customerRepository->findOneBy(['email' => $customerEmail]);
+        Assert::isInstanceOf($customer, CustomerInterface::class);
+
+        $order->setCustomerWithAuthorization($customer);
+
+        $this->get('doctrine.orm.entity_manager')->flush();
+    }
+
+    /**
+     * Asserts that response contains exactly the expected violations (exact match).
+     *
+     * @param array<array-key, mixed> $expectedViolations
+     *
+     * @throws \Exception
+     */
+    protected function assertResponseViolations(array $expectedViolations): void
+    {
+        $this->assertViolationResponseHeaders();
+
+        $response = $this->client()->getResponse();
+        $responseContent = $response->getContent() ?: '';
+        $this->assertNotEmpty($responseContent);
+
+        $decoded = json_decode($responseContent, true);
+        Assert::isArray($decoded);
+
+        $actualViolations = $decoded['violations'];
+        Assert::isArray($actualViolations);
+
+        $actualDescription = $decoded['hydra:description'];
+
+        array_walk($actualViolations, function (&$item): void {
+            unset($item['code']);
+        });
+
+        $mappedViolations = array_map(function (mixed $violation): string {
+            Assert::isArray($violation);
+
+            if (empty($violation['propertyPath'])) {
+                return $violation['message'];
+            }
+
+            return $violation['propertyPath'] . ': ' . $violation['message'];
+        }, $expectedViolations);
+
+        $expectedDescription = implode("\n", $mappedViolations);
+
+        $expected = [
+            '@context' => '/api/v2/contexts/ConstraintViolationList',
+            '@type' => 'ConstraintViolationList',
+            'hydra:title' => 'An error occurred',
+            'hydra:description' => $expectedDescription,
+            'violations' => $expectedViolations,
+        ];
+
+        $actual = [
+            '@context' => '/api/v2/contexts/ConstraintViolationList',
+            '@type' => 'ConstraintViolationList',
+            'hydra:title' => 'An error occurred',
+            'hydra:description' => $actualDescription,
+            'violations' => $actualViolations,
+        ];
+
+        $this->assertSame($expected, $actual);
+    }
+
+    private function assertViolationResponseHeaders(): void
+    {
+        $response = $this->client()->getResponse();
+
+        if (isset($_SERVER['OPEN_ERROR_IN_BROWSER']) && true === $_SERVER['OPEN_ERROR_IN_BROWSER']) {
+            $this->showErrorInBrowserIfOccurred($response);
+        }
+
+        $this->assertResponseCode($response, Response::HTTP_UNPROCESSABLE_ENTITY);
+        $this->assertJsonHeader($response);
     }
 }
