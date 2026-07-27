@@ -11,6 +11,7 @@
 
 declare(strict_types=1);
 
+use Sylius\Bundle\ApiBundle\Context\UserContextInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Applier\AddressApplier;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Applier\CheckoutApplierInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Applier\CompositeCheckoutApplier;
@@ -42,6 +43,8 @@ use Sylius\LiveOnePageCheckoutPlugin\Api\Provider\OrderItemImageProviderInterfac
 use Sylius\LiveOnePageCheckoutPlugin\Api\Security\Voter\CheckoutAvailabilityVoter;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Serializer\Normalizer\OrderItemImageNormalizer;
 use Sylius\LiveOnePageCheckoutPlugin\Api\StateProcessor\PreviewCheckoutProcessor;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\CheckoutEmailNotAllowedValidator;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\GuestEmailRequiredValidator;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\PromotionCouponEligibilityValidator;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
@@ -210,6 +213,15 @@ return static function (ContainerConfigurator $container): void {
             service('sylius_api.checker.applied_coupon_eligibility'),
         ])
         ->tag('validator.constraint_validator', ['alias' => 'sylius_live_one_page_checkout_api_promotion_coupon_eligibility'])
+    ;
+
+    $services
+        ->set('sylius_live_one_page_checkout.api.validator.checkout_email_not_allowed', CheckoutEmailNotAllowedValidator::class)
+        ->args([
+            service('sylius.repository.order'),
+            service(UserContextInterface::class),
+        ])
+        ->tag('validator.constraint_validator', ['alias' => 'sylius_live_one_page_checkout_api_checkout_email_not_allowed'])
     ;
 
     $services

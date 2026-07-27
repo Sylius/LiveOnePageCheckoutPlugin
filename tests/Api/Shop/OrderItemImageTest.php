@@ -13,9 +13,6 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\LiveOnePageCheckoutPlugin\Api\Shop;
 
-use Sylius\Bundle\ApiBundle\Command\Cart\AddItemToCart;
-use Sylius\Bundle\ApiBundle\Command\Cart\PickupCart;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Tests\Sylius\LiveOnePageCheckoutPlugin\Api\JsonApiTestCase;
 
 final class OrderItemImageTest extends JsonApiTestCase
@@ -37,7 +34,7 @@ final class OrderItemImageTest extends JsonApiTestCase
             'payment_method.yaml',
         ]);
 
-        $tokenValue = $this->pickUpCartWithItem();
+        $tokenValue = $this->pickUpCartWithItem(tokenValue: 'ORDER_ITEM_IMAGE_TOKEN');
 
         $this->requestGet(sprintf('/api/v2/shop/orders/%s', $tokenValue));
 
@@ -60,7 +57,7 @@ final class OrderItemImageTest extends JsonApiTestCase
             'payment_method.yaml',
         ]);
 
-        $tokenValue = $this->pickUpCartWithItem();
+        $tokenValue = $this->pickUpCartWithItem(tokenValue: 'ORDER_ITEM_IMAGE_TOKEN');
 
         $this->requestGet(sprintf('/api/v2/shop/orders/%s', $tokenValue));
 
@@ -71,27 +68,5 @@ final class OrderItemImageTest extends JsonApiTestCase
         $content = json_decode((string) $response->getContent(), true, flags: \JSON_THROW_ON_ERROR);
 
         self::assertArrayNotHasKey('image', $content['items'][0]);
-    }
-
-    private function pickUpCartWithItem(): string
-    {
-        /** @var MessageBusInterface $commandBus */
-        $commandBus = $this->get('sylius.command_bus');
-
-        $tokenValue = 'ORDER_ITEM_IMAGE_TOKEN';
-
-        $commandBus->dispatch(new PickupCart(
-            channelCode: 'WEB',
-            localeCode: 'en_US',
-            tokenValue: $tokenValue,
-        ));
-
-        $commandBus->dispatch(new AddItemToCart(
-            orderTokenValue: $tokenValue,
-            productVariantCode: 'MUG',
-            quantity: 1,
-        ));
-
-        return $tokenValue;
     }
 }
