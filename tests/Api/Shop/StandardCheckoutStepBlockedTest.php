@@ -16,10 +16,13 @@ namespace Tests\Sylius\LiveOnePageCheckoutPlugin\Api\Shop;
 use Sylius\Abstraction\StateMachine\StateMachineInterface;
 use Sylius\Component\Core\Model\Address;
 use Sylius\Component\Core\Model\OrderInterface;
+use Sylius\Component\Core\Model\PaymentInterface;
+use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\Component\Core\Model\ShipmentInterface;
 use Sylius\Component\Core\Model\ShippingMethodInterface;
 use Sylius\Component\Core\OrderCheckoutTransitions;
 use Sylius\Component\Core\Repository\OrderRepositoryInterface;
+use Sylius\Component\Core\Repository\PaymentMethodRepositoryInterface;
 use Sylius\Component\Core\Repository\ShippingMethodRepositoryInterface;
 use Tests\Sylius\LiveOnePageCheckoutPlugin\Api\JsonApiTestCase;
 use Webmozart\Assert\Assert;
@@ -168,6 +171,52 @@ final class StandardCheckoutStepBlockedTest extends JsonApiTestCase
         self::assertSame(200, $this->client()->getResponse()->getStatusCode());
     }
 
+    public function testBlocksCompleteOrderWhenOnePageCheckoutIsEnabled(): void
+    {
+        $this->loadFixturesFromFiles([
+            'channel.yaml',
+            'country.yaml',
+            'product.yaml',
+            'shipping_method.yaml',
+            'payment_method.yaml',
+        ]);
+
+        $tokenValue = $this->pickUpCartWithItem(tokenValue: 'STANDARD_CHECKOUT_BLOCKED_TOKEN');
+
+        $this->requestPatch(
+            uri: sprintf('/api/v2/shop/orders/%s/complete', $tokenValue),
+            body: [],
+        );
+
+        $this->assertResponseViolations([
+            ['propertyPath' => '', 'message' => 'This action is not available: one-page checkout is enabled for this channel.'],
+        ]);
+    }
+
+    public function testDoesNotBlockCompleteOrderWhenOnePageCheckoutIsDisabled(): void
+    {
+        $this->loadFixturesFromFiles([
+            'channel_disabled.yaml',
+            'country.yaml',
+            'product.yaml',
+            'shipping_method.yaml',
+            'payment_method.yaml',
+            'customer.yaml',
+        ]);
+
+        $tokenValue = $this->pickUpCartWithItem(tokenValue: 'STANDARD_CHECKOUT_BLOCKED_TOKEN', customerEmail: 'john@example.com');
+        $this->addressCartAndTransition($tokenValue);
+        $this->selectShippingMethod($tokenValue);
+        $this->selectPaymentMethod($tokenValue);
+
+        $this->requestPatch(
+            uri: sprintf('/api/v2/shop/orders/%s/complete', $tokenValue),
+            body: [],
+        );
+
+        self::assertSame(200, $this->client()->getResponse()->getStatusCode());
+    }
+
     private function addressCart(string $tokenValue): void
     {
         /** @var OrderRepositoryInterface<OrderInterface> $orderRepository */
@@ -224,6 +273,29 @@ final class StandardCheckoutStepBlockedTest extends JsonApiTestCase
         /** @var StateMachineInterface $stateMachine */
         $stateMachine = $this->get('sylius_abstraction.state_machine');
         $stateMachine->apply($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_SELECT_SHIPPING);
+
+        $this->get('doctrine.orm.entity_manager')->flush();
+    }
+
+    private function selectPaymentMethod(string $tokenValue): void
+    {
+        /** @var OrderRepositoryInterface<OrderInterface> $orderRepository */
+        $orderRepository = $this->get('sylius.repository.order');
+        $order = $orderRepository->findCartByTokenValue($tokenValue);
+        Assert::isInstanceOf($order, OrderInterface::class);
+
+        /** @var PaymentMethodRepositoryInterface<PaymentMethodInterface> $paymentMethodRepository */
+        $paymentMethodRepository = $this->get('sylius.repository.payment_method');
+        $paymentMethod = $paymentMethodRepository->findOneBy(['code' => 'CASH_ON_DELIVERY']);
+        Assert::notNull($paymentMethod);
+
+        /** @var PaymentInterface $payment */
+        $payment = $order->getPayments()->first();
+        $payment->setMethod($paymentMethod);
+
+        /** @var StateMachineInterface $stateMachine */
+        $stateMachine = $this->get('sylius_abstraction.state_machine');
+        $stateMachine->apply($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_SELECT_PAYMENT);
 
         $this->get('doctrine.orm.entity_manager')->flush();
     }

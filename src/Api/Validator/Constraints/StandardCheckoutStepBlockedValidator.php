@@ -15,6 +15,7 @@ namespace Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints;
 
 use Sylius\Bundle\ApiBundle\Command\Checkout\ChoosePaymentMethod;
 use Sylius\Bundle\ApiBundle\Command\Checkout\ChooseShippingMethod;
+use Sylius\Bundle\ApiBundle\Command\Checkout\CompleteOrder;
 use Sylius\Bundle\ApiBundle\Command\Checkout\UpdateCart;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Repository\OrderRepositoryInterface;
@@ -38,10 +39,11 @@ final class StandardCheckoutStepBlockedValidator extends ConstraintValidator
         Assert::true(
             $value instanceof UpdateCart ||
             $value instanceof ChooseShippingMethod ||
-            $value instanceof ChoosePaymentMethod,
+            $value instanceof ChoosePaymentMethod ||
+            $value instanceof CompleteOrder,
         );
 
-        /** @var UpdateCart|ChooseShippingMethod|ChoosePaymentMethod $value */
+        /** @var UpdateCart|ChooseShippingMethod|ChoosePaymentMethod|CompleteOrder $value */
         /** @var StandardCheckoutStepBlocked $constraint */
         Assert::isInstanceOf($constraint, StandardCheckoutStepBlocked::class);
 
