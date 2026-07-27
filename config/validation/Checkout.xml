@@ -13,12 +13,6 @@
 
 <constraint-mapping xmlns="http://symfony.com/schema/dic/constraint-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://symfony.com/schema/dic/constraint-mapping http://symfony.com/schema/dic/services/constraint-mapping-1.0.xsd">
     <class name="Sylius\LiveOnePageCheckoutPlugin\Api\Command\Checkout">
-        <constraint name="Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\PromotionCouponEligibility">
-            <option name="groups">
-                <value>sylius_live_one_page_checkout_preview</value>
-                <value>sylius_live_one_page_checkout_complete</value>
-            </option>
-        </constraint>
         <constraint name="Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\CheckoutEmailNotAllowed">
             <option name="groups">
                 <value>sylius_live_one_page_checkout_preview</value>
@@ -45,6 +39,30 @@
                     <value>sylius_live_one_page_checkout_complete</value>
                 </option>
             </constraint>
+        </property>
+        <constraint name="Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\PromotionCouponEligibility">
+            <option name="groups">
+                <value>sylius_live_one_page_checkout_preview</value>
+                <value>sylius_live_one_page_checkout_complete</value>
+            </option>
+        </constraint>
+        <constraint name="Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\OrderNotEmpty">
+            <option name="groups">
+                <value>sylius_live_one_page_checkout_preview</value>
+                <value>sylius_live_one_page_checkout_complete</value>
+            </option>
+        </constraint>
+        <constraint name="Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\CountryCodeExists">
+            <option name="groups">
+                <value>sylius_live_one_page_checkout_preview</value>
+                <value>sylius_live_one_page_checkout_complete</value>
+            </option>
+        </constraint>
+        <property name="shippingAddress">
+            <constraint name="Valid" />
+        </property>
+        <property name="billingAddress">
+            <constraint name="Valid" />
         </property>
     </class>
 </constraint-mapping>

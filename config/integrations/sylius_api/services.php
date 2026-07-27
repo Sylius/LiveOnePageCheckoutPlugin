@@ -44,7 +44,8 @@ use Sylius\LiveOnePageCheckoutPlugin\Api\Security\Voter\CheckoutAvailabilityVote
 use Sylius\LiveOnePageCheckoutPlugin\Api\Serializer\Normalizer\OrderItemImageNormalizer;
 use Sylius\LiveOnePageCheckoutPlugin\Api\StateProcessor\PreviewCheckoutProcessor;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\CheckoutEmailNotAllowedValidator;
-use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\GuestEmailRequiredValidator;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\CountryCodeExistsValidator;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\OrderNotEmptyValidator;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\PromotionCouponEligibilityValidator;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\StandardCheckoutStepBlockedValidator;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -223,6 +224,22 @@ return static function (ContainerConfigurator $container): void {
             service(UserContextInterface::class),
         ])
         ->tag('validator.constraint_validator', ['alias' => 'sylius_live_one_page_checkout_api_checkout_email_not_allowed'])
+    ;
+
+    $services
+        ->set('sylius_live_one_page_checkout.api.validator.order_not_empty', OrderNotEmptyValidator::class)
+        ->args([
+            service('sylius.repository.order'),
+        ])
+        ->tag('validator.constraint_validator', ['alias' => 'sylius_live_one_page_checkout_api_order_not_empty'])
+    ;
+
+    $services
+        ->set('sylius_live_one_page_checkout.api.validator.country_code_exists', CountryCodeExistsValidator::class)
+        ->args([
+            service('sylius.repository.country'),
+        ])
+        ->tag('validator.constraint_validator', ['alias' => 'sylius_live_one_page_checkout_api_country_code_exists'])
     ;
 
     $services
