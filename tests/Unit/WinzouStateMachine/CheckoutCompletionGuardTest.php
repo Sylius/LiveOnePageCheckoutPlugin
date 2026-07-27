@@ -34,15 +34,20 @@ final class CheckoutCompletionGuardTest extends TestCase
         $this->guard = new CheckoutCompletionGuard($this->checkoutEnabledChecker);
     }
 
-    public function testAllowsCompletionThatDoesNotOriginateFromCart(): void
+    public function testBlocksStandardCompletionWhenChannelHasOnePageCheckoutEnabled(): void
     {
-        $this->checkoutEnabledChecker->expects(self::never())->method('isEnabled');
+        $channel = new Channel();
+        $this->checkoutEnabledChecker->method('isEnabled')->with($channel)->willReturn(true);
 
-        $order = $this->createMock(OrderInterface::class);
-        $order->method('getCheckoutState')->willReturn(OrderCheckoutStates::STATE_PAYMENT_SELECTED);
-        $order->expects(self::never())->method('getChannel');
+        self::assertFalse(($this->guard)($this->createStandardOrder($channel)));
+    }
 
-        self::assertTrue(($this->guard)($order));
+    public function testAllowsStandardCompletionWhenChannelHasOnePageCheckoutDisabled(): void
+    {
+        $channel = new Channel();
+        $this->checkoutEnabledChecker->method('isEnabled')->with($channel)->willReturn(false);
+
+        self::assertTrue(($this->guard)($this->createStandardOrder($channel)));
     }
 
     public function testAllowsCartCompletionWhenChannelHasOnePageCheckoutEnabled(): void
@@ -74,6 +79,15 @@ final class CheckoutCompletionGuardTest extends TestCase
     {
         $order = $this->createMock(OrderInterface::class);
         $order->method('getCheckoutState')->willReturn(OrderCheckoutStates::STATE_CART);
+        $order->method('getChannel')->willReturn($channel);
+
+        return $order;
+    }
+
+    private function createStandardOrder(?ChannelOnePageCheckoutAwareInterface $channel): OrderInterface&MockObject
+    {
+        $order = $this->createMock(OrderInterface::class);
+        $order->method('getCheckoutState')->willReturn(OrderCheckoutStates::STATE_PAYMENT_SELECTED);
         $order->method('getChannel')->willReturn($channel);
 
         return $order;

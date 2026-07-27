@@ -17,9 +17,7 @@ use Sylius\Component\Core\Model\OrderInterface;
 
 final readonly class OrderHashDataProvider implements OrderHashDataProviderInterface
 {
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public function getData(OrderInterface $order): array
     {
         return  [
@@ -30,9 +28,7 @@ final readonly class OrderHashDataProvider implements OrderHashDataProviderInter
         ];
     }
 
-    /**
-     * @return list<string|null>
-     */
+    /** @return list<string|null> */
     private function getPromotionCodes(OrderInterface $order): array
     {
         $codes = [];
@@ -44,9 +40,7 @@ final readonly class OrderHashDataProvider implements OrderHashDataProviderInter
         return $codes;
     }
 
-    /**
-     * @return list<string|null>
-     */
+    /** @return list<string|null> */
     private function getShippingMethodCodes(OrderInterface $order): array
     {
         $codes = [];
@@ -58,9 +52,7 @@ final readonly class OrderHashDataProvider implements OrderHashDataProviderInter
         return $codes;
     }
 
-    /**
-     * @return list<string|null>
-     */
+    /** @return list<string|null> */
     private function getPaymentMethodCodes(OrderInterface $order): array
     {
         $codes = [];

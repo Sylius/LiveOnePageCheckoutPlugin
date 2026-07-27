@@ -18,9 +18,7 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 final class Configuration implements ConfigurationInterface
 {
-    /**
-     * @psalm-suppress UnusedVariable
-     */
+    /** @psalm-suppress UnusedVariable */
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('sylius_live_one_page_checkout');

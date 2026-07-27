@@ -20,9 +20,7 @@ use Sylius\LiveOnePageCheckoutPlugin\Api\Command\Checkout;
 
 final readonly class CouponApplier implements CheckoutApplierInterface
 {
-    /**
-     * @param PromotionCouponRepositoryInterface<PromotionCouponInterface> $promotionCouponRepository
-     */
+    /** @param PromotionCouponRepositoryInterface<PromotionCouponInterface> $promotionCouponRepository */
     public function __construct(
         private PromotionCouponRepositoryInterface $promotionCouponRepository,
     ) {

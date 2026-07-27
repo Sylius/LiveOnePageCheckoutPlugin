@@ -32,9 +32,7 @@ final class OrderShippingMethodEligibilityValidator extends ConstraintValidator
     {
     }
 
-    /**
-     * @throws \InvalidArgumentException
-     */
+    /** @throws \InvalidArgumentException */
     public function validate(mixed $value, Constraint $constraint): void
     {
         /** @var OrderInterface $value */

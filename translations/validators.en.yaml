@@ -2,4 +2,5 @@ sylius_live_one_page_checkout:
     checkout:
         billing_address_required: 'Please enter the billing address.'
         shipping_address_required: 'Please enter the shipping address.'
+        standard_checkout_not_available: 'This action is not available: one-page checkout is enabled for this channel.'
         email_not_allowed: 'You cannot place an order using an email address other than your own.'

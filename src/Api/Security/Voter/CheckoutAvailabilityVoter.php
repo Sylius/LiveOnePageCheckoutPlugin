@@ -29,9 +29,7 @@ final class CheckoutAvailabilityVoter extends Voter implements CacheableVoterInt
 {
     public const AVAILABLE = 'SYLIUS_ONE_PAGE_CHECKOUT_AVAILABLE';
 
-    /**
-     * @param OrderRepositoryInterface<OrderInterface> $orderRepository
-     */
+    /** @param OrderRepositoryInterface<OrderInterface> $orderRepository */
     public function __construct(
         private readonly OrderRepositoryInterface $orderRepository,
         private readonly CheckoutEnabledCheckerInterface $checkoutEnabledChecker,

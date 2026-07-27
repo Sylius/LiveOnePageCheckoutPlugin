@@ -72,8 +72,8 @@ final class AddressApplierTest extends TestCase
         $billingAddress = $this->createMock(AddressInterface::class);
         $command = new Checkout(
             orderTokenValue: 'token123',
-            shippingAddress: $shippingAddress,
             billingAddress: $billingAddress,
+            shippingAddress: $shippingAddress,
         );
 
         $order = $this->createMock(OrderInterface::class);
@@ -102,8 +102,8 @@ final class AddressApplierTest extends TestCase
     {
         $command = new Checkout(
             orderTokenValue: 'token123',
-            shippingAddress: null,
             billingAddress: null,
+            shippingAddress: null,
         );
 
         $order = $this->createMock(OrderInterface::class);

@@ -17,8 +17,6 @@ use Sylius\Component\Core\Model\OrderInterface;
 
 interface OrderHashDataProviderInterface
 {
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public function getData(OrderInterface $order): array;
 }
