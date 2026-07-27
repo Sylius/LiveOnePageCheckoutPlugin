@@ -54,6 +54,9 @@ return static function (ContainerConfigurator $container): void {
     $services = $container->services();
     $container->parameters()
         ->set('sylius_live_one_page_checkout.api.checkout_preview.class', CheckoutPreview::class)
+        ->set('sylius_live_one_page_checkout.api.order_item_image_normalizer.serialization_groups', [
+            'sylius_live_one_page_checkout:shop:order:show',
+        ])
     ;
 
     $services
@@ -232,8 +235,9 @@ return static function (ContainerConfigurator $container): void {
         ->args([
             service('liip_imagine.cache.manager'),
             service('request_stack'),
-            service('sylius_live_one_page_checkout.checker.checkout_enabled'),
+            service('sylius.section_resolver.uri_based'),
             service('sylius_live_one_page_checkout.api.provider.order_item_image'),
+            '%sylius_live_one_page_checkout.api.order_item_image_normalizer.serialization_groups%',
             'sylius_shop_product_small_thumbnail',
         ])
         ->tag('serializer.normalizer', ['priority' => 64])

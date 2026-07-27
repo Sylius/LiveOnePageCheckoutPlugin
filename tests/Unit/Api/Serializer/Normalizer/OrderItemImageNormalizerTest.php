@@ -18,25 +18,26 @@ use Liip\ImagineBundle\Exception\Imagine\Filter\NonExistingFilterException;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Sylius\Component\Core\Model\ChannelInterface;
+use Sylius\Bundle\ApiBundle\SectionResolver\ShopApiSection;
+use Sylius\Bundle\CoreBundle\SectionResolver\SectionInterface;
+use Sylius\Bundle\CoreBundle\SectionResolver\SectionProviderInterface;
 use Sylius\Component\Core\Model\ImageInterface;
-use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\OrderItemInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Provider\OrderItemImageProviderInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Serializer\Normalizer\OrderItemImageNormalizer;
-use Sylius\LiveOnePageCheckoutPlugin\Checker\CheckoutEnabledCheckerInterface;
-use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelOnePageCheckoutAwareInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 final class OrderItemImageNormalizerTest extends TestCase
 {
+    private const SUPPORTED_GROUP_CONTEXT = ['groups' => ['sylius_live_one_page_checkout:shop:order:show']];
+
     private CacheManager&MockObject $cacheManager;
 
     private RequestStack $requestStack;
 
-    private CheckoutEnabledCheckerInterface&MockObject $checkoutEnabledChecker;
+    private SectionProviderInterface&MockObject $sectionProvider;
 
     private OrderItemImageProviderInterface&MockObject $orderItemImageProvider;
 
@@ -48,14 +49,16 @@ final class OrderItemImageNormalizerTest extends TestCase
     {
         $this->cacheManager = $this->createMock(CacheManager::class);
         $this->requestStack = new RequestStack();
-        $this->checkoutEnabledChecker = $this->createMock(CheckoutEnabledCheckerInterface::class);
+        $this->sectionProvider = $this->createMock(SectionProviderInterface::class);
+        $this->sectionProvider->method('getSection')->willReturn(new ShopApiSection());
         $this->orderItemImageProvider = $this->createMock(OrderItemImageProviderInterface::class);
 
         $this->normalizer = new OrderItemImageNormalizer(
             $this->cacheManager,
             $this->requestStack,
-            $this->checkoutEnabledChecker,
+            $this->sectionProvider,
             $this->orderItemImageProvider,
+            ['sylius_live_one_page_checkout:shop:order:show'],
             'sylius_shop_product_small_thumbnail',
         );
 
@@ -66,8 +69,12 @@ final class OrderItemImageNormalizerTest extends TestCase
 
     public function testSupportsOnlyOrderItems(): void
     {
-        self::assertTrue($this->normalizer->supportsNormalization($this->createMock(OrderItemInterface::class)));
-        self::assertFalse($this->normalizer->supportsNormalization(new \stdClass()));
+        self::assertTrue($this->normalizer->supportsNormalization(
+            $this->createMock(OrderItemInterface::class),
+            null,
+            self::SUPPORTED_GROUP_CONTEXT,
+        ));
+        self::assertFalse($this->normalizer->supportsNormalization(new \stdClass(), null, self::SUPPORTED_GROUP_CONTEXT));
     }
 
     public function testDoesNotSupportNormalizationWhenAlreadyCalled(): void
@@ -75,13 +82,44 @@ final class OrderItemImageNormalizerTest extends TestCase
         self::assertFalse($this->normalizer->supportsNormalization(
             $this->createMock(OrderItemInterface::class),
             null,
-            ['sylius_live_one_page_checkout_order_item_image_normalizer_already_called' => true],
+            self::SUPPORTED_GROUP_CONTEXT + ['sylius_live_one_page_checkout_order_item_image_normalizer_already_called' => true],
         ));
     }
 
-    public function testAddsResolvedImageWhenChannelHasOnePageCheckoutEnabled(): void
+    public function testDoesNotSupportNormalizationWhenGroupIsNotSupported(): void
     {
-        $item = $this->createItemWithChannel(true);
+        self::assertFalse($this->normalizer->supportsNormalization(
+            $this->createMock(OrderItemInterface::class),
+            null,
+            ['groups' => ['sylius:shop:cart:show']],
+        ));
+        self::assertFalse($this->normalizer->supportsNormalization($this->createMock(OrderItemInterface::class)));
+    }
+
+    public function testDoesNotSupportNormalizationOutsideShopApiSection(): void
+    {
+        $sectionProvider = $this->createMock(SectionProviderInterface::class);
+        $sectionProvider->method('getSection')->willReturn($this->createMock(SectionInterface::class));
+
+        $normalizer = new OrderItemImageNormalizer(
+            $this->cacheManager,
+            $this->requestStack,
+            $sectionProvider,
+            $this->orderItemImageProvider,
+            ['sylius_live_one_page_checkout:shop:order:show'],
+            'sylius_shop_product_small_thumbnail',
+        );
+
+        self::assertFalse($normalizer->supportsNormalization(
+            $this->createMock(OrderItemInterface::class),
+            null,
+            self::SUPPORTED_GROUP_CONTEXT,
+        ));
+    }
+
+    public function testAddsResolvedImage(): void
+    {
+        $item = $this->createMock(OrderItemInterface::class);
         $image = $this->createMock(ImageInterface::class);
         $image->method('getPath')->willReturn('image.jpg');
 
@@ -92,20 +130,20 @@ final class OrderItemImageNormalizerTest extends TestCase
             ->with('image.jpg', 'sylius_shop_product_small_thumbnail')
             ->willReturn('https://example.com/cache/image.jpg');
 
-        $result = $this->normalizer->normalize($item);
+        $result = $this->normalizer->normalize($item, null, self::SUPPORTED_GROUP_CONTEXT);
 
         self::assertSame('https://example.com/cache/image.jpg', $result['image']);
     }
 
     public function testAddsNullImageWhenProviderFindsNoImage(): void
     {
-        $item = $this->createItemWithChannel(true);
+        $item = $this->createMock(OrderItemInterface::class);
 
         $this->orderItemImageProvider->method('provide')->with($item)->willReturn(null);
 
         $this->cacheManager->expects(self::never())->method('getBrowserPath');
 
-        $result = $this->normalizer->normalize($item);
+        $result = $this->normalizer->normalize($item, null, self::SUPPORTED_GROUP_CONTEXT);
 
         self::assertArrayHasKey('image', $result);
         self::assertNull($result['image']);
@@ -113,7 +151,7 @@ final class OrderItemImageNormalizerTest extends TestCase
 
     public function testAddsNullImageWhenImagePathIsNull(): void
     {
-        $item = $this->createItemWithChannel(true);
+        $item = $this->createMock(OrderItemInterface::class);
         $image = $this->createMock(ImageInterface::class);
         $image->method('getPath')->willReturn(null);
 
@@ -121,56 +159,15 @@ final class OrderItemImageNormalizerTest extends TestCase
 
         $this->cacheManager->expects(self::never())->method('getBrowserPath');
 
-        $result = $this->normalizer->normalize($item);
+        $result = $this->normalizer->normalize($item, null, self::SUPPORTED_GROUP_CONTEXT);
 
         self::assertArrayHasKey('image', $result);
         self::assertNull($result['image']);
     }
 
-    public function testDoesNotAddImageWhenChannelHasOnePageCheckoutDisabled(): void
-    {
-        $item = $this->createItemWithChannel(false);
-
-        $this->orderItemImageProvider->expects(self::never())->method('provide');
-        $this->cacheManager->expects(self::never())->method('getBrowserPath');
-
-        $result = $this->normalizer->normalize($item);
-
-        self::assertArrayNotHasKey('image', $result);
-    }
-
-    public function testDoesNotAddImageWhenOrderIsNull(): void
-    {
-        $item = $this->createMock(OrderItemInterface::class);
-        $item->method('getOrder')->willReturn(null);
-
-        $this->orderItemImageProvider->expects(self::never())->method('provide');
-
-        $result = $this->normalizer->normalize($item);
-
-        self::assertArrayNotHasKey('image', $result);
-    }
-
-    public function testDoesNotAddImageWhenChannelIsNotOnePageCheckoutAware(): void
-    {
-        $channel = $this->createMock(ChannelInterface::class);
-
-        $order = $this->createMock(OrderInterface::class);
-        $order->method('getChannel')->willReturn($channel);
-
-        $item = $this->createMock(OrderItemInterface::class);
-        $item->method('getOrder')->willReturn($order);
-
-        $this->orderItemImageProvider->expects(self::never())->method('provide');
-
-        $result = $this->normalizer->normalize($item);
-
-        self::assertArrayNotHasKey('image', $result);
-    }
-
     public function testUsesCustomImageFilterWhenProvidedInQuery(): void
     {
-        $item = $this->createItemWithChannel(true);
+        $item = $this->createMock(OrderItemInterface::class);
         $image = $this->createMock(ImageInterface::class);
         $image->method('getPath')->willReturn('image.jpg');
 
@@ -183,14 +180,14 @@ final class OrderItemImageNormalizerTest extends TestCase
             ->with('image.jpg', 'custom_filter')
             ->willReturn('https://example.com/cache/custom.jpg');
 
-        $result = $this->normalizer->normalize($item);
+        $result = $this->normalizer->normalize($item, null, self::SUPPORTED_GROUP_CONTEXT);
 
         self::assertSame('https://example.com/cache/custom.jpg', $result['image']);
     }
 
     public function testThrowsInvalidArgumentExceptionWhenFilterIsNotConfigured(): void
     {
-        $item = $this->createItemWithChannel(true);
+        $item = $this->createMock(OrderItemInterface::class);
         $image = $this->createMock(ImageInterface::class);
         $image->method('getPath')->willReturn('image.jpg');
 
@@ -200,29 +197,6 @@ final class OrderItemImageNormalizerTest extends TestCase
 
         self::expectException(InvalidArgumentException::class);
 
-        $this->normalizer->normalize($item);
-    }
-
-    /**
-     * @return OrderItemInterface&MockObject
-     */
-    private function createItemWithChannel(bool $onePageCheckoutEnabled): OrderItemInterface
-    {
-        $channel = $this->createMockForIntersectionOfInterfaces([
-            ChannelInterface::class,
-            ChannelOnePageCheckoutAwareInterface::class,
-        ]);
-
-        $this->checkoutEnabledChecker->method('isEnabled')
-            ->with($channel)
-            ->willReturn($onePageCheckoutEnabled);
-
-        $order = $this->createMock(OrderInterface::class);
-        $order->method('getChannel')->willReturn($channel);
-
-        $item = $this->createMock(OrderItemInterface::class);
-        $item->method('getOrder')->willReturn($order);
-
-        return $item;
+        $this->normalizer->normalize($item, null, self::SUPPORTED_GROUP_CONTEXT);
     }
 }

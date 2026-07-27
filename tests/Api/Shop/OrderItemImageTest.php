@@ -24,7 +24,7 @@ final class OrderItemImageTest extends JsonApiTestCase
         parent::setUp();
     }
 
-    public function testAddsImageToOrderItemsWhenOnePageCheckoutIsEnabled(): void
+    public function testDoesNotAddImageToOrderItemsOnTheStandardOrderEndpointWhenOnePageCheckoutIsEnabled(): void
     {
         $this->loadFixturesFromFiles([
             'channel.yaml',
@@ -44,7 +44,7 @@ final class OrderItemImageTest extends JsonApiTestCase
         /** @var array{items: list<array<string, mixed>>} $content */
         $content = json_decode((string) $response->getContent(), true, flags: \JSON_THROW_ON_ERROR);
 
-        self::assertArrayHasKey('image', $content['items'][0]);
+        self::assertArrayNotHasKey('image', $content['items'][0]);
     }
 
     public function testDoesNotAddImageToOrderItemsWhenOnePageCheckoutIsDisabled(): void

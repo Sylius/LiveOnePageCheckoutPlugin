@@ -1,0 +1,20 @@
+{
+    "@context": "\/api\/v2\/contexts\/Order",
+    "@id": "@string@",
+    "@type": "Order",
+    "tokenValue": "@string@",
+    "channel": "@string@",
+    "currencyCode": "USD",
+    "localeCode": "en_US",
+    "items": [
+        {
+            "@type": "OrderItem",
+            "@id": "@string@",
+            "id": "@integer@",
+            "productName": "Mug",
+            "variantName": "Mug",
+            "variant": "@string@",
+            "image": null
+        }
+    ]
+}
