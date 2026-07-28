@@ -55,9 +55,8 @@ use function Symfony\Component\DependencyInjection\Loader\Configurator\tagged_it
 return static function (ContainerConfigurator $container): void {
     $services = $container->services();
     $container->parameters()
-        ->set('sylius_live_one_page_checkout.api.checkout_preview.class', CheckoutPreview::class)
         ->set('sylius_live_one_page_checkout.api.order_item_image_normalizer.serialization_groups', [
-            'sylius_live_one_page_checkout:shop:order:show',
+            'sylius:shop:cart:show',
         ])
     ;
 
@@ -263,6 +262,7 @@ return static function (ContainerConfigurator $container): void {
             service('liip_imagine.cache.manager'),
             service('request_stack'),
             service('sylius.section_resolver.uri_based'),
+            service('sylius_live_one_page_checkout.checker.checkout_enabled'),
             service('sylius_live_one_page_checkout.api.provider.order_item_image'),
             '%sylius_live_one_page_checkout.api.order_item_image_normalizer.serialization_groups%',
             'sylius_shop_product_small_thumbnail',

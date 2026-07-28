@@ -19,22 +19,6 @@
     <resource class="%sylius.model.order.class%">
         <operations>
             <operation
-                name="sylius_api_shop_one_page_checkout_order_get"
-                class="ApiPlatform\Metadata\Get"
-                uriTemplate="/shop/orders/{tokenValue}/one-page"
-            >
-                <normalizationContext>
-                    <values>
-                        <value name="groups">
-                            <values>
-                                <value>sylius_live_one_page_checkout:shop:order:show</value>
-                            </values>
-                        </value>
-                    </values>
-                </normalizationContext>
-            </operation>
-
-            <operation
                 name="sylius_api_shop_one_page_checkout_preview"
                 class="ApiPlatform\Metadata\Patch"
                 uriTemplate="/shop/orders/{tokenValue}/one-page/preview"
