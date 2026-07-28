@@ -20,8 +20,11 @@ use Sylius\Bundle\ApiBundle\SectionResolver\ShopApiSection;
 use Sylius\Bundle\ApiBundle\Serializer\Normalizer\ImageNormalizer;
 use Sylius\Bundle\ApiBundle\Serializer\SerializationGroupsSupportTrait;
 use Sylius\Bundle\CoreBundle\SectionResolver\SectionProviderInterface;
+use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\OrderItemInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Provider\OrderItemImageProviderInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Checker\CheckoutEnabledCheckerInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelOnePageCheckoutAwareInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareTrait;
@@ -40,6 +43,7 @@ final class OrderItemImageNormalizer implements NormalizerInterface, NormalizerA
         private readonly CacheManager $cacheManager,
         private readonly RequestStack $requestStack,
         private readonly SectionProviderInterface $sectionProvider,
+        private readonly CheckoutEnabledCheckerInterface $checkoutEnabledChecker,
         private readonly OrderItemImageProviderInterface $orderItemImageProvider,
         private readonly array $serializationGroups,
         private readonly string $defaultFilter,
@@ -58,6 +62,10 @@ final class OrderItemImageNormalizer implements NormalizerInterface, NormalizerA
         Assert::isInstanceOf($this->sectionProvider->getSection(), ShopApiSection::class);
         Assert::true($this->supportsSerializationGroups($context, $this->serializationGroups));
 
+        $channel = $this->resolveChannel($object);
+        Assert::notNull($channel);
+        Assert::true($this->checkoutEnabledChecker->isEnabled($channel));
+
         $context[self::ALREADY_CALLED] = true;
 
         /** @var array<string, mixed> $data */
@@ -75,11 +83,32 @@ final class OrderItemImageNormalizer implements NormalizerInterface, NormalizerA
             return false;
         }
 
+        if (!$data instanceof OrderItemInterface) {
+            return false;
+        }
+
+        $channel = $this->resolveChannel($data);
+
         return
-            $data instanceof OrderItemInterface &&
+            $channel !== null &&
             $this->sectionProvider->getSection() instanceof ShopApiSection &&
-            $this->supportsSerializationGroups($context, $this->serializationGroups)
+            $this->supportsSerializationGroups($context, $this->serializationGroups) &&
+            $this->checkoutEnabledChecker->isEnabled($channel)
         ;
+    }
+
+    private function resolveChannel(OrderItemInterface $item): ?ChannelOnePageCheckoutAwareInterface
+    {
+        $order = $item->getOrder();
+
+        if (!$order instanceof OrderInterface) {
+            return null;
+        }
+
+        /** @var ChannelOnePageCheckoutAwareInterface $channel */
+        $channel = $order->getChannel();
+
+        return $channel;
     }
 
     /** @return array<class-string, bool> */

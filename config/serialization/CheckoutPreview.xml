@@ -31,11 +31,5 @@
         <attribute name="hash">
             <group>sylius_live_one_page_checkout:shop:checkout:show</group>
         </attribute>
-        <attribute name="billingAddress">
-            <group>sylius_live_one_page_checkout:shop:checkout:show</group>
-        </attribute>
-        <attribute name="shippingAddress">
-            <group>sylius_live_one_page_checkout:shop:checkout:show</group>
-        </attribute>
     </class>
 </serializer>

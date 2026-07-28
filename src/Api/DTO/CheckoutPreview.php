@@ -23,8 +23,6 @@ class CheckoutPreview
     public function __construct(
         public readonly OrderSummary $summary,
         public readonly array $items,
-        public readonly ?AddressPreview $billingAddress,
-        public readonly ?AddressPreview $shippingAddress,
         public readonly array $shipments,
         public readonly array $payments,
         public readonly string $hash,

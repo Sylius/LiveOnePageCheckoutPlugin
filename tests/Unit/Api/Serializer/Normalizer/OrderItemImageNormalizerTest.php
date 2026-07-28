@@ -22,12 +22,15 @@ use Sylius\Bundle\ApiBundle\SectionResolver\ShopApiSection;
 use Sylius\Bundle\CoreBundle\SectionResolver\SectionInterface;
 use Sylius\Bundle\CoreBundle\SectionResolver\SectionProviderInterface;
 use Sylius\Component\Core\Model\ImageInterface;
+use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\OrderItemInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Provider\OrderItemImageProviderInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Serializer\Normalizer\OrderItemImageNormalizer;
+use Sylius\LiveOnePageCheckoutPlugin\Checker\CheckoutEnabledCheckerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Tests\Sylius\LiveOnePageCheckoutPlugin\Entity\Channel;
 
 final class OrderItemImageNormalizerTest extends TestCase
 {
@@ -41,6 +44,8 @@ final class OrderItemImageNormalizerTest extends TestCase
 
     private OrderItemImageProviderInterface&MockObject $orderItemImageProvider;
 
+    private CheckoutEnabledCheckerInterface&MockObject $checkoutEnabledChecker;
+
     private NormalizerInterface&MockObject $innerNormalizer;
 
     private OrderItemImageNormalizer $normalizer;
@@ -52,11 +57,14 @@ final class OrderItemImageNormalizerTest extends TestCase
         $this->sectionProvider = $this->createMock(SectionProviderInterface::class);
         $this->sectionProvider->method('getSection')->willReturn(new ShopApiSection());
         $this->orderItemImageProvider = $this->createMock(OrderItemImageProviderInterface::class);
+        $this->checkoutEnabledChecker = $this->createMock(CheckoutEnabledCheckerInterface::class);
+        $this->checkoutEnabledChecker->method('isEnabled')->willReturn(true);
 
         $this->normalizer = new OrderItemImageNormalizer(
             $this->cacheManager,
             $this->requestStack,
             $this->sectionProvider,
+            $this->checkoutEnabledChecker,
             $this->orderItemImageProvider,
             ['sylius_live_one_page_checkout:shop:order:show'],
             'sylius_shop_product_small_thumbnail',
@@ -67,10 +75,21 @@ final class OrderItemImageNormalizerTest extends TestCase
         $this->innerNormalizer->method('normalize')->willReturn(['id' => 1]);
     }
 
+    private function createOrderItem(): OrderItemInterface&MockObject
+    {
+        $order = $this->createMock(OrderInterface::class);
+        $order->method('getChannel')->willReturn(new Channel());
+
+        $item = $this->createMock(OrderItemInterface::class);
+        $item->method('getOrder')->willReturn($order);
+
+        return $item;
+    }
+
     public function testSupportsOnlyOrderItems(): void
     {
         self::assertTrue($this->normalizer->supportsNormalization(
-            $this->createMock(OrderItemInterface::class),
+            $this->createOrderItem(),
             null,
             self::SUPPORTED_GROUP_CONTEXT,
         ));
@@ -105,13 +124,14 @@ final class OrderItemImageNormalizerTest extends TestCase
             $this->cacheManager,
             $this->requestStack,
             $sectionProvider,
+            $this->checkoutEnabledChecker,
             $this->orderItemImageProvider,
             ['sylius_live_one_page_checkout:shop:order:show'],
             'sylius_shop_product_small_thumbnail',
         );
 
         self::assertFalse($normalizer->supportsNormalization(
-            $this->createMock(OrderItemInterface::class),
+            $this->createOrderItem(),
             null,
             self::SUPPORTED_GROUP_CONTEXT,
         ));
@@ -119,7 +139,7 @@ final class OrderItemImageNormalizerTest extends TestCase
 
     public function testAddsResolvedImage(): void
     {
-        $item = $this->createMock(OrderItemInterface::class);
+        $item = $this->createOrderItem();
         $image = $this->createMock(ImageInterface::class);
         $image->method('getPath')->willReturn('image.jpg');
 
@@ -137,7 +157,7 @@ final class OrderItemImageNormalizerTest extends TestCase
 
     public function testAddsNullImageWhenProviderFindsNoImage(): void
     {
-        $item = $this->createMock(OrderItemInterface::class);
+        $item = $this->createOrderItem();
 
         $this->orderItemImageProvider->method('provide')->with($item)->willReturn(null);
 
@@ -151,7 +171,7 @@ final class OrderItemImageNormalizerTest extends TestCase
 
     public function testAddsNullImageWhenImagePathIsNull(): void
     {
-        $item = $this->createMock(OrderItemInterface::class);
+        $item = $this->createOrderItem();
         $image = $this->createMock(ImageInterface::class);
         $image->method('getPath')->willReturn(null);
 
@@ -167,7 +187,7 @@ final class OrderItemImageNormalizerTest extends TestCase
 
     public function testUsesCustomImageFilterWhenProvidedInQuery(): void
     {
-        $item = $this->createMock(OrderItemInterface::class);
+        $item = $this->createOrderItem();
         $image = $this->createMock(ImageInterface::class);
         $image->method('getPath')->willReturn('image.jpg');
 
@@ -187,7 +207,7 @@ final class OrderItemImageNormalizerTest extends TestCase
 
     public function testThrowsInvalidArgumentExceptionWhenFilterIsNotConfigured(): void
     {
-        $item = $this->createMock(OrderItemInterface::class);
+        $item = $this->createOrderItem();
         $image = $this->createMock(ImageInterface::class);
         $image->method('getPath')->willReturn('image.jpg');
 

@@ -21,8 +21,6 @@ use Sylius\LiveOnePageCheckoutPlugin\Api\Applier\PaymentMethodApplier;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Applier\ShippingMethodApplier;
 use Sylius\LiveOnePageCheckoutPlugin\Api\CommandHandler\CompleteCheckoutHandler;
 use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\CheckoutPreview;
-use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\AddressPreviewFactory;
-use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\AddressPreviewFactoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\CheckoutPreviewFactory;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\CheckoutPreviewFactoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\DefaultShippingAddressOrderFactory;
@@ -55,9 +53,8 @@ use function Symfony\Component\DependencyInjection\Loader\Configurator\tagged_it
 return static function (ContainerConfigurator $container): void {
     $services = $container->services();
     $container->parameters()
-        ->set('sylius_live_one_page_checkout.api.checkout_preview.class', CheckoutPreview::class)
         ->set('sylius_live_one_page_checkout.api.order_item_image_normalizer.serialization_groups', [
-            'sylius_live_one_page_checkout:shop:order:show',
+            'sylius:shop:cart:show',
         ])
     ;
 
@@ -106,10 +103,6 @@ return static function (ContainerConfigurator $container): void {
     ;
 
     $services->alias(CheckoutApplierInterface::class, 'sylius_live_one_page_checkout.api.applier.checkout');
-
-    $services->set('sylius_live_one_page_checkout.api.factory.address_preview', AddressPreviewFactory::class);
-
-    $services->alias(AddressPreviewFactoryInterface::class, 'sylius_live_one_page_checkout.api.factory.address_preview');
 
     $services
         ->set('sylius_live_one_page_checkout.api.factory.order_summary', OrderSummaryFactory::class)
@@ -166,7 +159,6 @@ return static function (ContainerConfigurator $container): void {
             service('sylius_live_one_page_checkout.api.factory.shipment_preview'),
             service('sylius_live_one_page_checkout.api.factory.payment_preview'),
             service('sylius_live_one_page_checkout.hasher.order'),
-            service('sylius_live_one_page_checkout.api.factory.address_preview'),
         ])
     ;
 
@@ -263,6 +255,7 @@ return static function (ContainerConfigurator $container): void {
             service('liip_imagine.cache.manager'),
             service('request_stack'),
             service('sylius.section_resolver.uri_based'),
+            service('sylius_live_one_page_checkout.checker.checkout_enabled'),
             service('sylius_live_one_page_checkout.api.provider.order_item_image'),
             '%sylius_live_one_page_checkout.api.order_item_image_normalizer.serialization_groups%',
             'sylius_shop_product_small_thumbnail',

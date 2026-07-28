@@ -1,14 +1,12 @@
 {
     "@context": {
-        "@vocab": "http:\/\/localhost\/api\/v2\/docs.jsonld#",
-        "hydra": "http:\/\/www.w3.org\/ns\/hydra\/core#",
-        "summary": "CheckoutPreview\/summary",
-        "items": "CheckoutPreview\/items",
-        "billingAddress": "CheckoutPreview\/billingAddress",
-        "shippingAddress": "CheckoutPreview\/shippingAddress",
-        "shipments": "CheckoutPreview\/shipments",
-        "payments": "CheckoutPreview\/payments",
-        "hash": "CheckoutPreview\/hash"
+        "@vocab": "http://localhost/api/v2/docs.jsonld#",
+        "hydra": "http://www.w3.org/ns/hydra/core#",
+        "summary": "CheckoutPreview/summary",
+        "items": "CheckoutPreview/items",
+        "shipments": "CheckoutPreview/shipments",
+        "payments": "CheckoutPreview/payments",
+        "hash": "CheckoutPreview/hash"
     },
     "@type": "CheckoutPreview",
     "@id": "@string@",
@@ -40,34 +38,6 @@
             "subtotal": 4000
         }
     ],
-    "billingAddress": {
-        "@type": "AddressPreview",
-        "@id": "@string@",
-        "firstName": null,
-        "lastName": null,
-        "company": null,
-        "street": null,
-        "city": null,
-        "postcode": null,
-        "countryCode": null,
-        "provinceCode": null,
-        "provinceName": null,
-        "phoneNumber": null
-    },
-    "shippingAddress": {
-        "@type": "AddressPreview",
-        "@id": "@string@",
-        "firstName": null,
-        "lastName": null,
-        "company": null,
-        "street": null,
-        "city": null,
-        "postcode": null,
-        "countryCode": null,
-        "provinceCode": null,
-        "provinceName": null,
-        "phoneNumber": null
-    },
     "shipments": [
         {
             "@type": "ShipmentPreview",
