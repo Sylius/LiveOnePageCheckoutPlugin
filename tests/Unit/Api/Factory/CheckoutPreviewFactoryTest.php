@@ -15,15 +15,12 @@ namespace Tests\Sylius\LiveOnePageCheckoutPlugin\Unit\Api\Factory;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Sylius\Component\Core\Model\AddressInterface;
 use Sylius\Component\Core\Model\OrderInterface;
-use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\AddressPreview;
 use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\CheckoutPreview;
 use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\ItemPreview;
 use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\OrderSummary;
 use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\PaymentPreview;
 use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\ShipmentPreview;
-use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\AddressPreviewFactoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\CheckoutPreviewFactory;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\CheckoutPreviewFactoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ItemsPreviewFactoryInterface;
@@ -44,8 +41,6 @@ final class CheckoutPreviewFactoryTest extends TestCase
 
     private OrderHasherInterface&MockObject $orderHasher;
 
-    private AddressPreviewFactoryInterface&MockObject $addressPreviewFactory;
-
     private CheckoutPreviewFactory $factory;
 
     protected function setUp(): void
@@ -55,7 +50,6 @@ final class CheckoutPreviewFactoryTest extends TestCase
         $this->shipmentPreviewFactory = $this->createMock(ShipmentsPreviewFactoryInterface::class);
         $this->paymentPreviewFactory = $this->createMock(PaymentsPreviewFactoryInterface::class);
         $this->orderHasher = $this->createMock(OrderHasherInterface::class);
-        $this->addressPreviewFactory = $this->createMock(AddressPreviewFactoryInterface::class);
 
         $this->factory = new CheckoutPreviewFactory(
             $this->orderSummaryFactory,
@@ -63,7 +57,6 @@ final class CheckoutPreviewFactoryTest extends TestCase
             $this->shipmentPreviewFactory,
             $this->paymentPreviewFactory,
             $this->orderHasher,
-            $this->addressPreviewFactory,
         );
     }
 
@@ -74,11 +67,7 @@ final class CheckoutPreviewFactoryTest extends TestCase
 
     public function testCreatesCheckoutPreviewComposingAllFactories(): void
     {
-        $billingAddress = $this->createMock(AddressInterface::class);
-        $shippingAddress = $this->createMock(AddressInterface::class);
         $order = $this->createMock(OrderInterface::class);
-        $order->method('getBillingAddress')->willReturn($billingAddress);
-        $order->method('getShippingAddress')->willReturn($shippingAddress);
 
         $orderSummary = $this->createMock(OrderSummary::class);
         $itemPreviews = [
@@ -92,8 +81,6 @@ final class CheckoutPreviewFactoryTest extends TestCase
             $this->createMock(PaymentPreview::class),
         ];
         $hash = 'abc123def456';
-        $billingAddressPreview = $this->createMock(AddressPreview::class);
-        $shippingAddressPreview = $this->createMock(AddressPreview::class);
 
         $this->orderSummaryFactory->expects(self::once())
             ->method('create')
@@ -120,12 +107,6 @@ final class CheckoutPreviewFactoryTest extends TestCase
             ->with($order)
             ->willReturn($hash);
 
-        $this->addressPreviewFactory->method('create')
-            ->willReturnMap([
-                [$billingAddress, $billingAddressPreview],
-                [$shippingAddress, $shippingAddressPreview],
-            ]);
-
         $result = $this->factory->create($order);
 
         self::assertInstanceOf(CheckoutPreview::class, $result);
@@ -134,15 +115,11 @@ final class CheckoutPreviewFactoryTest extends TestCase
         self::assertSame($shipmentPreviews, $result->shipments);
         self::assertSame($paymentPreviews, $result->payments);
         self::assertSame($hash, $result->hash);
-        self::assertSame($billingAddressPreview, $result->billingAddress);
-        self::assertSame($shippingAddressPreview, $result->shippingAddress);
     }
 
     public function testCreatesCheckoutPreviewWithEmptyShipmentsAndPayments(): void
     {
         $order = $this->createMock(OrderInterface::class);
-        $order->method('getBillingAddress')->willReturn(null);
-        $order->method('getShippingAddress')->willReturn(null);
 
         $orderSummary = $this->createMock(OrderSummary::class);
         $hash = 'hash123';
@@ -152,22 +129,17 @@ final class CheckoutPreviewFactoryTest extends TestCase
         $this->shipmentPreviewFactory->method('create')->willReturn([]);
         $this->paymentPreviewFactory->method('create')->willReturn([]);
         $this->orderHasher->method('hash')->willReturn($hash);
-        $this->addressPreviewFactory->method('create')->willReturn(null);
 
         $result = $this->factory->create($order);
 
         self::assertCount(0, $result->items);
         self::assertCount(0, $result->shipments);
         self::assertCount(0, $result->payments);
-        self::assertNull($result->billingAddress);
-        self::assertNull($result->shippingAddress);
     }
 
     public function testCallsAllFactoriesInCorrectOrder(): void
     {
         $order = $this->createMock(OrderInterface::class);
-        $order->method('getBillingAddress')->willReturn(null);
-        $order->method('getShippingAddress')->willReturn(null);
         $calls = [];
 
         $this->orderSummaryFactory->method('create')->willReturnCallback(function () use (&$calls) {
@@ -199,8 +171,6 @@ final class CheckoutPreviewFactoryTest extends TestCase
 
             return 'hash';
         });
-
-        $this->addressPreviewFactory->method('create')->willReturn(null);
 
         $this->factory->create($order);
 
