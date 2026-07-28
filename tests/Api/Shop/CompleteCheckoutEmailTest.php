@@ -36,7 +36,7 @@ final class CompleteCheckoutEmailTest extends JsonApiTestCase
 
         $tokenValue = $this->pickUpCartWithItem(tokenValue: 'COMPLETE_CHECKOUT_EMAIL_TOKEN');
 
-        $this->requestPost(
+        $this->requestPatch(
             uri: sprintf('/api/v2/shop/orders/%s/one-page/complete', $tokenValue),
             body: [],
         );
@@ -58,7 +58,7 @@ final class CompleteCheckoutEmailTest extends JsonApiTestCase
 
         $tokenValue = $this->pickUpCartWithItem(tokenValue: 'COMPLETE_CHECKOUT_EMAIL_TOKEN');
 
-        $this->requestPost(
+        $this->requestPatch(
             uri: sprintf('/api/v2/shop/orders/%s/one-page/complete', $tokenValue),
             body: [
                 'email' => 'not-a-valid-email',
@@ -82,7 +82,7 @@ final class CompleteCheckoutEmailTest extends JsonApiTestCase
 
         $tokenValue = $this->pickUpCartWithItem(tokenValue: 'COMPLETE_CHECKOUT_EMAIL_TOKEN');
 
-        $this->requestPost(
+        $this->requestPatch(
             uri: sprintf('/api/v2/shop/orders/%s/one-page/complete', $tokenValue),
             body: [
                 'email' => sprintf('%s@example.com', str_repeat('a', 250)),

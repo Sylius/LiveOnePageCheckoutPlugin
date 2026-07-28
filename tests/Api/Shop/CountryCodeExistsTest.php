@@ -36,7 +36,7 @@ final class CountryCodeExistsTest extends JsonApiTestCase
 
         $tokenValue = $this->pickUpCartWithItem(tokenValue: 'COUNTRY_CODE_EXISTS_TOKEN');
 
-        $this->requestPost(
+        $this->requestPatch(
             uri: sprintf('/api/v2/shop/orders/%s/one-page/preview', $tokenValue),
             body: [
                 'billingAddress' => $this->address(countryCode: 'GB'),
@@ -62,7 +62,7 @@ final class CountryCodeExistsTest extends JsonApiTestCase
 
         $tokenValue = $this->pickUpCartWithItem(tokenValue: 'COUNTRY_CODE_EXISTS_TOKEN');
 
-        $this->requestPost(
+        $this->requestPatch(
             uri: sprintf('/api/v2/shop/orders/%s/one-page/complete', $tokenValue),
             body: [
                 'email' => 'shop@example.com',
@@ -89,7 +89,7 @@ final class CountryCodeExistsTest extends JsonApiTestCase
 
         $tokenValue = $this->pickUpCartWithItem(tokenValue: 'COUNTRY_CODE_EXISTS_TOKEN');
 
-        $this->requestPost(
+        $this->requestPatch(
             uri: sprintf('/api/v2/shop/orders/%s/one-page/preview', $tokenValue),
             body: [
                 'billingAddress' => $this->address(countryCode: 'US'),

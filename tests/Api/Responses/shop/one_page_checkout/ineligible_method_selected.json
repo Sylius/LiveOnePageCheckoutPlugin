@@ -1,7 +1,17 @@
 {
-    "@context": "\/api\/v2\/contexts\/OnePageCheckout",
+    "@context": {
+        "@vocab": "http:\/\/localhost\/api\/v2\/docs.jsonld#",
+        "hydra": "http:\/\/www.w3.org\/ns\/hydra\/core#",
+        "summary": "CheckoutPreview\/summary",
+        "items": "CheckoutPreview\/items",
+        "billingAddress": "CheckoutPreview\/billingAddress",
+        "shippingAddress": "CheckoutPreview\/shippingAddress",
+        "shipments": "CheckoutPreview\/shipments",
+        "payments": "CheckoutPreview\/payments",
+        "hash": "CheckoutPreview\/hash"
+    },
+    "@type": "CheckoutPreview",
     "@id": "@string@",
-    "@type": "OnePageCheckout",
     "summary": {
         "@type": "OrderSummary",
         "@id": "@string@",
@@ -30,6 +40,34 @@
             "subtotal": 4000
         }
     ],
+    "billingAddress": {
+        "@type": "AddressPreview",
+        "@id": "@string@",
+        "firstName": null,
+        "lastName": null,
+        "company": null,
+        "street": null,
+        "city": null,
+        "postcode": null,
+        "countryCode": null,
+        "provinceCode": null,
+        "provinceName": null,
+        "phoneNumber": null
+    },
+    "shippingAddress": {
+        "@type": "AddressPreview",
+        "@id": "@string@",
+        "firstName": "Hans",
+        "lastName": "Mueller",
+        "company": null,
+        "street": "Hauptstrasse",
+        "city": "Berlin",
+        "postcode": "10115",
+        "countryCode": "DE",
+        "provinceCode": null,
+        "provinceName": null,
+        "phoneNumber": null
+    },
     "shipments": [
         {
             "@type": "ShipmentPreview",
@@ -77,33 +115,5 @@
             ]
         }
     ],
-    "hash": "@string@",
-    "billingAddress": {
-        "@type": "AddressPreview",
-        "@id": "@string@",
-        "firstName": null,
-        "lastName": null,
-        "company": null,
-        "street": null,
-        "city": null,
-        "postcode": null,
-        "countryCode": null,
-        "provinceCode": null,
-        "provinceName": null,
-        "phoneNumber": null
-    },
-    "shippingAddress": {
-        "@type": "AddressPreview",
-        "@id": "@string@",
-        "firstName": "Hans",
-        "lastName": "Mueller",
-        "company": null,
-        "street": "Hauptstrasse",
-        "city": "Berlin",
-        "postcode": "10115",
-        "countryCode": "DE",
-        "provinceCode": null,
-        "provinceName": null,
-        "phoneNumber": null
-    }
+    "hash": "631c5d307e8c61fc42c4a7ca06418ca0"
 }
