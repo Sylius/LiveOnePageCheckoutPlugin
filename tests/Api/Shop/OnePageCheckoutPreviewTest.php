@@ -36,7 +36,7 @@ final class OnePageCheckoutPreviewTest extends JsonApiTestCase
 
         $tokenValue = $this->pickUpCartWithItem(tokenValue: 'ONE_PAGE_TOKEN', quantity: 2);
 
-        $this->requestPost(
+        $this->requestPatch(
             uri: sprintf('/api/v2/shop/orders/%s/one-page/preview', $tokenValue),
             body: [
                 'email' => 'guest@example.com',
@@ -72,7 +72,7 @@ final class OnePageCheckoutPreviewTest extends JsonApiTestCase
 
         $tokenValue = $this->pickUpCartWithItem(tokenValue: 'ONE_PAGE_TOKEN', quantity: 2);
 
-        $this->requestPost(
+        $this->requestPatch(
             uri: sprintf('/api/v2/shop/orders/%s/one-page/preview', $tokenValue),
             body: [],
         );
@@ -96,7 +96,7 @@ final class OnePageCheckoutPreviewTest extends JsonApiTestCase
 
         $token = $this->generateJwtTokenForShopUserEmail('john@example.com');
 
-        $this->requestPost(
+        $this->requestPatch(
             uri: sprintf('/api/v2/shop/orders/%s/one-page/preview', $tokenValue),
             body: [],
             headers: ['HTTP_AUTHORIZATION' => sprintf('Bearer %s', $token)],
@@ -121,7 +121,7 @@ final class OnePageCheckoutPreviewTest extends JsonApiTestCase
 
         $token = $this->generateJwtTokenForShopUserEmail('jane@example.com');
 
-        $this->requestPost(
+        $this->requestPatch(
             uri: sprintf('/api/v2/shop/orders/%s/one-page/preview', $tokenValue),
             body: [],
             headers: ['HTTP_AUTHORIZATION' => sprintf('Bearer %s', $token)],
@@ -142,7 +142,7 @@ final class OnePageCheckoutPreviewTest extends JsonApiTestCase
 
         $tokenValue = $this->pickUpCartWithItem(tokenValue: 'ONE_PAGE_TOKEN', quantity: 2);
 
-        $this->requestPost(
+        $this->requestPatch(
             uri: sprintf('/api/v2/shop/orders/%s/one-page/preview', $tokenValue),
             body: [
                 'shippingAddress' => [
@@ -171,7 +171,7 @@ final class OnePageCheckoutPreviewTest extends JsonApiTestCase
 
         $tokenValue = $this->pickUpCartWithItem(tokenValue: 'ONE_PAGE_TOKEN', quantity: 2);
 
-        $this->requestPost(
+        $this->requestPatch(
             uri: sprintf('/api/v2/shop/orders/%s/one-page/preview', $tokenValue),
             body: [
                 'shippingAddress' => [
@@ -200,7 +200,7 @@ final class OnePageCheckoutPreviewTest extends JsonApiTestCase
 
         $tokenValue = $this->pickUpCartWithItem(tokenValue: 'ONE_PAGE_TOKEN', quantity: 2);
 
-        $this->requestPost(
+        $this->requestPatch(
             uri: sprintf('/api/v2/shop/orders/%s/one-page/preview', $tokenValue),
             body: [
                 'shippingAddress' => [

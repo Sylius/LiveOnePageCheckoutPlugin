@@ -39,7 +39,7 @@ final class CheckoutEmailNotAllowedTest extends JsonApiTestCase
         $tokenValue = $this->pickUpCartWithItem(tokenValue: 'CHECKOUT_EMAIL_TOKEN', customerEmail: 'jane@example.com');
         $token = $this->generateJwtTokenForShopUserEmail('jane@example.com');
 
-        $this->requestPost(
+        $this->requestPatch(
             uri: sprintf('/api/v2/shop/orders/%s/one-page/preview', $tokenValue),
             body: [
                 'email' => 'another@example.com',
@@ -67,7 +67,7 @@ final class CheckoutEmailNotAllowedTest extends JsonApiTestCase
         $tokenValue = $this->pickUpCartWithItem(tokenValue: 'CHECKOUT_EMAIL_TOKEN', customerEmail: 'jane@example.com');
         $token = $this->generateJwtTokenForShopUserEmail('jane@example.com');
 
-        $this->requestPost(
+        $this->requestPatch(
             uri: sprintf('/api/v2/shop/orders/%s/one-page/preview', $tokenValue),
             body: [
                 'email' => 'jane@example.com',
@@ -78,7 +78,7 @@ final class CheckoutEmailNotAllowedTest extends JsonApiTestCase
         self::assertSame(200, $this->client()->getResponse()->getStatusCode());
     }
 
-    public function testAllowsGuestToSubmitAnyEmailForAlreadyAssignedCart(): void
+    public function testDoesNotAllowGuestToAccessCartAssignedToARegisteredCustomer(): void
     {
         $this->loadFixturesFromFiles([
             'channel.yaml',
@@ -92,13 +92,13 @@ final class CheckoutEmailNotAllowedTest extends JsonApiTestCase
 
         $tokenValue = $this->pickUpCartWithItem(tokenValue: 'CHECKOUT_EMAIL_TOKEN', customerEmail: 'jane@example.com');
 
-        $this->requestPost(
+        $this->requestPatch(
             uri: sprintf('/api/v2/shop/orders/%s/one-page/preview', $tokenValue),
             body: [
                 'email' => 'another@example.com',
             ],
         );
 
-        self::assertSame(200, $this->client()->getResponse()->getStatusCode());
+        self::assertSame(404, $this->client()->getResponse()->getStatusCode());
     }
 }

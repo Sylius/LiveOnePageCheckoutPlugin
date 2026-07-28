@@ -32,7 +32,7 @@ final class OrderNotEmptyTest extends JsonApiTestCase
 
         $tokenValue = $this->pickUpEmptyCart('ORDER_NOT_EMPTY_TOKEN');
 
-        $this->requestPost(
+        $this->requestPatch(
             uri: sprintf('/api/v2/shop/orders/%s/one-page/preview', $tokenValue),
             body: [],
         );
@@ -48,7 +48,7 @@ final class OrderNotEmptyTest extends JsonApiTestCase
 
         $tokenValue = $this->pickUpEmptyCart('ORDER_NOT_EMPTY_TOKEN');
 
-        $this->requestPost(
+        $this->requestPatch(
             uri: sprintf('/api/v2/shop/orders/%s/one-page/complete', $tokenValue),
             body: [
                 'email' => 'shop@example.com',
