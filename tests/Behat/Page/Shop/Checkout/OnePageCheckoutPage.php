@@ -152,6 +152,11 @@ class OnePageCheckoutPage extends Page implements OnePageCheckoutPageInterface
         return $this->hasElement('promotion_discount');
     }
 
+    public function hasShippingDiscount(): bool
+    {
+        return $this->hasElement('shipping_discount');
+    }
+
     public function hasAppliedCoupon(string $couponCode): bool
     {
         return $this->hasElement('applied_coupon') &&
@@ -218,6 +223,7 @@ class OnePageCheckoutPage extends Page implements OnePageCheckoutPageInterface
             'shipping_address_book' => '[data-test-shipping-address] [data-test-address-book]',
             'shipping_city' => '[data-test-shipping-address] [data-test-city]',
             'shipping_country' => '[data-test-shipping-address] [data-test-country]',
+            'shipping_discount' => '[data-test-shipping-discount]',
             'shipping_first_name' => '[data-test-shipping-address] [data-test-first-name]',
             'shipping_last_name' => '[data-test-shipping-address] [data-test-last-name]',
             'shipping_method' => '[data-test-shipping-method="%name%"]',
