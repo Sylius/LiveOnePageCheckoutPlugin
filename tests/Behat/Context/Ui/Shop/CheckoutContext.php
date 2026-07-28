@@ -216,6 +216,18 @@ final readonly class CheckoutContext implements Context
         Assert::false($this->onePageCheckoutPage->hasPromotionDiscount());
     }
 
+    #[Then('I should be given a shipping discount')]
+    public function iShouldBeGivenAShippingDiscount(): void
+    {
+        Assert::true($this->onePageCheckoutPage->hasShippingDiscount());
+    }
+
+    #[Then('I should not be given a shipping discount')]
+    public function iShouldNotBeGivenAShippingDiscount(): void
+    {
+        Assert::false($this->onePageCheckoutPage->hasShippingDiscount());
+    }
+
     #[Then('the :couponCode coupon should be used')]
     public function theCouponShouldBeUsed(string $couponCode): void
     {

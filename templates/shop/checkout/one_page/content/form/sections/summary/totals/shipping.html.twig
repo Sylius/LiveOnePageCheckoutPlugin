@@ -8,6 +8,11 @@
             {{ ux_icon('tabler:truck', { class: 'icon icon-sm text-body-tertiary' }) }}
             {{ 'sylius.ui.shipping_estimated_cost'|trans }}
         </div>
-        <div class="ms-auto">{{ money.convertAndFormat(order.shippingTotal) }}</div>
+        <div class="ms-auto">
+            {% if order.getAdjustmentsTotal('shipping') > order.shippingTotal %}
+                <del {{ sylius_test_html_attribute('shipping-discount') }}>{{ money.convertAndFormat(order.getAdjustmentsTotal('shipping')) }}</del>
+            {% endif %}
+            <span>{{ money.convertAndFormat(order.shippingTotal) }}</span>
+        </div>
     </div>
 {% endif %}
