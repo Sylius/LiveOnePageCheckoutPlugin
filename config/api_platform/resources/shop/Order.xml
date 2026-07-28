@@ -19,7 +19,7 @@
     <resource class="%sylius.model.order.class%">
         <operations>
             <operation
-                name="sylius_api_shop_one_page_checkout_preview"
+                name="sylius_live_one_page_checkout_api_shop_order_preview"
                 class="ApiPlatform\Metadata\Patch"
                 uriTemplate="/shop/orders/{tokenValue}/one-page/preview"
                 input="Sylius\LiveOnePageCheckoutPlugin\Api\Command\Checkout"
@@ -57,7 +57,7 @@
             </operation>
 
             <operation
-                name="sylius_api_shop_one_page_checkout_complete"
+                name="sylius_live_one_page_checkout_api_shop_order_complete"
                 class="ApiPlatform\Metadata\Patch"
                 uriTemplate="/shop/orders/{tokenValue}/one-page/complete"
                 messenger="input"
