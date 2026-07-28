@@ -116,6 +116,9 @@ Installation guide
    The recipe registers the bundle, imports the plugin config and routing, and adds the plugin's
    Shop assets import to `assets/shop/entrypoint.js` for you, so there is nothing to wire by hand.
 
+1. If your application registers custom order processors that affect price, promotions,
+   shipping or taxes, tag them accordingly - see [Custom order processors](#custom-order-processors).
+
 1. Rebuild the cache to display all new translations correctly:
 
     ```bash
@@ -265,11 +268,43 @@ Don't want to use recipes or Rector? You can still follow the legacy installatio
 
 1. Run `yarn encore dev` or `yarn encore production`
 
+1. If your application registers custom order processors that affect price, promotions,
+   shipping or taxes, tag them accordingly - see [Custom order processors](#custom-order-processors).
+
 1. Rebuild the cache to display all new translations correctly:
 
     ```bash
     bin/console cache:clear
     ```
+
+## Custom order processors
+
+The plugin does not reuse Sylius' core order processor composite (`sylius.order_processing.order_processor.composite`)
+for its live recalculation. Instead it builds its own composite,
+`sylius_live_one_page_checkout.order_processing.order_processor.composite`, populated only with an
+explicit whitelist of core processors (adjustments clearer, prices recalculator, shipping charges,
+promotion, taxes, checkout payment) - see `SyliusLiveOnePageCheckoutPlugin::build()`. Notably it
+**excludes** the core shipping-method default-setter processor, since auto-selecting a shipping
+method there conflicts with the live-updating one-page UI.
+
+This means: if your application registers a **custom** order processor that affects the price,
+promotions, shipping or taxes (i.e. anything that ends up in the order state hash, see
+`Provider/OrderHashDataProvider`), tagging it with the core `sylius.order_processor` tag alone is
+**not enough** for the one-page checkout. You must also tag it with
+`sylius_live_one_page_checkout.order_processor` (with an appropriate priority) so it's included in
+the plugin's composite:
+
+```yaml
+services:
+    App\OrderProcessing\MyCustomProcessor:
+        tags:
+            - { name: sylius.order_processor, priority: 15 }
+            - { name: sylius_live_one_page_checkout.order_processor, priority: 15 }
+```
+
+Without this, the Live Component's `FormComponent` will compute totals/hash without your
+processor's effect, while `OrderIntegrityChecker` (which still uses the full core composite) will
+compute them with it - causing a false `state_mismatch` redirect on every checkout submission.
 
 ## API
 

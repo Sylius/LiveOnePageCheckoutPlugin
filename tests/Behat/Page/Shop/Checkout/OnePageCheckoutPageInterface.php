@@ -55,6 +55,8 @@ interface OnePageCheckoutPageInterface extends PageInterface
 
     public function hasPromotionDiscount(): bool;
 
+    public function hasShippingDiscount(): bool;
+
     public function hasAppliedCoupon(string $couponCode): bool;
 
     public function hasPaymentMethod(string $paymentMethodName): bool;
