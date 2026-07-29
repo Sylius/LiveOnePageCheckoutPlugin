@@ -24,7 +24,7 @@ final class PromotionCouponEligibilityTest extends JsonApiTestCase
         parent::setUp();
     }
 
-    public function testDoesNotAllowReusingOncePerCustomerCouponInPreviewAfterFirstOrderIsPlaced(): void
+    public function testGuestDoesNotAllowReusingOncePerCustomerCouponInPreviewAfterFirstOrderIsPlaced(): void
     {
         $this->loadFixturesFromFiles([
             'channel.yaml',
@@ -54,7 +54,7 @@ final class PromotionCouponEligibilityTest extends JsonApiTestCase
         ]);
     }
 
-    public function testAllowsDifferentCustomerToUseOncePerCustomerCouponAfterAnotherCustomerAlreadyUsedIt(): void
+    public function testGuestAllowsDifferentCustomerToUseOncePerCustomerCouponAfterAnotherCustomerAlreadyUsedIt(): void
     {
         $this->loadFixturesFromFiles([
             'channel.yaml',
@@ -78,6 +78,98 @@ final class PromotionCouponEligibilityTest extends JsonApiTestCase
         );
 
         self::assertSame(200, $this->client()->getResponse()->getStatusCode(), (string) $this->client()->getResponse()->getContent());
+    }
+
+    public function testGuestDoesNotAllowReusingOncePerCustomerCouponOnDirectCompleteWithoutPriorPreview(): void
+    {
+        $this->loadFixturesFromFiles([
+            'channel.yaml',
+            'country.yaml',
+            'product.yaml',
+            'shipping_method.yaml',
+            'payment_method.yaml',
+            'promotion_coupon.yaml',
+        ]);
+
+        $email = 'direct-complete-reuse@example.com';
+
+        $this->completeCheckoutWithCoupon(tokenValue: 'ONCE_PER_CUSTOMER_DIRECT_FIRST', email: $email);
+
+        $secondTokenValue = $this->pickUpCartWithItem(tokenValue: 'ONCE_PER_CUSTOMER_DIRECT_SECOND');
+
+        $this->requestPatch(
+            uri: sprintf('/api/v2/shop/orders/%s/one-page/complete', $secondTokenValue),
+            body: [
+                'email' => $email,
+                'shippingAddress' => $this->address(),
+                'billingAddress' => $this->address(),
+                'shipments' => [['methodCode' => 'UPS']],
+                'payments' => [['methodCode' => 'CASH_ON_DELIVERY']],
+                'couponCode' => 'ONCE_PER_CUSTOMER',
+            ],
+        );
+
+        $this->assertResponseViolations([
+            ['propertyPath' => 'couponCode', 'message' => 'Coupon code is invalid.'],
+        ]);
+    }
+
+    public function testLoggedInCustomerDoesNotAllowReusingOncePerCustomerCouponInPreview(): void
+    {
+        $this->loadFixturesFromFiles([
+            'channel.yaml',
+            'country.yaml',
+            'product.yaml',
+            'shipping_method.yaml',
+            'payment_method.yaml',
+            'promotion_coupon.yaml',
+            'customer.yaml',
+            'shop_user.yaml',
+        ]);
+
+        $email = 'jane@example.com';
+        $token = $this->generateJwtTokenForShopUserEmail($email);
+        $authHeaders = ['HTTP_AUTHORIZATION' => sprintf('Bearer %s', $token)];
+
+        $firstTokenValue = $this->pickUpCartWithItem(tokenValue: 'ONCE_PER_CUSTOMER_LOGGED_IN_FIRST', customerEmail: $email);
+
+        $body = [
+            'email' => $email,
+            'shippingAddress' => $this->address(),
+            'billingAddress' => $this->address(),
+            'shipments' => [['methodCode' => 'UPS']],
+            'payments' => [['methodCode' => 'CASH_ON_DELIVERY']],
+            'couponCode' => 'ONCE_PER_CUSTOMER',
+        ];
+
+        $this->requestPatch(
+            uri: sprintf('/api/v2/shop/orders/%s/one-page/preview', $firstTokenValue),
+            body: $body,
+            headers: $authHeaders,
+        );
+
+        /** @var array{hash: string} $previewContent */
+        $previewContent = json_decode((string) $this->client()->getResponse()->getContent(), true, flags: \JSON_THROW_ON_ERROR);
+
+        $this->requestPatch(
+            uri: sprintf('/api/v2/shop/orders/%s/one-page/complete', $firstTokenValue),
+            body: $body + ['hash' => $previewContent['hash']],
+            headers: $authHeaders,
+        );
+
+        self::assertSame(200, $this->client()->getResponse()->getStatusCode(), (string) $this->client()->getResponse()->getContent());
+
+        $secondTokenValue = $this->pickUpCartWithItem(tokenValue: 'ONCE_PER_CUSTOMER_LOGGED_IN_SECOND', customerEmail: $email);
+
+        $this->requestPatch(
+            uri: sprintf('/api/v2/shop/orders/%s/one-page/preview', $secondTokenValue),
+            body: $body,
+            headers: $authHeaders,
+        );
+
+        $this->assertResponseViolations([
+            ['propertyPath' => 'couponCode', 'message' => 'Coupon code is invalid.'],
+        ]);
     }
 
     private function completeCheckoutWithCoupon(string $tokenValue, string $email): void
