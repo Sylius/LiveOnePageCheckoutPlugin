@@ -58,6 +58,16 @@
                 <value>sylius_live_one_page_checkout_complete</value>
             </option>
         </constraint>
+        <constraint name="Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\ProductEligibility">
+            <option name="groups">
+                <value>sylius_live_one_page_checkout_complete</value>
+            </option>
+        </constraint>
+        <constraint name="Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\ItemAvailability">
+            <option name="groups">
+                <value>sylius_live_one_page_checkout_complete</value>
+            </option>
+        </constraint>
         <property name="shippingAddress">
             <constraint name="Valid" />
         </property>

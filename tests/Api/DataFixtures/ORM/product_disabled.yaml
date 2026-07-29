@@ -1,0 +1,84 @@
+Sylius\Component\Core\Model\Product:
+    product_disabled:
+        code: 'DISABLED_PRODUCT'
+        enabled: false
+        channels: ['@channel_web']
+        currentLocale: 'en_US'
+    product_variant_disabled_owner:
+        code: 'VARIANT_DISABLED_PRODUCT'
+        enabled: true
+        channels: ['@channel_web']
+        currentLocale: 'en_US'
+    product_not_in_channel:
+        code: 'NOT_IN_CHANNEL_PRODUCT'
+        enabled: true
+        channels: []
+        currentLocale: 'en_US'
+
+Sylius\Component\Core\Model\ProductTranslation:
+    product_translation_disabled:
+        locale: 'en_US'
+        translatable: '@product_disabled'
+        slug: 'disabled-product'
+        name: 'Disabled Product'
+    product_translation_variant_disabled_owner:
+        locale: 'en_US'
+        translatable: '@product_variant_disabled_owner'
+        slug: 'variant-disabled-product'
+        name: 'Variant Disabled Product'
+    product_translation_not_in_channel:
+        locale: 'en_US'
+        translatable: '@product_not_in_channel'
+        slug: 'not-in-channel-product'
+        name: 'Not In Channel Product'
+
+Sylius\Component\Core\Model\ProductVariant:
+    product_variant_disabled_product:
+        code: 'DISABLED_PRODUCT_VARIANT'
+        product: '@product_disabled'
+        enabled: true
+        currentLocale: 'en_US'
+        shippingRequired: true
+        channelPricings:
+            WEB: '@channel_pricing_disabled_product'
+    product_variant_disabled:
+        code: 'DISABLED_VARIANT'
+        product: '@product_variant_disabled_owner'
+        enabled: false
+        currentLocale: 'en_US'
+        shippingRequired: true
+        channelPricings:
+            WEB: '@channel_pricing_disabled_variant'
+    product_variant_not_in_channel:
+        code: 'NOT_IN_CHANNEL_VARIANT'
+        product: '@product_not_in_channel'
+        enabled: true
+        currentLocale: 'en_US'
+        shippingRequired: true
+        channelPricings:
+            WEB: '@channel_pricing_not_in_channel'
+
+Sylius\Component\Product\Model\ProductVariantTranslation:
+    product_variant_translation_disabled_product:
+        locale: 'en_US'
+        name: 'Disabled Product Variant'
+        translatable: '@product_variant_disabled_product'
+    product_variant_translation_disabled:
+        locale: 'en_US'
+        name: 'Disabled Variant'
+        translatable: '@product_variant_disabled'
+    product_variant_translation_not_in_channel:
+        locale: 'en_US'
+        name: 'Not In Channel Variant'
+        translatable: '@product_variant_not_in_channel'
+
+Sylius\Component\Core\Model\ChannelPricing:
+    channel_pricing_disabled_product:
+        channelCode: 'WEB'
+        price: 1000
+    channel_pricing_disabled_variant:
+        channelCode: 'WEB'
+        price: 1000
+    channel_pricing_not_in_channel:
+        channelCode: 'WEB'
+        price: 1000
