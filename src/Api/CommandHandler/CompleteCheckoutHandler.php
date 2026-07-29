@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Sylius\LiveOnePageCheckoutPlugin\Api\CommandHandler;
 
+use ApiPlatform\Validator\ValidatorInterface;
 use Sylius\Abstraction\StateMachine\StateMachineInterface;
 use Sylius\Bundle\ApiBundle\Event\OrderCompleted;
 use Sylius\Component\Core\Model\OrderInterface;
@@ -40,6 +41,7 @@ final readonly class CompleteCheckoutHandler
         private OrderConsistencyCheckerInterface $consistencyChecker,
         private StateMachineInterface $stateMachine,
         private MessageBusInterface $eventBus,
+        private ValidatorInterface $validator,
     ) {
     }
 
@@ -54,6 +56,8 @@ final readonly class CompleteCheckoutHandler
         $this->orderObjectsEnsurer->ensure($order);
         $this->checkoutApplier->apply($order, $command);
 
+        $this->validator->validate($order, ['groups' => ['sylius', 'sylius_checkout_complete']]);
+
         Assert::notNull($order->getCustomer(), 'Please enter your email before completing the order.');
 
         $this->orderProcessor->process($order);
@@ -61,11 +65,6 @@ final readonly class CompleteCheckoutHandler
         if (!$this->consistencyChecker->isConsistent($order, $command->hash ?? '')) {
             throw new OrderStateMismatchException();
         }
-
-        Assert::true(
-            $this->stateMachine->can($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_COMPLETE),
-            sprintf('Order with %s token cannot be completed.', $command->orderTokenValue),
-        );
 
         $this->stateMachine->apply($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_COMPLETE);
 

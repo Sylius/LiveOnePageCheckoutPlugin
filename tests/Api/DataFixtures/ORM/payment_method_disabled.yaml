@@ -1,0 +1,21 @@
+Sylius\Bundle\PayumBundle\Model\GatewayConfig:
+    gateway_disabled_method:
+        gatewayName: 'Disabled Method'
+        factoryName: 'offline'
+        config: []
+
+Sylius\Component\Payment\Model\PaymentMethodTranslation:
+    payment_method_disabled_translation:
+        name: 'Disabled Method'
+        locale: 'en_US'
+        description: 'Not enabled for this channel'
+        translatable: '@payment_method_disabled'
+
+Sylius\Component\Core\Model\PaymentMethod:
+    payment_method_disabled:
+        code: 'DISABLED_METHOD'
+        enabled: false
+        gatewayConfig: '@gateway_disabled_method'
+        currentLocale: 'en_US'
+        translations: ['@payment_method_disabled_translation']
+        channels: ['@channel_web']

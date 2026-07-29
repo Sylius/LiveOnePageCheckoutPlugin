@@ -38,7 +38,12 @@ final class CompleteCheckoutEmailTest extends JsonApiTestCase
 
         $this->requestPatch(
             uri: sprintf('/api/v2/shop/orders/%s/one-page/complete', $tokenValue),
-            body: [],
+            body: [
+                'shippingAddress' => $this->address(),
+                'billingAddress' => $this->address(),
+                'shipments' => [['methodCode' => 'UPS']],
+                'payments' => [['methodCode' => 'CASH_ON_DELIVERY']],
+            ],
         );
 
         $this->assertResponseViolations([
@@ -62,6 +67,10 @@ final class CompleteCheckoutEmailTest extends JsonApiTestCase
             uri: sprintf('/api/v2/shop/orders/%s/one-page/complete', $tokenValue),
             body: [
                 'email' => 'not-a-valid-email',
+                'shippingAddress' => $this->address(),
+                'billingAddress' => $this->address(),
+                'shipments' => [['methodCode' => 'UPS']],
+                'payments' => [['methodCode' => 'CASH_ON_DELIVERY']],
             ],
         );
 
@@ -86,6 +95,10 @@ final class CompleteCheckoutEmailTest extends JsonApiTestCase
             uri: sprintf('/api/v2/shop/orders/%s/one-page/complete', $tokenValue),
             body: [
                 'email' => sprintf('%s@example.com', str_repeat('a', 250)),
+                'shippingAddress' => $this->address(),
+                'billingAddress' => $this->address(),
+                'shipments' => [['methodCode' => 'UPS']],
+                'payments' => [['methodCode' => 'CASH_ON_DELIVERY']],
             ],
         );
 
@@ -93,5 +106,20 @@ final class CompleteCheckoutEmailTest extends JsonApiTestCase
             ['propertyPath' => 'email', 'message' => 'Email must not be longer than 254 characters.'],
             ['propertyPath' => 'email', 'message' => 'This email is invalid.'],
         ]);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function address(): array
+    {
+        return [
+            'firstName' => 'John',
+            'lastName' => 'Doe',
+            'city' => 'New York',
+            'street' => 'Avenue',
+            'postcode' => '90000',
+            'countryCode' => 'US',
+        ];
     }
 }
