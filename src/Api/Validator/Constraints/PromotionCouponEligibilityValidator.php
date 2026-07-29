@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints;
 
 use Sylius\Bundle\ApiBundle\Checker\AppliedCouponEligibilityCheckerInterface;
+use Sylius\Bundle\CoreBundle\Resolver\CustomerResolverInterface;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\PromotionCouponInterface;
 use Sylius\Component\Core\Repository\OrderRepositoryInterface;
@@ -33,6 +34,7 @@ final class PromotionCouponEligibilityValidator extends ConstraintValidator
         private PromotionCouponRepositoryInterface $promotionCouponRepository,
         private OrderRepositoryInterface $orderRepository,
         private AppliedCouponEligibilityCheckerInterface $appliedCouponEligibilityChecker,
+        private CustomerResolverInterface $customerResolver,
     ) {
     }
 
@@ -63,6 +65,10 @@ final class PromotionCouponEligibilityValidator extends ConstraintValidator
 
         if (!$cart instanceof OrderInterface) {
             return;
+        }
+
+        if (null !== $value->email && '' !== $value->email) {
+            $cart->setCustomer($this->customerResolver->resolve($value->email));
         }
 
         $cart->setPromotionCoupon($promotionCoupon);

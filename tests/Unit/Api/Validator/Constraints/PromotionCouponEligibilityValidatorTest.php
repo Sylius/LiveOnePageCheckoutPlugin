@@ -15,6 +15,8 @@ namespace Tests\Sylius\LiveOnePageCheckoutPlugin\Unit\Api\Validator\Constraints;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use Sylius\Bundle\ApiBundle\Checker\AppliedCouponEligibilityCheckerInterface;
+use Sylius\Bundle\CoreBundle\Resolver\CustomerResolverInterface;
+use Sylius\Component\Core\Model\CustomerInterface;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\PromotionCouponInterface;
 use Sylius\Component\Core\Repository\OrderRepositoryInterface;
@@ -38,11 +40,14 @@ final class PromotionCouponEligibilityValidatorTest extends ConstraintValidatorT
 
     private AppliedCouponEligibilityCheckerInterface&MockObject $appliedCouponEligibilityChecker;
 
+    private CustomerResolverInterface&MockObject $customerResolver;
+
     protected function setUp(): void
     {
         $this->promotionCouponRepository = $this->createMock(PromotionCouponRepositoryInterface::class);
         $this->orderRepository = $this->createMock(OrderRepositoryInterface::class);
         $this->appliedCouponEligibilityChecker = $this->createMock(AppliedCouponEligibilityCheckerInterface::class);
+        $this->customerResolver = $this->createMock(CustomerResolverInterface::class);
 
         parent::setUp();
     }
@@ -53,6 +58,7 @@ final class PromotionCouponEligibilityValidatorTest extends ConstraintValidatorT
             $this->promotionCouponRepository,
             $this->orderRepository,
             $this->appliedCouponEligibilityChecker,
+            $this->customerResolver,
         );
     }
 
@@ -174,5 +180,48 @@ final class PromotionCouponEligibilityValidatorTest extends ConstraintValidatorT
         $this->buildViolation('sylius.promotion_coupon.is_invalid')
             ->atPath('property.path.couponCode')
             ->assertRaised();
+    }
+
+    public function testResolvesAndSetsCustomerWhenEmailIsProvidedBeforeCheckingEligibility(): void
+    {
+        $coupon = $this->createMock(PromotionCouponInterface::class);
+        $cart = $this->createMock(OrderInterface::class);
+        $customer = $this->createMock(CustomerInterface::class);
+        $command = new Checkout(orderTokenValue: 'token123', email: 'shop@example.com', couponCode: 'SUMMER_SALE');
+
+        $this->promotionCouponRepository->method('findOneBy')->willReturn($coupon);
+        $this->orderRepository->method('findCartByTokenValue')->willReturn($cart);
+
+        $this->customerResolver->expects(self::once())
+            ->method('resolve')
+            ->with('shop@example.com')
+            ->willReturn($customer)
+        ;
+        $cart->expects(self::once())->method('setCustomer')->with($customer);
+
+        $this->appliedCouponEligibilityChecker->method('isEligible')->willReturn(true);
+
+        $this->validator->validate($command, new PromotionCouponEligibility());
+
+        $this->assertNoViolation();
+    }
+
+    public function testDoesNotResolveCustomerWhenEmailIsNotProvided(): void
+    {
+        $coupon = $this->createMock(PromotionCouponInterface::class);
+        $cart = $this->createMock(OrderInterface::class);
+        $command = new Checkout(orderTokenValue: 'token123', couponCode: 'SUMMER_SALE');
+
+        $this->promotionCouponRepository->method('findOneBy')->willReturn($coupon);
+        $this->orderRepository->method('findCartByTokenValue')->willReturn($cart);
+
+        $this->customerResolver->expects(self::never())->method('resolve');
+        $cart->expects(self::never())->method('setCustomer');
+
+        $this->appliedCouponEligibilityChecker->method('isEligible')->willReturn(true);
+
+        $this->validator->validate($command, new PromotionCouponEligibility());
+
+        $this->assertNoViolation();
     }
 }
