@@ -42,6 +42,7 @@ final readonly class CompleteCheckoutHandler
         private StateMachineInterface $stateMachine,
         private MessageBusInterface $eventBus,
         private ValidatorInterface $validator,
+        private array $validationGroups,
     ) {
     }
 
@@ -56,7 +57,7 @@ final readonly class CompleteCheckoutHandler
         $this->orderObjectsEnsurer->ensure($order);
         $this->checkoutApplier->apply($order, $command);
 
-        $this->validator->validate($order, ['groups' => ['sylius', 'sylius_checkout_complete']]);
+        $this->validator->validate($order, ['groups' => $this->validationGroups]);
 
         Assert::notNull($order->getCustomer(), 'Please enter your email before completing the order.');
 

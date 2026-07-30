@@ -190,6 +190,11 @@ return static function (ContainerConfigurator $container): void {
             service('sylius_live_one_page_checkout.checker.order_consistency'),
             service('sylius_abstraction.state_machine'),
             service('sylius.event_bus'),
+            service('api_platform.validator'),
+            [
+                'sylius',
+                'sylius_checkout_complete',
+            ],
         ])
         ->tag('messenger.message_handler', ['bus' => 'sylius.command_bus'])
     ;
