@@ -75,7 +75,7 @@ final class ShippingMethodEligibilityTest extends JsonApiTestCase
         );
 
         $this->assertResponseViolations([
-            ['propertyPath' => 'shipments[0].method', 'message' => 'Please select shipping method.'],
+            ['propertyPath' => 'shipments', 'message' => 'The shipping method with BOGUS_CODE_XYZ code does not exist.'],
         ]);
     }
 

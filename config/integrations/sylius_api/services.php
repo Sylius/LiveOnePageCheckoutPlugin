@@ -239,6 +239,7 @@ return static function (ContainerConfigurator $container): void {
         ->set('sylius_live_one_page_checkout.api.validator.shipping_method_required', ShippingMethodRequiredValidator::class)
         ->args([
             service('sylius.repository.order'),
+            service('sylius.repository.shipping_method'),
         ])
         ->tag('validator.constraint_validator', ['alias' => 'sylius_live_one_page_checkout_api_shipping_method_required'])
     ;

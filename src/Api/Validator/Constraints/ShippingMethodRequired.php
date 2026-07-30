@@ -20,6 +20,8 @@ final class ShippingMethodRequired extends Constraint
 {
     public string $message = 'sylius.shipment.shipping_method.not_blank';
 
+    public string $notExistMessage = 'sylius.shipping_method.not_found';
+
     public function validatedBy(): string
     {
         return 'sylius_live_one_page_checkout_api_shipping_method_required';
