@@ -59,6 +59,7 @@ final class OrderNotEmptyTest extends JsonApiTestCase
 
         $this->assertResponseViolations([
             ['propertyPath' => '', 'message' => 'An empty order cannot be processed.'],
+            ['propertyPath' => 'payments', 'message' => 'Please select a payment method.'],
         ]);
     }
 

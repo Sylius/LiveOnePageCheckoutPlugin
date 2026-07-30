@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints;
 
-use Sylius\Component\Core\Model\OrderInterface;
-use Sylius\Component\Core\Repository\OrderRepositoryInterface;
+use Sylius\Component\Core\Model\PaymentMethodInterface;
+use Sylius\Component\Core\Repository\PaymentMethodRepositoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Command\Checkout;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
@@ -22,9 +22,9 @@ use Webmozart\Assert\Assert;
 
 final class PaymentMethodRequiredValidator extends ConstraintValidator
 {
-    /** @param OrderRepositoryInterface<OrderInterface> $orderRepository */
+    /** @param PaymentMethodRepositoryInterface<PaymentMethodInterface> $paymentMethodRepository */
     public function __construct(
-        private OrderRepositoryInterface $orderRepository,
+        private PaymentMethodRepositoryInterface $paymentMethodRepository,
     ) {
     }
 
@@ -35,19 +35,34 @@ final class PaymentMethodRequiredValidator extends ConstraintValidator
         /** @var PaymentMethodRequired $constraint */
         Assert::isInstanceOf($constraint, PaymentMethodRequired::class);
 
-        $order = $this->orderRepository->findCartByTokenValue($value->orderTokenValue);
+        if ([] === $value->payments) {
+            $this->context
+                ->buildViolation($constraint->message)
+                ->atPath('payments')
+                ->addViolation()
+            ;
 
-        if (!$order instanceof OrderInterface) {
             return;
         }
 
-        for ($index = 0; $index < $order->getPayments()->count(); ++$index) {
-            $code = $value->payments[$index]['methodCode'] ?? null;
+        foreach ($value->payments as $data) {
+            $code = $data['methodCode'] ?? null;
 
             if (null === $code || '' === trim($code)) {
                 $this->context
                     ->buildViolation($constraint->message)
                     ->atPath('payments')
+                    ->addViolation()
+                ;
+
+                continue;
+            }
+
+            if (null === $this->paymentMethodRepository->findOneBy(['code' => $code])) {
+                $this->context
+                    ->buildViolation($constraint->notExistMessage)
+                    ->atPath('payments')
+                    ->setParameter('%code%', $code)
                     ->addViolation()
                 ;
             }

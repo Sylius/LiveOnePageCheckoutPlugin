@@ -75,7 +75,7 @@ final class PaymentMethodEligibilityTest extends JsonApiTestCase
         );
 
         $this->assertResponseViolations([
-            ['propertyPath' => 'payments[0].method', 'message' => 'Please select a payment method.'],
+            ['propertyPath' => 'payments', 'message' => 'The payment method with BOGUS_CODE_XYZ code does not exist.'],
         ]);
     }
 

@@ -246,7 +246,7 @@ return static function (ContainerConfigurator $container): void {
     $services
         ->set('sylius_live_one_page_checkout.api.validator.payment_method_required', PaymentMethodRequiredValidator::class)
         ->args([
-            service('sylius.repository.order'),
+            service('sylius.repository.payment_method'),
         ])
         ->tag('validator.constraint_validator', ['alias' => 'sylius_live_one_page_checkout_api_payment_method_required'])
     ;

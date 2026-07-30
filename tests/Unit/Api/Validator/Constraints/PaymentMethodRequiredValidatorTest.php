@@ -13,11 +13,9 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\LiveOnePageCheckoutPlugin\Unit\Api\Validator\Constraints;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\MockObject\MockObject;
-use Sylius\Component\Core\Model\OrderInterface;
-use Sylius\Component\Core\Model\PaymentInterface;
-use Sylius\Component\Core\Repository\OrderRepositoryInterface;
+use Sylius\Component\Core\Model\PaymentMethodInterface;
+use Sylius\Component\Core\Repository\PaymentMethodRepositoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Command\Checkout;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\PaymentMethodRequired;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\PaymentMethodRequiredValidator;
@@ -29,40 +27,41 @@ use Symfony\Component\Validator\Test\ConstraintValidatorTestCase;
  */
 final class PaymentMethodRequiredValidatorTest extends ConstraintValidatorTestCase
 {
-    /** @var OrderRepositoryInterface<OrderInterface>&MockObject */
-    private OrderRepositoryInterface&MockObject $orderRepository;
+    /** @var PaymentMethodRepositoryInterface<PaymentMethodInterface>&MockObject */
+    private PaymentMethodRepositoryInterface&MockObject $paymentMethodRepository;
 
     protected function setUp(): void
     {
-        $this->orderRepository = $this->createMock(OrderRepositoryInterface::class);
+        $this->paymentMethodRepository = $this->createMock(PaymentMethodRepositoryInterface::class);
 
         parent::setUp();
     }
 
     protected function createValidator(): ConstraintValidatorInterface
     {
-        return new PaymentMethodRequiredValidator($this->orderRepository);
+        return new PaymentMethodRequiredValidator($this->paymentMethodRepository);
     }
 
-    public function testNoViolationWhenOrderNotFound(): void
+    public function testViolationWhenNoPaymentsProvided(): void
     {
-        $command = new Checkout(orderTokenValue: 'token123');
+        $command = new Checkout(orderTokenValue: 'token123', payments: []);
 
-        $this->orderRepository->method('findCartByTokenValue')->willReturn(null);
+        $this->paymentMethodRepository->expects(self::never())->method('findOneBy');
 
         $this->validator->validate($command, new PaymentMethodRequired());
 
-        $this->assertNoViolation();
+        $this->buildViolation('sylius.payment.method.not_blank')
+            ->atPath('property.path.payments')
+            ->assertRaised()
+        ;
     }
 
     public function testViolationWhenPaymentMethodCodeIsMissing(): void
     {
-        $order = $this->createMock(OrderInterface::class);
-        $order->method('getPayments')->willReturn(new ArrayCollection([$this->createMock(PaymentInterface::class)]));
+        $command = new Checkout(orderTokenValue: 'token123', payments: [[]]);
 
-        $this->orderRepository->method('findCartByTokenValue')->willReturn($order);
+        $this->paymentMethodRepository->expects(self::never())->method('findOneBy');
 
-        $command = new Checkout(orderTokenValue: 'token123', payments: []);
         $this->validator->validate($command, new PaymentMethodRequired());
 
         $this->buildViolation('sylius.payment.method.not_blank')
@@ -73,12 +72,10 @@ final class PaymentMethodRequiredValidatorTest extends ConstraintValidatorTestCa
 
     public function testViolationWhenPaymentMethodCodeIsBlank(): void
     {
-        $order = $this->createMock(OrderInterface::class);
-        $order->method('getPayments')->willReturn(new ArrayCollection([$this->createMock(PaymentInterface::class)]));
-
-        $this->orderRepository->method('findCartByTokenValue')->willReturn($order);
-
         $command = new Checkout(orderTokenValue: 'token123', payments: [['methodCode' => '  ']]);
+
+        $this->paymentMethodRepository->expects(self::never())->method('findOneBy');
+
         $this->validator->validate($command, new PaymentMethodRequired());
 
         $this->buildViolation('sylius.payment.method.not_blank')
@@ -87,15 +84,30 @@ final class PaymentMethodRequiredValidatorTest extends ConstraintValidatorTestCa
         ;
     }
 
+    public function testViolationWhenPaymentMethodCodeDoesNotExist(): void
+    {
+        $this->paymentMethodRepository->expects(self::once())
+            ->method('findOneBy')
+            ->with(['code' => 'UNKNOWN'])
+            ->willReturn(null)
+        ;
+
+        $command = new Checkout(orderTokenValue: 'token123', payments: [['methodCode' => 'UNKNOWN']]);
+        $this->validator->validate($command, new PaymentMethodRequired());
+
+        $this->buildViolation('sylius.payment_method.not_exist')
+            ->atPath('property.path.payments')
+            ->setParameter('%code%', 'UNKNOWN')
+            ->assertRaised()
+        ;
+    }
+
     public function testNoViolationWhenPaymentMethodCodeIsProvidedForEveryPayment(): void
     {
-        $order = $this->createMock(OrderInterface::class);
-        $order->method('getPayments')->willReturn(new ArrayCollection([
-            $this->createMock(PaymentInterface::class),
-            $this->createMock(PaymentInterface::class),
-        ]));
-
-        $this->orderRepository->method('findCartByTokenValue')->willReturn($order);
+        $this->paymentMethodRepository->expects(self::exactly(2))
+            ->method('findOneBy')
+            ->willReturn($this->createMock(PaymentMethodInterface::class))
+        ;
 
         $command = new Checkout(orderTokenValue: 'token123', payments: [
             ['methodCode' => 'CASH_ON_DELIVERY'],
