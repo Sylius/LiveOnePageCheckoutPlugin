@@ -40,7 +40,7 @@
                 </option>
             </constraint>
         </property>
-        <constraint name="Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\PromotionCouponEligibility">
+        <constraint name="Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\PromotionCouponExists">
             <option name="groups">
                 <value>sylius_live_one_page_checkout_preview</value>
                 <value>sylius_live_one_page_checkout_complete</value>
