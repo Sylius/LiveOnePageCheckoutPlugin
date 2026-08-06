@@ -62,21 +62,24 @@ final class CheckoutCompletionGuardTest extends TestCase
         self::assertFalse($event->isBlocked());
     }
 
-    public function testIgnoresCompletionThatDoesNotOriginateFromCart(): void
+    public function testBlocksStandardCompletionWhenChannelHasOnePageCheckoutEnabled(): void
     {
-        $this->checkoutEnabledChecker->expects(self::never())->method('isEnabled');
+        $channel = new Channel();
+        $this->checkoutEnabledChecker->method('isEnabled')->with($channel)->willReturn(true);
 
-        $order = $this->createMock(OrderInterface::class);
-        $order->expects(self::never())->method('getChannel');
+        $event = $this->createStandardCompletionEvent($channel);
 
-        $event = $this->createEvent(
-            $order,
-            new Transition(
-                OrderCheckoutTransitions::TRANSITION_COMPLETE,
-                OrderCheckoutStates::STATE_PAYMENT_SELECTED,
-                OrderCheckoutStates::STATE_COMPLETED,
-            ),
-        );
+        ($this->guard)($event);
+
+        self::assertTrue($event->isBlocked());
+    }
+
+    public function testDoesNotBlockStandardCompletionWhenChannelHasOnePageCheckoutDisabled(): void
+    {
+        $channel = new Channel();
+        $this->checkoutEnabledChecker->method('isEnabled')->with($channel)->willReturn(false);
+
+        $event = $this->createStandardCompletionEvent($channel);
 
         ($this->guard)($event);
 
@@ -116,11 +119,28 @@ final class CheckoutCompletionGuardTest extends TestCase
         return $this->createEvent($order, $this->cartCompletionTransition());
     }
 
+    private function createStandardCompletionEvent(?ChannelOnePageCheckoutAwareInterface $channel): GuardEvent
+    {
+        $order = $this->createMock(OrderInterface::class);
+        $order->method('getChannel')->willReturn($channel);
+
+        return $this->createEvent($order, $this->standardCompletionTransition());
+    }
+
     private function cartCompletionTransition(): Transition
     {
         return new Transition(
             OrderCheckoutTransitions::TRANSITION_COMPLETE,
             OrderCheckoutStates::STATE_CART,
+            OrderCheckoutStates::STATE_COMPLETED,
+        );
+    }
+
+    private function standardCompletionTransition(): Transition
+    {
+        return new Transition(
+            OrderCheckoutTransitions::TRANSITION_COMPLETE,
+            OrderCheckoutStates::STATE_PAYMENT_SELECTED,
             OrderCheckoutStates::STATE_COMPLETED,
         );
     }

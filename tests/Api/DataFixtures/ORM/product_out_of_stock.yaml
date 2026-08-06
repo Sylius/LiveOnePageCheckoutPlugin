@@ -1,0 +1,37 @@
+Sylius\Component\Core\Model\Product:
+    product_out_of_stock:
+        code: 'OUT_OF_STOCK_PRODUCT'
+        enabled: true
+        channels: ['@channel_web']
+        currentLocale: 'en_US'
+
+Sylius\Component\Core\Model\ProductTranslation:
+    product_translation_out_of_stock:
+        locale: 'en_US'
+        translatable: '@product_out_of_stock'
+        slug: 'out-of-stock-product'
+        name: 'Out Of Stock Product'
+
+Sylius\Component\Core\Model\ProductVariant:
+    product_variant_out_of_stock:
+        code: 'OUT_OF_STOCK_VARIANT'
+        product: '@product_out_of_stock'
+        enabled: true
+        tracked: true
+        onHand: 0
+        onHold: 0
+        currentLocale: 'en_US'
+        shippingRequired: true
+        channelPricings:
+            WEB: '@channel_pricing_out_of_stock'
+
+Sylius\Component\Product\Model\ProductVariantTranslation:
+    product_variant_translation_out_of_stock:
+        locale: 'en_US'
+        name: 'Out Of Stock Variant'
+        translatable: '@product_variant_out_of_stock'
+
+Sylius\Component\Core\Model\ChannelPricing:
+    channel_pricing_out_of_stock:
+        channelCode: 'WEB'
+        price: 1000

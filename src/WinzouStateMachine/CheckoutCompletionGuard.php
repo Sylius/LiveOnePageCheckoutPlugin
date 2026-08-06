@@ -28,13 +28,12 @@ final readonly class CheckoutCompletionGuard
 
     public function __invoke(OrderInterface $order): bool
     {
-        if (OrderCheckoutStates::STATE_CART !== $order->getCheckoutState()) {
-            return true;
-        }
-
         $channel = $order->getChannel();
         Assert::isInstanceOf($channel, ChannelOnePageCheckoutAwareInterface::class);
 
-        return $this->checkoutEnabledChecker->isEnabled($channel);
+        $checkoutStateIsCart = OrderCheckoutStates::STATE_CART === $order->getCheckoutState();
+        $isEnabled = $this->checkoutEnabledChecker->isEnabled($channel);
+
+        return $checkoutStateIsCart === $isEnabled;
     }
 }

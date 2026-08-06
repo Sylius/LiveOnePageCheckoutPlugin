@@ -13,19 +13,18 @@ declare(strict_types=1);
 
 namespace Sylius\LiveOnePageCheckoutPlugin\Cart\Context;
 
-use Sylius\Component\Core\Model\CustomerInterface;
+use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Order\Context\ResettableCartContextInterface;
 use Sylius\Component\Order\Model\OrderInterface as BaseOrderInterface;
-use Sylius\LiveOnePageCheckoutPlugin\Checker\CheckoutEnabledCheckerInterface;
-use Sylius\LiveOnePageCheckoutPlugin\Entity\ChannelOnePageCheckoutAwareInterface;
+use Sylius\LiveOnePageCheckoutPlugin\Applier\DefaultShippingAddressApplierInterface;
 use Webmozart\Assert\Assert;
 
 final readonly class DefaultShippingAddressCartContext implements ResettableCartContextInterface
 {
     public function __construct(
         private ResettableCartContextInterface $decoratedContext,
-        private CheckoutEnabledCheckerInterface $checkoutEnabledChecker,
+        private DefaultShippingAddressApplierInterface $defaultShippingAddressApplier,
     ) {
     }
 
@@ -35,31 +34,9 @@ final readonly class DefaultShippingAddressCartContext implements ResettableCart
         Assert::isInstanceOf($cart, OrderInterface::class);
 
         $channel = $cart->getChannel();
-        Assert::isInstanceOf($channel, ChannelOnePageCheckoutAwareInterface::class);
+        Assert::isInstanceOf($channel, ChannelInterface::class);
 
-        if (false === $this->checkoutEnabledChecker->isEnabled($channel)) {
-            return $cart;
-        }
-
-        if (null !== $cart->getShippingAddress()) {
-            return $cart;
-        }
-
-        $customer = $cart->getCustomer();
-
-        if (!$customer instanceof CustomerInterface) {
-            return $cart;
-        }
-
-        $defaultAddress = $customer->getDefaultAddress();
-
-        if (null === $defaultAddress) {
-            return $cart;
-        }
-
-        $clonedAddress = clone $defaultAddress;
-        $clonedAddress->setCustomer(null);
-        $cart->setShippingAddress($clonedAddress);
+        $this->defaultShippingAddressApplier->apply($cart, $channel);
 
         return $cart;
     }

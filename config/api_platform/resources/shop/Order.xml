@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+
+ This file is part of the Sylius package.
+
+ (c) Sylius Sp. z o.o.
+
+ For the full copyright and license information, please view the LICENSE
+ file that was distributed with this source code.
+
+-->
+
+<resources
+    xmlns="https://api-platform.com/schema/metadata/resources-3.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="https://api-platform.com/schema/metadata/resources-3.0 https://api-platform.com/schema/metadata/resources-3.0.xsd"
+>
+    <resource class="%sylius.model.order.class%">
+        <operations>
+            <operation
+                name="sylius_live_one_page_checkout_api_shop_order_preview"
+                class="ApiPlatform\Metadata\Patch"
+                uriTemplate="/shop/orders/{tokenValue}/one-page/preview"
+                input="Sylius\LiveOnePageCheckoutPlugin\Api\Command\Checkout"
+                output="Sylius\LiveOnePageCheckoutPlugin\Api\DTO\CheckoutPreview"
+                processor="sylius_live_one_page_checkout.api.state_processor.preview_checkout"
+                securityPostDenormalize="is_granted('SYLIUS_ONE_PAGE_CHECKOUT_AVAILABLE', object)"
+            >
+                <denormalizationContext>
+                    <values>
+                        <value name="groups">
+                            <values>
+                                <value>sylius_live_one_page_checkout:shop:checkout:update</value>
+                            </values>
+                        </value>
+                    </values>
+                </denormalizationContext>
+                <normalizationContext>
+                    <values>
+                        <value name="groups">
+                            <values>
+                                <value>sylius_live_one_page_checkout:shop:checkout:show</value>
+                            </values>
+                        </value>
+                    </values>
+                </normalizationContext>
+                <validationContext>
+                    <values>
+                        <value name="groups">
+                            <values>
+                                <value>sylius_live_one_page_checkout_preview</value>
+                            </values>
+                        </value>
+                    </values>
+                </validationContext>
+            </operation>
+
+            <operation
+                name="sylius_live_one_page_checkout_api_shop_order_complete"
+                class="ApiPlatform\Metadata\Patch"
+                uriTemplate="/shop/orders/{tokenValue}/one-page/complete"
+                messenger="input"
+                input="Sylius\LiveOnePageCheckoutPlugin\Api\Command\Checkout"
+                securityPostDenormalize="is_granted('SYLIUS_ONE_PAGE_CHECKOUT_AVAILABLE', object)"
+            >
+                <denormalizationContext>
+                    <values>
+                        <value name="groups">
+                            <values>
+                                <value>sylius_live_one_page_checkout:shop:checkout:update</value>
+                            </values>
+                        </value>
+                    </values>
+                </denormalizationContext>
+                <normalizationContext>
+                    <values>
+                        <value name="groups">
+                            <values>
+                                <value>sylius:shop:cart:show</value>
+                            </values>
+                        </value>
+                    </values>
+                </normalizationContext>
+                <validationContext>
+                    <values>
+                        <value name="groups">
+                            <values>
+                                <value>sylius_live_one_page_checkout_complete</value>
+                                <value>sylius</value>
+                            </values>
+                        </value>
+                    </values>
+                </validationContext>
+            </operation>
+        </operations>
+    </resource>
+</resources>

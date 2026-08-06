@@ -29,20 +29,17 @@ final readonly class CheckoutCompletionGuard
 
     public function __invoke(GuardEvent $event): void
     {
-        if (!in_array(OrderCheckoutStates::STATE_CART, $event->getTransition()->getFroms(), true)) {
-            return;
-        }
-
         $order = $event->getSubject();
         Assert::isInstanceOf($order, OrderInterface::class);
 
         $channel = $order->getChannel();
         Assert::isInstanceOf($channel, ChannelOnePageCheckoutAwareInterface::class);
 
-        if ($this->checkoutEnabledChecker->isEnabled($channel)) {
-            return;
-        }
+        $transitionStartsFromCart = in_array(OrderCheckoutStates::STATE_CART, $event->getTransition()->getFroms(), true);
+        $isEnabled = $this->checkoutEnabledChecker->isEnabled($channel);
 
-        $event->setBlocked(true);
+        if ($transitionStartsFromCart !== $isEnabled) {
+            $event->setBlocked(true);
+        }
     }
 }

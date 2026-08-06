@@ -139,9 +139,7 @@ final class CheckoutType extends AbstractResourceType
         }
     }
 
-    /**
-     * @param array<string, mixed> $options
-     */
+    /** @param array<string, mixed> $options */
     private function buildCustomerAndAddressChoices(FormEvent $event, array $options): void
     {
         $form = $event->getForm();
@@ -181,9 +179,7 @@ final class CheckoutType extends AbstractResourceType
             !$this->addressComparator->equal($billingAddress, $shippingAddress);
     }
 
-    /**
-     * @param array<string, mixed> $options
-     */
+    /** @param array<string, mixed> $options */
     private function applySelectedDefaultAddress(FormEvent $event, array $options, string $scope): void
     {
         /** @var array<string, mixed> $orderData */
@@ -210,9 +206,7 @@ final class CheckoutType extends AbstractResourceType
         $event->setData($orderData);
     }
 
-    /**
-     * @param array<string, mixed> $options
-     */
+    /** @param array<string, mixed> $options */
     private function synchronizeAddresses(FormEvent $event, array $options): void
     {
         /** @var array<string, mixed> $orderData */
@@ -306,9 +300,7 @@ final class CheckoutType extends AbstractResourceType
         return null;
     }
 
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     private function buildAddressFormValues(AddressInterface $address): array
     {
         $values = [];

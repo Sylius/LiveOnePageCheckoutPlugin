@@ -1,0 +1,13 @@
+Sylius\Component\Core\Model\Promotion:
+    promotion_once_per_customer:
+        code: 'ONCE_PER_CUSTOMER_PROMOTION'
+        name: 'Once Per Customer Promotion'
+        channels: ['@channel_web']
+        couponBased: true
+        priority: 0
+
+Sylius\Component\Core\Model\PromotionCoupon:
+    promotion_coupon_once_per_customer:
+        code: 'ONCE_PER_CUSTOMER'
+        promotion: '@promotion_once_per_customer'
+        perCustomerUsageLimit: 1

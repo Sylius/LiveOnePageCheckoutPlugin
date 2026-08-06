@@ -13,6 +13,9 @@
         <testsuite name="sylius_live_one_page_checkout_plugin_integration_test_suite">
             <directory>tests/Integration</directory>
         </testsuite>
+        <testsuite name="sylius_live_one_page_checkout_plugin_api_test_suite">
+            <directory>tests/Api</directory>
+        </testsuite>
     </testsuites>
 
     <php>
@@ -22,5 +25,7 @@
         <env name="SHELL_VERBOSITY" value="-1" />
 
         <server name="KERNEL_CLASS" value="Sylius\TestApplication\Kernel" />
+        <server name="IS_DOCTRINE_ORM_SUPPORTED" value="true" />
+        <server name="ESCAPE_JSON" value="true" />
     </php>
 </phpunit>

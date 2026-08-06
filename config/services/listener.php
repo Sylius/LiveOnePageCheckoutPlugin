@@ -1,10 +1,20 @@
 <?php
 
+/*
+ * This file is part of the Sylius package.
+ *
+ * (c) Sylius Sp. z o.o.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 declare(strict_types=1);
 
 use Sylius\Component\Core\OrderCheckoutTransitions;
 use Sylius\LiveOnePageCheckoutPlugin\EventListener\OrderIntegrityChecker;
 use Sylius\LiveOnePageCheckoutPlugin\EventListener\Workflow\CheckoutCompletionGuard;
+use Sylius\LiveOnePageCheckoutPlugin\EventListener\Workflow\StandardCheckoutStepGuard;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
@@ -32,6 +42,25 @@ return static function (ContainerConfigurator $container): void {
         ])
         ->tag('kernel.event_listener', [
             'event' => 'workflow.' . OrderCheckoutTransitions::GRAPH . '.guard.' . OrderCheckoutTransitions::TRANSITION_COMPLETE,
+            'method' => '__invoke',
+        ])
+    ;
+
+    $services
+        ->set('sylius_live_one_page_checkout.listener.workflow.checkout_step_guard', StandardCheckoutStepGuard::class)
+        ->args([
+            service('sylius_live_one_page_checkout.checker.checkout_enabled'),
+        ])
+        ->tag('kernel.event_listener', [
+            'event' => 'workflow.' . OrderCheckoutTransitions::GRAPH . '.guard.' . OrderCheckoutTransitions::TRANSITION_ADDRESS,
+            'method' => '__invoke',
+        ])
+        ->tag('kernel.event_listener', [
+            'event' => 'workflow.' . OrderCheckoutTransitions::GRAPH . '.guard.' . OrderCheckoutTransitions::TRANSITION_SELECT_SHIPPING,
+            'method' => '__invoke',
+        ])
+        ->tag('kernel.event_listener', [
+            'event' => 'workflow.' . OrderCheckoutTransitions::GRAPH . '.guard.' . OrderCheckoutTransitions::TRANSITION_SELECT_PAYMENT,
             'method' => '__invoke',
         ])
     ;

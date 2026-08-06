@@ -1,0 +1,23 @@
+Sylius\Component\Core\Model\Address:
+    customer_address_default:
+        firstName: 'Jane'
+        lastName: 'Smith'
+        company: 'Acme Corp'
+        street: '123 Main Street'
+        city: 'New York'
+        postcode: '10001'
+        countryCode: 'US'
+        phoneNumber: '555-5678'
+
+Sylius\Component\Core\Model\Customer:
+    customer_one:
+        email: 'john@example.com'
+        firstName: 'John'
+        lastName: 'Doe'
+        phoneNumber: '555-1234'
+    customer_two:
+        email: 'jane@example.com'
+        firstName: 'Jane'
+        lastName: 'Smith'
+        phoneNumber: '555-5678'
+        defaultAddress: '@customer_address_default'
