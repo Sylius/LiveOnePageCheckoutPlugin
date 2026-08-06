@@ -51,6 +51,7 @@ use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\PromotionCouponEl
 use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\ShippingMethodRequiredValidator;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\StandardCheckoutStepBlockedValidator;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\tagged_iterator;
 
@@ -59,6 +60,10 @@ return static function (ContainerConfigurator $container): void {
     $container->parameters()
         ->set('sylius_live_one_page_checkout.api.order_item_image_normalizer.serialization_groups', [
             'sylius:shop:cart:show',
+        ])
+        ->set('sylius_live_one_page_checkout.api.command_handler.complete_checkout.validation_groups', [
+            'sylius',
+            'sylius_checkout_complete',
         ])
     ;
 
@@ -191,10 +196,7 @@ return static function (ContainerConfigurator $container): void {
             service('sylius_abstraction.state_machine'),
             service('sylius.event_bus'),
             service('api_platform.validator'),
-            [
-                'sylius',
-                'sylius_checkout_complete',
-            ],
+            param('sylius_live_one_page_checkout.api.command_handler.complete_checkout.validation_groups'),
         ])
         ->tag('messenger.message_handler', ['bus' => 'sylius.command_bus'])
     ;
