@@ -1,0 +1,33 @@
+Sylius\Component\Core\Model\Product:
+    product_digital:
+        code: 'DIGITAL_PRODUCT'
+        enabled: true
+        channels: ['@channel_web']
+        currentLocale: 'en_US'
+
+Sylius\Component\Core\Model\ProductTranslation:
+    product_translation_digital:
+        locale: 'en_US'
+        translatable: '@product_digital'
+        slug: 'digital-product'
+        name: 'Digital Product'
+
+Sylius\Component\Core\Model\ProductVariant:
+    product_variant_digital:
+        code: 'DIGITAL_PRODUCT_VARIANT'
+        product: '@product_digital'
+        currentLocale: 'en_US'
+        shippingRequired: false
+        channelPricings:
+            WEB: '@channel_pricing_digital'
+
+Sylius\Component\Product\Model\ProductVariantTranslation:
+    product_variant_translation_digital:
+        locale: 'en_US'
+        name: 'Digital Product Variant'
+        translatable: '@product_variant_digital'
+
+Sylius\Component\Core\Model\ChannelPricing:
+    channel_pricing_digital:
+        channelCode: 'WEB'
+        price: 1000

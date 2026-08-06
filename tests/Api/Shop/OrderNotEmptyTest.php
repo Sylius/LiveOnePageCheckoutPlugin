@@ -44,7 +44,7 @@ final class OrderNotEmptyTest extends JsonApiTestCase
 
     public function testDoesNotAllowCompletingAnEmptyCart(): void
     {
-        $this->loadFixturesFromFiles(['channel.yaml']);
+        $this->loadFixturesFromFiles(['channel.yaml', 'country.yaml']);
 
         $tokenValue = $this->pickUpEmptyCart('ORDER_NOT_EMPTY_TOKEN');
 
@@ -52,11 +52,14 @@ final class OrderNotEmptyTest extends JsonApiTestCase
             uri: sprintf('/api/v2/shop/orders/%s/one-page/complete', $tokenValue),
             body: [
                 'email' => 'shop@example.com',
+                'shippingAddress' => $this->address(),
+                'billingAddress' => $this->address(),
             ],
         );
 
         $this->assertResponseViolations([
             ['propertyPath' => '', 'message' => 'An empty order cannot be processed.'],
+            ['propertyPath' => 'payments', 'message' => 'Please select a payment method.'],
         ]);
     }
 
@@ -72,5 +75,20 @@ final class OrderNotEmptyTest extends JsonApiTestCase
         ));
 
         return $tokenValue;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function address(): array
+    {
+        return [
+            'firstName' => 'John',
+            'lastName' => 'Doe',
+            'city' => 'New York',
+            'street' => 'Avenue',
+            'postcode' => '90000',
+            'countryCode' => 'US',
+        ];
     }
 }

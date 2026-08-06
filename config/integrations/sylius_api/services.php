@@ -40,14 +40,18 @@ use Sylius\LiveOnePageCheckoutPlugin\Api\Provider\OrderItemImageProviderInterfac
 use Sylius\LiveOnePageCheckoutPlugin\Api\Security\Voter\CheckoutAvailabilityVoter;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Serializer\Normalizer\OrderItemImageNormalizer;
 use Sylius\LiveOnePageCheckoutPlugin\Api\StateProcessor\PreviewCheckoutProcessor;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\CheckoutCompletionValidator;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\CheckoutEmailNotAllowedValidator;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\CountryCodeExistsValidator;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\ItemAvailabilityValidator;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\OrderNotEmptyValidator;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\ProductEligibilityValidator;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\PaymentMethodRequiredValidator;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\PromotionCouponEligibilityValidator;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\ShippingMethodRequiredValidator;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\StandardCheckoutStepBlockedValidator;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\tagged_iterator;
 
@@ -56,6 +60,10 @@ return static function (ContainerConfigurator $container): void {
     $container->parameters()
         ->set('sylius_live_one_page_checkout.api.order_item_image_normalizer.serialization_groups', [
             'sylius:shop:cart:show',
+        ])
+        ->set('sylius_live_one_page_checkout.api.command_handler.complete_checkout.validation_groups', [
+            'sylius',
+            'sylius_checkout_complete',
         ])
     ;
 
@@ -187,6 +195,8 @@ return static function (ContainerConfigurator $container): void {
             service('sylius_live_one_page_checkout.checker.order_consistency'),
             service('sylius_abstraction.state_machine'),
             service('sylius.event_bus'),
+            service('api_platform.validator'),
+            param('sylius_live_one_page_checkout.api.command_handler.complete_checkout.validation_groups'),
         ])
         ->tag('messenger.message_handler', ['bus' => 'sylius.command_bus'])
     ;
@@ -225,6 +235,32 @@ return static function (ContainerConfigurator $container): void {
             service('sylius.repository.order'),
         ])
         ->tag('validator.constraint_validator', ['alias' => 'sylius_live_one_page_checkout_api_order_not_empty'])
+    ;
+
+    $services
+        ->set('sylius_live_one_page_checkout.api.validator.shipping_method_required', ShippingMethodRequiredValidator::class)
+        ->args([
+            service('sylius.repository.order'),
+            service('sylius.repository.shipping_method'),
+        ])
+        ->tag('validator.constraint_validator', ['alias' => 'sylius_live_one_page_checkout_api_shipping_method_required'])
+    ;
+
+    $services
+        ->set('sylius_live_one_page_checkout.api.validator.payment_method_required', PaymentMethodRequiredValidator::class)
+        ->args([
+            service('sylius.repository.payment_method'),
+        ])
+        ->tag('validator.constraint_validator', ['alias' => 'sylius_live_one_page_checkout_api_payment_method_required'])
+    ;
+
+    $services
+        ->set('sylius_live_one_page_checkout.api.validator.checkout_completion', CheckoutCompletionValidator::class)
+        ->args([
+            service('sylius.repository.order'),
+            service('sylius_abstraction.state_machine'),
+        ])
+        ->tag('validator.constraint_validator', ['alias' => 'sylius_live_one_page_checkout_api_checkout_completion'])
     ;
 
     $services

@@ -52,6 +52,21 @@
                 <value>sylius_live_one_page_checkout_complete</value>
             </option>
         </constraint>
+        <constraint name="Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\ShippingMethodRequired">
+            <option name="groups">
+                <value>sylius_live_one_page_checkout_complete</value>
+            </option>
+        </constraint>
+        <constraint name="Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\PaymentMethodRequired">
+            <option name="groups">
+                <value>sylius_live_one_page_checkout_complete</value>
+            </option>
+        </constraint>
+        <constraint name="Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\CheckoutCompletion">
+            <option name="groups">
+                <value>sylius_live_one_page_checkout_complete</value>
+            </option>
+        </constraint>
         <constraint name="Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\CountryCodeExists">
             <option name="groups">
                 <value>sylius_live_one_page_checkout_preview</value>
@@ -69,9 +84,19 @@
             </option>
         </constraint>
         <property name="shippingAddress">
+            <constraint name="NotBlank">
+                <option name="groups">
+                    <value>sylius_live_one_page_checkout_complete</value>
+                </option>
+            </constraint>
             <constraint name="Valid" />
         </property>
         <property name="billingAddress">
+            <constraint name="NotBlank">
+                <option name="groups">
+                    <value>sylius_live_one_page_checkout_complete</value>
+                </option>
+            </constraint>
             <constraint name="Valid" />
         </property>
     </class>

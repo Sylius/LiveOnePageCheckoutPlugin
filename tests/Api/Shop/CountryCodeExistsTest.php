@@ -68,6 +68,8 @@ final class CountryCodeExistsTest extends JsonApiTestCase
                 'email' => 'shop@example.com',
                 'billingAddress' => $this->address(countryCode: 'GB'),
                 'shippingAddress' => $this->address(countryCode: 'GB'),
+                'shipments' => [['methodCode' => 'UPS']],
+                'payments' => [['methodCode' => 'CASH_ON_DELIVERY']],
             ],
         );
 
