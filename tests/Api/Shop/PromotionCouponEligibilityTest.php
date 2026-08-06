@@ -172,6 +172,82 @@ final class PromotionCouponEligibilityTest extends JsonApiTestCase
         ]);
     }
 
+    public function testPreviewReturnsSingleViolationWhenCouponCodeDoesNotExist(): void
+    {
+        $this->loadFixturesFromFiles([
+            'channel.yaml',
+            'country.yaml',
+            'product.yaml',
+            'shipping_method.yaml',
+            'payment_method.yaml',
+        ]);
+
+        $tokenValue = $this->pickUpCartWithItem(tokenValue: 'NONEXISTENT_COUPON_PREVIEW');
+
+        $this->requestPatch(
+            uri: sprintf('/api/v2/shop/orders/%s/one-page/preview', $tokenValue),
+            body: [
+                'couponCode' => 'TOTALLY_BOGUS_CODE',
+            ],
+        );
+
+        $this->assertResponseViolations([
+            ['propertyPath' => 'couponCode', 'message' => 'Coupon code is invalid.'],
+        ]);
+    }
+
+    public function testCompleteReturnsSingleViolationWhenCouponCodeDoesNotExist(): void
+    {
+        $this->loadFixturesFromFiles([
+            'channel.yaml',
+            'country.yaml',
+            'product.yaml',
+            'shipping_method.yaml',
+            'payment_method.yaml',
+        ]);
+
+        $tokenValue = $this->pickUpCartWithItem(tokenValue: 'NONEXISTENT_COUPON_COMPLETE');
+
+        $this->requestPatch(
+            uri: sprintf('/api/v2/shop/orders/%s/one-page/complete', $tokenValue),
+            body: [
+                'email' => 'bogus-coupon@example.com',
+                'shippingAddress' => $this->address(),
+                'billingAddress' => $this->address(),
+                'shipments' => [['methodCode' => 'UPS']],
+                'payments' => [['methodCode' => 'CASH_ON_DELIVERY']],
+                'couponCode' => 'TOTALLY_BOGUS_CODE',
+            ],
+        );
+
+        $this->assertResponseViolations([
+            ['propertyPath' => 'couponCode', 'message' => 'Coupon code is invalid.'],
+        ]);
+    }
+
+    public function testPreviewAllowsOncePerCustomerCouponWhenNoEmailIsProvided(): void
+    {
+        $this->loadFixturesFromFiles([
+            'channel.yaml',
+            'country.yaml',
+            'product.yaml',
+            'shipping_method.yaml',
+            'payment_method.yaml',
+            'promotion_coupon.yaml',
+        ]);
+
+        $tokenValue = $this->pickUpCartWithItem(tokenValue: 'NO_EMAIL_ONCE_PER_CUSTOMER');
+
+        $this->requestPatch(
+            uri: sprintf('/api/v2/shop/orders/%s/one-page/preview', $tokenValue),
+            body: [
+                'couponCode' => 'ONCE_PER_CUSTOMER',
+            ],
+        );
+
+        self::assertSame(200, $this->client()->getResponse()->getStatusCode(), (string) $this->client()->getResponse()->getContent());
+    }
+
     private function completeCheckoutWithCoupon(string $tokenValue, string $email): void
     {
         $this->pickUpCartWithItem(tokenValue: $tokenValue);
