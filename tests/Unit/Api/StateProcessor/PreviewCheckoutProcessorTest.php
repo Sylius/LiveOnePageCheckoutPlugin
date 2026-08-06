@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Tests\Sylius\LiveOnePageCheckoutPlugin\Unit\Api\StateProcessor;
 
 use ApiPlatform\Metadata\Operation;
+use ApiPlatform\Validator\ValidatorInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\OrderInterface;
@@ -40,6 +41,8 @@ final class PreviewCheckoutProcessorTest extends TestCase
 
     private CheckoutPreviewFactoryInterface&MockObject $checkoutPreviewFactory;
 
+    private ValidatorInterface&MockObject $validator;
+
     private PreviewCheckoutProcessor $processor;
 
     protected function setUp(): void
@@ -49,6 +52,7 @@ final class PreviewCheckoutProcessorTest extends TestCase
         $this->checkoutApplier = $this->createMock(CheckoutApplierInterface::class);
         $this->orderProcessor = $this->createMock(OrderProcessorInterface::class);
         $this->checkoutPreviewFactory = $this->createMock(CheckoutPreviewFactoryInterface::class);
+        $this->validator = $this->createMock(ValidatorInterface::class);
 
         $this->processor = new PreviewCheckoutProcessor(
             $this->orderRepository,
@@ -56,6 +60,8 @@ final class PreviewCheckoutProcessorTest extends TestCase
             $this->checkoutApplier,
             $this->orderProcessor,
             $this->checkoutPreviewFactory,
+            $this->validator,
+            ['sylius_live_one_page_checkout_promotion_coupon_eligibility'],
         );
     }
 
@@ -78,6 +84,10 @@ final class PreviewCheckoutProcessorTest extends TestCase
         $this->checkoutApplier->expects(self::once())
             ->method('apply')
             ->with($order, $command);
+
+        $this->validator->expects(self::once())
+            ->method('validate')
+            ->with($order, ['groups' => ['sylius_live_one_page_checkout_promotion_coupon_eligibility']]);
 
         $this->orderProcessor->expects(self::once())
             ->method('process')
@@ -105,6 +115,7 @@ final class PreviewCheckoutProcessorTest extends TestCase
 
         $this->orderObjectsEnsurer->expects(self::never())->method('ensure');
         $this->checkoutApplier->expects(self::never())->method('apply');
+        $this->validator->expects(self::never())->method('validate');
         $this->orderProcessor->expects(self::never())->method('process');
         $this->checkoutPreviewFactory->expects(self::never())->method('create');
 
@@ -135,6 +146,11 @@ final class PreviewCheckoutProcessorTest extends TestCase
                 $callOrder[] = 'apply';
             });
 
+        $this->validator->method('validate')
+            ->willReturnCallback(function () use (&$callOrder) {
+                $callOrder[] = 'validate';
+            });
+
         $this->orderProcessor->method('process')
             ->willReturnCallback(function () use (&$callOrder) {
                 $callOrder[] = 'process';
@@ -144,7 +160,7 @@ final class PreviewCheckoutProcessorTest extends TestCase
 
         $this->processor->process($command, $operation);
 
-        self::assertSame(['ensure', 'apply', 'process'], $callOrder);
+        self::assertSame(['ensure', 'apply', 'validate', 'process'], $callOrder);
     }
 
     public function testAcceptsOptionalUriVariablesAndContext(): void

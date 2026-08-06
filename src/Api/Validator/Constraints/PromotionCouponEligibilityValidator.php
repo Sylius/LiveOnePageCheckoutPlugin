@@ -14,66 +14,33 @@ declare(strict_types=1);
 namespace Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints;
 
 use Sylius\Bundle\ApiBundle\Checker\AppliedCouponEligibilityCheckerInterface;
-use Sylius\Bundle\CoreBundle\Resolver\CustomerResolverInterface;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\PromotionCouponInterface;
-use Sylius\Component\Core\Repository\OrderRepositoryInterface;
-use Sylius\Component\Promotion\Repository\PromotionCouponRepositoryInterface;
-use Sylius\LiveOnePageCheckoutPlugin\Api\Command\Checkout;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Webmozart\Assert\Assert;
 
 final class PromotionCouponEligibilityValidator extends ConstraintValidator
 {
-    /**
-     * @param OrderRepositoryInterface<OrderInterface> $orderRepository
-     * @param PromotionCouponRepositoryInterface<PromotionCouponInterface> $promotionCouponRepository
-     */
     public function __construct(
-        private PromotionCouponRepositoryInterface $promotionCouponRepository,
-        private OrderRepositoryInterface $orderRepository,
         private AppliedCouponEligibilityCheckerInterface $appliedCouponEligibilityChecker,
-        private CustomerResolverInterface $customerResolver,
     ) {
     }
 
     public function validate(mixed $value, Constraint $constraint): void
     {
-        Assert::isInstanceOf($value, Checkout::class);
+        Assert::isInstanceOf($value, OrderInterface::class);
 
         /** @var PromotionCouponEligibility $constraint */
         Assert::isInstanceOf($constraint, PromotionCouponEligibility::class);
 
-        if (null === $value->couponCode || '' === $value->couponCode) {
-            return;
-        }
-
-        $promotionCoupon = $this->promotionCouponRepository->findOneBy(['code' => $value->couponCode]);
+        $promotionCoupon = $value->getPromotionCoupon();
 
         if (!$promotionCoupon instanceof PromotionCouponInterface) {
-            $this->context
-                ->buildViolation($constraint->message)
-                ->atPath('couponCode')
-                ->addViolation()
-            ;
-
             return;
         }
 
-        $cart = $this->orderRepository->findCartByTokenValue($value->orderTokenValue);
-
-        if (!$cart instanceof OrderInterface) {
-            return;
-        }
-
-        if (null !== $value->email && '' !== $value->email) {
-            $cart->setCustomer($this->customerResolver->resolve($value->email));
-        }
-
-        $cart->setPromotionCoupon($promotionCoupon);
-
-        if (!$this->appliedCouponEligibilityChecker->isEligible($promotionCoupon, $cart)) {
+        if (!$this->appliedCouponEligibilityChecker->isEligible($promotionCoupon, $value)) {
             $this->context
                 ->buildViolation($constraint->message)
                 ->atPath('couponCode')

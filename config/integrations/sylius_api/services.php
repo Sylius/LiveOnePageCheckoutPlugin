@@ -48,6 +48,7 @@ use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\OrderNotEmptyVali
 use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\ProductEligibilityValidator;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\PaymentMethodRequiredValidator;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\PromotionCouponEligibilityValidator;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\PromotionCouponExistsValidator;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\ShippingMethodRequiredValidator;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\StandardCheckoutStepBlockedValidator;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -64,6 +65,10 @@ return static function (ContainerConfigurator $container): void {
         ->set('sylius_live_one_page_checkout.api.command_handler.complete_checkout.validation_groups', [
             'sylius',
             'sylius_checkout_complete',
+            'sylius_live_one_page_checkout_promotion_coupon_eligibility',
+        ])
+        ->set('sylius_live_one_page_checkout.api.state_processor.preview_checkout.validation_groups', [
+            'sylius_live_one_page_checkout_promotion_coupon_eligibility',
         ])
     ;
 
@@ -181,6 +186,8 @@ return static function (ContainerConfigurator $container): void {
             service('sylius_live_one_page_checkout.api.applier.checkout'),
             service('sylius_live_one_page_checkout.order_processing.order_processor.composite'),
             service('sylius_live_one_page_checkout.api.factory.checkout_preview'),
+            service('api_platform.validator'),
+            param('sylius_live_one_page_checkout.api.state_processor.preview_checkout.validation_groups'),
         ])
         ->tag('api_platform.state_processor')
     ;
@@ -213,12 +220,17 @@ return static function (ContainerConfigurator $container): void {
     $services
         ->set('sylius_live_one_page_checkout.api.validator.promotion_coupon_eligibility', PromotionCouponEligibilityValidator::class)
         ->args([
-            service('sylius.repository.promotion_coupon'),
-            service('sylius.repository.order'),
             service('sylius_api.checker.applied_coupon_eligibility'),
-            service('sylius.resolver.customer'),
         ])
         ->tag('validator.constraint_validator', ['alias' => 'sylius_live_one_page_checkout_api_promotion_coupon_eligibility'])
+    ;
+
+    $services
+        ->set('sylius_live_one_page_checkout.api.validator.promotion_coupon_exists', PromotionCouponExistsValidator::class)
+        ->args([
+            service('sylius.repository.promotion_coupon'),
+        ])
+        ->tag('validator.constraint_validator', ['alias' => 'sylius_live_one_page_checkout_api_promotion_coupon_exists'])
     ;
 
     $services

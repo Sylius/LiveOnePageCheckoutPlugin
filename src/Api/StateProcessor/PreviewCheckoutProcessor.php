@@ -15,6 +15,7 @@ namespace Sylius\LiveOnePageCheckoutPlugin\Api\StateProcessor;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
+use ApiPlatform\Validator\ValidatorInterface;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Repository\OrderRepositoryInterface;
 use Sylius\Component\Order\Processor\OrderProcessorInterface;
@@ -31,13 +32,18 @@ use Webmozart\Assert\Assert;
  */
 final readonly class PreviewCheckoutProcessor implements ProcessorInterface
 {
-    /** @param OrderRepositoryInterface<OrderInterface> $orderRepository */
+    /**
+     * @param OrderRepositoryInterface<OrderInterface> $orderRepository
+     * @param list<string> $validationGroups
+     */
     public function __construct(
         private OrderRepositoryInterface $orderRepository,
         private OrderObjectsEnsurerInterface $orderObjectsEnsurer,
         private CheckoutApplierInterface $checkoutApplier,
         private OrderProcessorInterface $orderProcessor,
         private CheckoutPreviewFactoryInterface $checkoutPreviewFactory,
+        private ValidatorInterface $validator,
+        private array $validationGroups,
     ) {
     }
 
@@ -58,6 +64,9 @@ final readonly class PreviewCheckoutProcessor implements ProcessorInterface
 
         $this->orderObjectsEnsurer->ensure($order);
         $this->checkoutApplier->apply($order, $data);
+
+        $this->validator->validate($order, ['groups' => $this->validationGroups]);
+
         $this->orderProcessor->process($order);
 
         return $this->checkoutPreviewFactory->create($order);
