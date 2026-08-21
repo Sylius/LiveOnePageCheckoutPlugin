@@ -31,4 +31,9 @@ return static function (ContainerConfigurator $configurator, ContainerBuilder $c
         $configurator->import('integrations/sylius_api/config.yaml');
         $configurator->import('integrations/sylius_api/services.php');
     }
+
+    if ($isBundleActive('SyliusMolliePlugin', $bundles)) {
+        $configurator->import('integrations/mollie/services.php');
+        $configurator->import('integrations/mollie/config.yaml');
+    }
 };

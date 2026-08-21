@@ -120,10 +120,15 @@ final readonly class CheckoutContext implements Context
     }
 
     #[Then('I should be on the one page checkout')]
-    #[Then('I should be redirected to the one page checkout')]
     public function iShouldBeOnTheOnePageCheckout(): void
     {
         Assert::true($this->onePageCheckoutPage->isOpen());
+    }
+
+    #[Then('I should be redirected to the one page checkout')]
+    public function iShouldBeRedirectedToTheOnePageCheckout(): void
+    {
+        $this->iShouldBeOnTheOnePageCheckout();
     }
 
     #[Then('I should no longer be on the one page checkout')]
