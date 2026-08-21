@@ -17,6 +17,8 @@ use Sylius\LiveOnePageCheckoutPlugin\Form\Type\PaymentType;
 use Sylius\MolliePlugin\Form\Type\PaymentMollieType;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Validator\Constraints\Valid;
 
 final class PaymentTypeExtension extends AbstractTypeExtension
@@ -29,6 +31,22 @@ final class PaymentTypeExtension extends AbstractTypeExtension
                 new Valid(),
             ],
         ]);
+
+        $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event): void {
+            $form = $event->getForm();
+
+            if (!$form->getRoot()->has('billingAddress')) {
+                return;
+            }
+
+            $form->remove('details');
+            $form->add('details', PaymentMollieType::class, [
+                'validation_groups' => ['sylius'],
+                'constraints' => [
+                    new Valid(),
+                ],
+            ]);
+        });
     }
 
     public static function getExtendedTypes(): array

@@ -103,6 +103,14 @@ async function initOpcMollie() {
     opc.addEventListener('change', async (event) => {
         if (!event.target.matches('input[type="radio"]')) return;
 
+        if (event.target.matches('input.online-payment__input') && event.target.checked) {
+            const mollieRadio = opc.querySelector('input.mollie-payments');
+            if (mollieRadio && !mollieRadio.checked) {
+                mollieRadio.checked = true;
+                mollieRadio.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        }
+
         updateMolliePanel(opc);
 
         if (event.target.matches('input.online-payment__input[value="creditcard"]') && event.target.checked) {
