@@ -277,6 +277,54 @@ Don't want to use recipes or Rector? You can still follow the legacy installatio
     bin/console cache:clear
     ```
 
+## Mollie integration
+
+When your Sylius application has `SyliusMolliePlugin` installed and registered, the plugin automatically:
+- Adds Mollie payment submethods (iDEAL, credit card, etc.) to the OPC payment form via `PaymentTypeExtension`.
+- Renders the submethod selector and the Mollie credit card widget via twig hooks.
+
+The JavaScript must be wired up manually in your project (the entry point name and webpack package are project-specific).
+
+### JavaScript setup
+
+**Option A - OPC-only (recommended):** add a dedicated webpack entry and register a twig hook so
+the script loads only on OPC checkout pages.
+
+```javascript
+// webpack.config.js - inside your shop Encore block
+Encore.addEntry('opc-mollie-shop', './vendor/sylius/live-one-page-checkout-plugin/assets/shop/integration/mollie/entrypoint.js');
+```
+
+```yaml
+# config/packages/sylius_twig_hooks.yaml
+sylius_twig_hooks:
+    hooks:
+        'sylius_live_one_page_checkout.shop.checkout#javascripts':
+            opc_mollie:
+                template: 'shop/checkout/one_page/mollie_js.html.twig'
+                priority: 0
+```
+
+```twig
+{# templates/shop/checkout/one_page/mollie_js.html.twig #}
+{{ encore_entry_script_tags('opc-mollie-shop', null, 'app.shop') }}
+```
+
+Adjust the entry name (`opc-mollie-shop`) and the Encore package name (`app.shop`) to match your
+project's webpack configuration.
+
+**Option B - global (simpler setup):** import the script directly in your existing shop entrypoint.
+The script self-guards via `.sylius-one-page-checkout` and will not initialise on any other page.
+
+```javascript
+// assets/shop/entrypoint.js
+import '@vendor/sylius/live-one-page-checkout-plugin/assets/shop/integration/mollie/entrypoint';
+```
+
+This plain-JS file handles show/hide of Mollie submethods and the Mollie.js credit card component
+on the OPC page. It loads `https://js.mollie.com/v1/mollie.js` on demand (only when the customer
+selects the credit card method) and re-initialises automatically after each Live Component re-render.
+
 ## Custom order processors
 
 The plugin does not reuse Sylius' core order processor composite (`sylius.order_processing.order_processor.composite`)

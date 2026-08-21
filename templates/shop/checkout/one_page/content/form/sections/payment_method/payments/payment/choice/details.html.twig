@@ -1,5 +1,7 @@
 {% set method = hookable_metadata.context.method %}
 
-<div class="flex-grow-1">
-    {% hook 'details' with { method } %}
+<div class="card bg-body-tertiary border-0 mb-3">
+    <label class="card-body" {{ sylius_test_html_attribute('payment-method', method.name) }}>
+        {% hook 'details' with { method } %}
+    </label>
 </div>

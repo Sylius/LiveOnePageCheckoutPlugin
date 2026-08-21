@@ -39,6 +39,10 @@ final class SyliusLiveOnePageCheckoutPlugin extends Bundle
                     'sylius.order_processing.order_promotion_processor' => 20,
                     'sylius.order_processing.order_taxes_processor' => 10,
                     'sylius.order_processing.order_payment_processor.checkout' => 0,
+
+                    // Mollie integration
+                    'sylius_mollie.processor.payment_surcharge_cleanup' => 20,
+                    'sylius_mollie.processor.payment_surcharge' => 10,
                 ],
             ),
             priority: 10,
