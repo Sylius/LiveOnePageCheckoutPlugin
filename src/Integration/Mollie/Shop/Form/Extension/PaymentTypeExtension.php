@@ -25,28 +25,20 @@ final class PaymentTypeExtension extends AbstractTypeExtension
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('details', PaymentMollieType::class, [
+        $builder
+            ->addEventListener(FormEvents::PRE_SET_DATA, fn (FormEvent $event) => $this->addDetails($event))
+            ->addEventListener(FormEvents::PRE_SUBMIT, fn (FormEvent $event) => $this->addDetails($event))
+        ;
+    }
+
+    private function addDetails(FormEvent $event): void
+    {
+        $event->getForm()->add('details', PaymentMollieType::class, [
             'validation_groups' => ['sylius'],
             'constraints' => [
                 new Valid(),
             ],
         ]);
-
-        $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event): void {
-            $form = $event->getForm();
-
-            if (!$form->getRoot()->has('billingAddress')) {
-                return;
-            }
-
-            $form->remove('details');
-            $form->add('details', PaymentMollieType::class, [
-                'validation_groups' => ['sylius'],
-                'constraints' => [
-                    new Valid(),
-                ],
-            ]);
-        });
     }
 
     public static function getExtendedTypes(): array
