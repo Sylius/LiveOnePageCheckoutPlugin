@@ -43,6 +43,7 @@ final class ShippingMethodEligibilityTest extends JsonApiTestCase
                 'shippingAddress' => $this->address(),
                 'billingAddress' => $this->address(),
                 'payments' => [['methodCode' => 'CASH_ON_DELIVERY']],
+                'hash' => 'PREVIEW_HASH',
             ],
         );
 
@@ -71,6 +72,7 @@ final class ShippingMethodEligibilityTest extends JsonApiTestCase
                 'billingAddress' => $this->address(),
                 'shipments' => [['methodCode' => 'BOGUS_CODE_XYZ']],
                 'payments' => [['methodCode' => 'CASH_ON_DELIVERY']],
+                'hash' => 'PREVIEW_HASH',
             ],
         );
 
@@ -99,6 +101,7 @@ final class ShippingMethodEligibilityTest extends JsonApiTestCase
                 'billingAddress' => $this->address(),
                 'shipments' => [['methodCode' => 'DHL']],
                 'payments' => [['methodCode' => 'CASH_ON_DELIVERY']],
+                'hash' => 'PREVIEW_HASH',
             ],
         );
 

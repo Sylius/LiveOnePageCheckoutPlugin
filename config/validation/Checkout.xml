@@ -83,6 +83,14 @@
                 <value>sylius_live_one_page_checkout_complete</value>
             </option>
         </constraint>
+        <property name="hash">
+            <constraint name="NotBlank">
+                <option name="message">sylius_live_one_page_checkout.checkout.hash_required</option>
+                <option name="groups">
+                    <value>sylius_live_one_page_checkout_complete</value>
+                </option>
+            </constraint>
+        </property>
         <property name="shippingAddress">
             <constraint name="NotBlank">
                 <option name="groups">
