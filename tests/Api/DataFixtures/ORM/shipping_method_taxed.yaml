@@ -1,0 +1,35 @@
+Sylius\Component\Taxation\Model\TaxCategory:
+    tax_category_shipping:
+        code: 'SHIPPING'
+        name: 'Shipping'
+
+Sylius\Component\Core\Model\TaxRate:
+    tax_rate_shipping:
+        code: 'SHIPPING_TAX'
+        name: 'Shipping Tax 10%'
+        amount: 0.1
+        includedInPrice: false
+        calculator: 'default'
+        category: '@tax_category_shipping'
+        zone: '@zone_us'
+
+Sylius\Component\Shipping\Model\ShippingMethodTranslation:
+    shipping_method_translation_ups_taxed:
+        name: 'UPS Taxed'
+        locale: 'en_US'
+        description: 'United Parcel Service with tax'
+        translatable: '@shipping_method_ups_taxed'
+
+Sylius\Component\Core\Model\ShippingMethod:
+    shipping_method_ups_taxed:
+        code: 'UPS_TAXED'
+        enabled: true
+        calculator: 'flat_rate'
+        configuration:
+            WEB:
+                amount: 500
+        zone: '@zone_us'
+        taxCategory: '@tax_category_shipping'
+        currentLocale: 'en_US'
+        translations: ['@shipping_method_translation_ups_taxed']
+        channels: ['@channel_web']
