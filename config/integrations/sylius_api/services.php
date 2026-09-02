@@ -37,13 +37,13 @@ use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ShippingMethodPreviewFactory;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\ShippingMethodPreviewFactoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Provider\OrderItemImageProvider;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Provider\OrderItemImageProviderInterface;
-use Sylius\LiveOnePageCheckoutPlugin\Api\Security\Voter\CheckoutAvailabilityVoter;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Serializer\Normalizer\OrderItemImageNormalizer;
 use Sylius\LiveOnePageCheckoutPlugin\Api\StateProcessor\PreviewCheckoutProcessor;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\CheckoutCompletionValidator;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\CheckoutEmailNotAllowedValidator;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\CountryCodeExistsValidator;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\ItemAvailabilityValidator;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\OnePageCheckoutNotAvailableValidator;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\OrderNotEmptyValidator;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\ProductEligibilityValidator;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Validator\Constraints\PaymentMethodRequiredValidator;
@@ -209,12 +209,12 @@ return static function (ContainerConfigurator $container): void {
     ;
 
     $services
-        ->set('sylius_live_one_page_checkout.api.security.voter.checkout_availability', CheckoutAvailabilityVoter::class)
+        ->set('sylius_live_one_page_checkout.api.validator.one_page_checkout_not_available', OnePageCheckoutNotAvailableValidator::class)
         ->args([
             service('sylius.repository.order'),
             service('sylius_live_one_page_checkout.checker.checkout_enabled'),
         ])
-        ->tag('security.voter')
+        ->tag('validator.constraint_validator', ['alias' => 'sylius_live_one_page_checkout_api_one_page_checkout_not_available'])
     ;
 
     $services

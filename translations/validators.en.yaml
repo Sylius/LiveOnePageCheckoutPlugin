@@ -1,5 +1,6 @@
 sylius_live_one_page_checkout:
     checkout:
         standard_checkout_not_available: 'This action is not available: one-page checkout is enabled for this channel.'
+        one_page_checkout_not_available: 'This action is not available: one-page checkout is disabled for this channel.'
         email_not_allowed: 'You cannot place an order using an email address other than your own.'
         hash_required: 'The order hash is required. Please preview the checkout first.'
