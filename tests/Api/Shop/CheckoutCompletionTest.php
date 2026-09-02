@@ -87,12 +87,16 @@ final class CheckoutCompletionTest extends JsonApiTestCase
 
         $tokenValue = $this->pickUpCartWithItem(tokenValue: 'CHECKOUT_COMPLETION_TOKEN');
 
+        /** @var OrderRepositoryInterface<OrderInterface> $orderRepository */
+        $orderRepository = $this->get('sylius.repository.order');
+
         $body = [
             'email' => 'shop@example.com',
             'shippingAddress' => $this->address(),
             'billingAddress' => $this->address(),
             'shipments' => [['methodCode' => 'UPS']],
             'payments' => [['methodCode' => 'CASH_ON_DELIVERY']],
+            'notes' => 'Please deliver in the evening',
         ];
 
         $this->requestPatch(uri: sprintf('/api/v2/shop/orders/%s/one-page/preview', $tokenValue), body: $body);
@@ -106,6 +110,15 @@ final class CheckoutCompletionTest extends JsonApiTestCase
         );
 
         self::assertSame(200, $this->client()->getResponse()->getStatusCode());
+
+        /** @var EntityManagerInterface $entityManager */
+        $entityManager = $this->get('doctrine.orm.entity_manager');
+        $entityManager->clear();
+
+        $completedOrder = $orderRepository->findOneByTokenValue($tokenValue);
+        self::assertInstanceOf(OrderInterface::class, $completedOrder);
+
+        self::assertSame('Please deliver in the evening', $completedOrder->getNotes());
     }
 
     /** @return array<string, string> */

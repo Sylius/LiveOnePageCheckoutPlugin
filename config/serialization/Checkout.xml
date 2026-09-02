@@ -37,5 +37,8 @@
         <attribute name="hash">
             <group>sylius_live_one_page_checkout:shop:checkout:update</group>
         </attribute>
+        <attribute name="notes">
+            <group>sylius_live_one_page_checkout:shop:checkout:update</group>
+        </attribute>
     </class>
 </serializer>

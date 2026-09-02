@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\LiveOnePageCheckoutPlugin\Api\Shop;
 
+use Sylius\Component\Core\Model\OrderInterface;
+use Sylius\Component\Core\Repository\OrderRepositoryInterface;
 use Tests\Sylius\LiveOnePageCheckoutPlugin\Api\JsonApiTestCase;
 
 final class OnePageCheckoutPreviewTest extends JsonApiTestCase
@@ -54,10 +56,40 @@ final class OnePageCheckoutPreviewTest extends JsonApiTestCase
                 'payments' => [
                     ['methodCode' => 'CASH_ON_DELIVERY'],
                 ],
+                'notes' => 'Please deliver in the evening',
             ],
         );
 
         $this->assertResponse($this->client()->getResponse(), 'shop/one_page_checkout/preview');
+    }
+
+    public function testDoesNotPersistNotesWhenPreviewing(): void
+    {
+        $this->loadFixturesFromFiles([
+            'channel.yaml',
+            'country.yaml',
+            'product.yaml',
+            'shipping_method.yaml',
+            'payment_method.yaml',
+        ]);
+
+        $tokenValue = $this->pickUpCartWithItem(tokenValue: 'ONE_PAGE_TOKEN', quantity: 2);
+
+        $this->requestPatch(
+            uri: sprintf('/api/v2/shop/orders/%s/one-page/preview', $tokenValue),
+            body: ['notes' => 'Please deliver in the evening'],
+        );
+
+        self::assertSame(200, $this->client()->getResponse()->getStatusCode());
+
+        $this->get('doctrine.orm.entity_manager')->clear();
+
+        /** @var OrderRepositoryInterface<OrderInterface> $orderRepository */
+        $orderRepository = $this->get('sylius.repository.order');
+        $cart = $orderRepository->findCartByTokenValue($tokenValue);
+        self::assertInstanceOf(OrderInterface::class, $cart);
+
+        self::assertNull($cart->getNotes());
     }
 
     public function testPreviewsForGuestWithEmptyRequest(): void
