@@ -17,6 +17,7 @@ use Sylius\LiveOnePageCheckoutPlugin\Api\Applier\CheckoutApplierInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Applier\CompositeCheckoutApplier;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Applier\CouponApplier;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Applier\CustomerApplier;
+use Sylius\LiveOnePageCheckoutPlugin\Api\Applier\NotesApplier;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Applier\PaymentMethodApplier;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Applier\ShippingMethodApplier;
 use Sylius\LiveOnePageCheckoutPlugin\Api\CommandHandler\CompleteCheckoutHandler;
@@ -77,12 +78,12 @@ return static function (ContainerConfigurator $container): void {
         ->args([
             service('sylius.resolver.customer'),
         ])
-        ->tag('sylius_live_one_page_checkout.api.checkout_applier', ['priority' => 40])
+        ->tag('sylius_live_one_page_checkout.api.checkout_applier', ['priority' => 50])
     ;
 
     $services
         ->set('sylius_live_one_page_checkout.api.applier.address', AddressApplier::class)
-        ->tag('sylius_live_one_page_checkout.api.checkout_applier', ['priority' => 30])
+        ->tag('sylius_live_one_page_checkout.api.checkout_applier', ['priority' => 40])
     ;
 
     $services
@@ -90,7 +91,7 @@ return static function (ContainerConfigurator $container): void {
         ->args([
             service('sylius.resolver.shipping_methods'),
         ])
-        ->tag('sylius_live_one_page_checkout.api.checkout_applier', ['priority' => 20])
+        ->tag('sylius_live_one_page_checkout.api.checkout_applier', ['priority' => 30])
     ;
 
     $services
@@ -98,7 +99,7 @@ return static function (ContainerConfigurator $container): void {
         ->args([
             service('sylius.resolver.payment_methods'),
         ])
-        ->tag('sylius_live_one_page_checkout.api.checkout_applier', ['priority' => 10])
+        ->tag('sylius_live_one_page_checkout.api.checkout_applier', ['priority' => 20])
     ;
 
     $services
@@ -106,6 +107,11 @@ return static function (ContainerConfigurator $container): void {
         ->args([
             service('sylius.repository.promotion_coupon'),
         ])
+        ->tag('sylius_live_one_page_checkout.api.checkout_applier', ['priority' => 10])
+    ;
+
+    $services
+        ->set('sylius_live_one_page_checkout.api.applier.notes', NotesApplier::class)
         ->tag('sylius_live_one_page_checkout.api.checkout_applier', ['priority' => 0])
     ;
 

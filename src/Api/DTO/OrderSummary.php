@@ -28,6 +28,7 @@ class OrderSummary
         public readonly int $orderAndItemPromotionTotal,
         public readonly int $shippingPromotionTotal,
         public readonly ?string $promotionCoupon,
+        public readonly ?string $notes,
     ) {
     }
 }
