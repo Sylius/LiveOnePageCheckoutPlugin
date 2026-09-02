@@ -54,6 +54,7 @@ final class OrderNotEmptyTest extends JsonApiTestCase
                 'email' => 'shop@example.com',
                 'shippingAddress' => $this->address(),
                 'billingAddress' => $this->address(),
+                'hash' => 'PREVIEW_HASH',
             ],
         );
 
