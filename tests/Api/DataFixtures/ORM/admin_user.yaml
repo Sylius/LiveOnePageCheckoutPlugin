@@ -1,0 +1,8 @@
+Sylius\Component\Core\Model\AdminUser:
+    admin_user:
+        email: 'admin@example.com'
+        username: 'admin'
+        localeCode: 'en_US'
+        plainPassword: 'sylius'
+        enabled: true
+        roles: ['ROLE_API_ACCESS']

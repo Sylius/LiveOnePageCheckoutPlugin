@@ -19,11 +19,12 @@ use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use PHPUnit\Framework\Attributes\Before;
 use Sylius\Bundle\ApiBundle\Command\Cart\AddItemToCart;
 use Sylius\Bundle\ApiBundle\Command\Cart\PickupCart;
+use Sylius\Component\Core\Model\AdminUserInterface;
 use Sylius\Component\Core\Model\CustomerInterface;
 use Sylius\Component\Core\Model\OrderInterface;
-use Sylius\Component\Core\Model\ShopUserInterface;
 use Sylius\Component\Core\Repository\CustomerRepositoryInterface;
 use Sylius\Component\Core\Repository\OrderRepositoryInterface;
+use Sylius\Component\User\Model\UserInterface;
 use Sylius\Component\User\Repository\UserRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Component\DomCrawler\Crawler;
@@ -120,7 +121,7 @@ abstract class JsonApiTestCase extends BaseJsonApiTestCase
         );
     }
 
-    protected function generateJwtTokenForUser(ShopUserInterface $user): string
+    protected function generateJwtTokenForUser(UserInterface $user): string
     {
         /** @var JWTTokenManagerInterface $jwtManager */
         $jwtManager = $this->get(JWTTokenManagerInterface::class);
@@ -130,10 +131,10 @@ abstract class JsonApiTestCase extends BaseJsonApiTestCase
 
     protected function generateJwtTokenForShopUserEmail(string $email): string
     {
-        /** @var UserRepositoryInterface<ShopUserInterface> $shopUserRepository */
+        /** @var UserRepositoryInterface<UserInterface> $shopUserRepository */
         $shopUserRepository = $this->get('sylius.repository.shop_user');
         $shopUser = $shopUserRepository->findOneByEmail($email);
-        Assert::isInstanceOf($shopUser, ShopUserInterface::class);
+        Assert::isInstanceOf($shopUser, UserInterface::class);
 
         return $this->generateJwtTokenForUser($shopUser);
     }
@@ -247,6 +248,16 @@ abstract class JsonApiTestCase extends BaseJsonApiTestCase
         ];
 
         $this->assertSame($expected, $actual);
+    }
+
+    protected function generateJwtTokenForAdminUserEmail(string $email): string
+    {
+        /** @var UserRepositoryInterface<AdminUserInterface> $adminUserRepository */
+        $adminUserRepository = $this->get('sylius.repository.admin_user');
+        $adminUser = $adminUserRepository->findOneByEmail($email);
+        Assert::isInstanceOf($adminUser, AdminUserInterface::class);
+
+        return $this->generateJwtTokenForUser($adminUser);
     }
 
     private function assertViolationResponseHeaders(): void
