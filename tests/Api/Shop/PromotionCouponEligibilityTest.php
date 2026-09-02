@@ -106,6 +106,7 @@ final class PromotionCouponEligibilityTest extends JsonApiTestCase
                 'shipments' => [['methodCode' => 'UPS']],
                 'payments' => [['methodCode' => 'CASH_ON_DELIVERY']],
                 'couponCode' => 'ONCE_PER_CUSTOMER',
+                'hash' => 'PREVIEW_HASH',
             ],
         );
 
@@ -217,6 +218,7 @@ final class PromotionCouponEligibilityTest extends JsonApiTestCase
                 'shipments' => [['methodCode' => 'UPS']],
                 'payments' => [['methodCode' => 'CASH_ON_DELIVERY']],
                 'couponCode' => 'TOTALLY_BOGUS_CODE',
+                'hash' => 'PREVIEW_HASH',
             ],
         );
 
