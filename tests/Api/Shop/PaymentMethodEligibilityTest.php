@@ -107,7 +107,7 @@ final class PaymentMethodEligibilityTest extends JsonApiTestCase
         );
 
         $this->assertResponseViolations([
-            ['propertyPath' => 'payments[0].method', 'message' => 'Please select a payment method.'],
+            ['propertyPath' => '', 'message' => 'This payment method Disabled Method has been disabled. Please reselect your payment method.'],
         ]);
     }
 

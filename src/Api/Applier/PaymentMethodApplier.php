@@ -14,15 +14,16 @@ declare(strict_types=1);
 namespace Sylius\LiveOnePageCheckoutPlugin\Api\Applier;
 
 use Sylius\Component\Core\Model\OrderInterface;
+use Sylius\Component\Core\Model\PaymentMethodInterface;
+use Sylius\Component\Core\Repository\PaymentMethodRepositoryInterface;
 use Sylius\Component\Payment\Model\PaymentInterface;
-use Sylius\Component\Payment\Model\PaymentMethodInterface;
-use Sylius\Component\Payment\Resolver\PaymentMethodsResolverInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Command\Checkout;
 
 final readonly class PaymentMethodApplier implements CheckoutApplierInterface
 {
+    /** @param PaymentMethodRepositoryInterface<PaymentMethodInterface> $paymentMethodRepository */
     public function __construct(
-        private PaymentMethodsResolverInterface $paymentMethodsResolver,
+        private PaymentMethodRepositoryInterface $paymentMethodRepository,
     ) {
     }
 
@@ -38,18 +39,9 @@ final readonly class PaymentMethodApplier implements CheckoutApplierInterface
                 continue;
             }
 
-            $payment->setMethod($this->findSupportedMethod($payment, $code));
-        }
-    }
+            $method = $this->paymentMethodRepository->findOneBy(['code' => $code]);
 
-    private function findSupportedMethod(PaymentInterface $payment, string $code): ?PaymentMethodInterface
-    {
-        foreach ($this->paymentMethodsResolver->getSupportedMethods($payment) as $method) {
-            if ($method->getCode() === $code) {
-                return $method;
-            }
+            $payment->setMethod($method instanceof PaymentMethodInterface ? $method : null);
         }
-
-        return null;
     }
 }
