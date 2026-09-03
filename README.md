@@ -54,35 +54,6 @@ Installation guide
     composer require sylius/live-one-page-checkout-plugin --no-scripts
     ```
 
-1. Update `<project_root>/rector.php`
-
-   Depending on your `rector.php` format, apply one of the following:
-
-   - Closure-based configuration:
-
-    ```diff
-   + use Sylius\SyliusRector\Set\SyliusLiveOnePageCheckout;
-
-    return static function (RectorConfig $rectorConfig): void {
-        // ...
-    +    $rectorConfig->sets([
-    +        SyliusLiveOnePageCheckout::LIVE_ONE_PAGE_CHECKOUT_PLUGIN_01,
-    +    ]);
-    };
-    ```
-
-   - Fluent `RectorConfig::configure()` configuration:
-
-    ```diff
-   + use Sylius\SyliusRector\Set\SyliusLiveOnePageCheckout;
-
-    return RectorConfig::configure()
-        // ...
-    +    ->withSets([
-    +        SyliusLiveOnePageCheckout::LIVE_ONE_PAGE_CHECKOUT_PLUGIN_01,
-    +    ]);
-    ```
-
 1. Run
 
     ```bash
