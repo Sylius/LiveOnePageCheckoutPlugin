@@ -43,6 +43,7 @@ final class PaymentMethodEligibilityTest extends JsonApiTestCase
                 'shippingAddress' => $this->address(),
                 'billingAddress' => $this->address(),
                 'shipments' => [['methodCode' => 'UPS']],
+                'hash' => 'PREVIEW_HASH',
             ],
         );
 
@@ -71,6 +72,7 @@ final class PaymentMethodEligibilityTest extends JsonApiTestCase
                 'billingAddress' => $this->address(),
                 'shipments' => [['methodCode' => 'UPS']],
                 'payments' => [['methodCode' => 'BOGUS_CODE_XYZ']],
+                'hash' => 'PREVIEW_HASH',
             ],
         );
 
@@ -100,6 +102,7 @@ final class PaymentMethodEligibilityTest extends JsonApiTestCase
                 'billingAddress' => $this->address(),
                 'shipments' => [['methodCode' => 'UPS']],
                 'payments' => [['methodCode' => 'DISABLED_METHOD']],
+                'hash' => 'PREVIEW_HASH',
             ],
         );
 

@@ -45,6 +45,7 @@ final class ItemAvailabilityTest extends JsonApiTestCase
                 'billingAddress' => $this->address(),
                 'shipments' => [['methodCode' => 'UPS']],
                 'payments' => [['methodCode' => 'CASH_ON_DELIVERY']],
+                'hash' => 'PREVIEW_HASH',
             ],
         );
 
