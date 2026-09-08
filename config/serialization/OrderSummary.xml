@@ -52,5 +52,8 @@
         <attribute name="promotionCoupon">
             <group>sylius_live_one_page_checkout:shop:checkout:show</group>
         </attribute>
+        <attribute name="notes">
+            <group>sylius_live_one_page_checkout:shop:checkout:show</group>
+        </attribute>
     </class>
 </serializer>

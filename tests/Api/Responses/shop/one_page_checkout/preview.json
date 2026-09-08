@@ -24,7 +24,8 @@
         "orderPromotionTotal": 0,
         "orderAndItemPromotionTotal": 0,
         "shippingPromotionTotal": 0,
-        "promotionCoupon": null
+        "promotionCoupon": null,
+        "notes": "Please deliver in the evening"
     },
     "items": [
         {

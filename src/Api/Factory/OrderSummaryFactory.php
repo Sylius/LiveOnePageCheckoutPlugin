@@ -37,6 +37,7 @@ final readonly class OrderSummaryFactory implements OrderSummaryFactoryInterface
             $order->getOrderAndItemPromotionTotal(),
             $order->getShippingPromotionTotal(),
             $order->getPromotionCoupon()?->getCode(),
+            $order->getNotes(),
         );
     }
 }
