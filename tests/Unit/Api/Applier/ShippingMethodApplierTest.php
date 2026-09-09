@@ -17,23 +17,24 @@ use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\OrderInterface;
+use Sylius\Component\Core\Model\ShippingMethodInterface;
+use Sylius\Component\Core\Repository\ShippingMethodRepositoryInterface;
 use Sylius\Component\Shipping\Model\ShipmentInterface;
-use Sylius\Component\Shipping\Model\ShippingMethodInterface;
-use Sylius\Component\Shipping\Resolver\ShippingMethodsResolverInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Applier\CheckoutApplierInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Applier\ShippingMethodApplier;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Command\Checkout;
 
 final class ShippingMethodApplierTest extends TestCase
 {
-    private ShippingMethodsResolverInterface&MockObject $shippingMethodsResolver;
+    /** @var ShippingMethodRepositoryInterface<ShippingMethodInterface>&MockObject */
+    private ShippingMethodRepositoryInterface&MockObject $shippingMethodRepository;
 
     private ShippingMethodApplier $applier;
 
     protected function setUp(): void
     {
-        $this->shippingMethodsResolver = $this->createMock(ShippingMethodsResolverInterface::class);
-        $this->applier = new ShippingMethodApplier($this->shippingMethodsResolver);
+        $this->shippingMethodRepository = $this->createMock(ShippingMethodRepositoryInterface::class);
+        $this->applier = new ShippingMethodApplier($this->shippingMethodRepository);
     }
 
     public function testImplementsCheckoutApplierInterface(): void
@@ -41,10 +42,9 @@ final class ShippingMethodApplierTest extends TestCase
         self::assertInstanceOf(CheckoutApplierInterface::class, $this->applier);
     }
 
-    public function testAppliesSupportedShippingMethodByCode(): void
+    public function testAppliesExistingShippingMethodByCode(): void
     {
         $method = $this->createMock(ShippingMethodInterface::class);
-        $method->method('getCode')->willReturn('UPS');
 
         $shipment = $this->createMock(ShipmentInterface::class);
         $shipment->expects(self::once())->method('setMethod')->with($method);
@@ -52,33 +52,50 @@ final class ShippingMethodApplierTest extends TestCase
         $order = $this->createMock(OrderInterface::class);
         $order->method('getShipments')->willReturn(new ArrayCollection([$shipment]));
 
-        $this->shippingMethodsResolver->expects(self::once())
-            ->method('getSupportedMethods')
-            ->with($shipment)
-            ->willReturn([$method]);
+        $this->shippingMethodRepository->expects(self::once())
+            ->method('findOneBy')
+            ->with(['code' => 'UPS'])
+            ->willReturn($method);
 
         $command = new Checkout(orderTokenValue: 'token123', shipments: [['methodCode' => 'UPS']]);
 
         $this->applier->apply($order, $command);
     }
 
-    public function testSetsNullWhenRequestedMethodIsNotSupported(): void
+    public function testAppliesMethodUnavailableForTheAddressAndLeavesItToValidation(): void
     {
-        $supportedMethod = $this->createMock(ShippingMethodInterface::class);
-        $supportedMethod->method('getCode')->willReturn('DHL');
+        $method = $this->createMock(ShippingMethodInterface::class);
 
+        $shipment = $this->createMock(ShipmentInterface::class);
+        $shipment->expects(self::once())->method('setMethod')->with($method);
+
+        $order = $this->createMock(OrderInterface::class);
+        $order->method('getShipments')->willReturn(new ArrayCollection([$shipment]));
+
+        $this->shippingMethodRepository->expects(self::once())
+            ->method('findOneBy')
+            ->with(['code' => 'DHL'])
+            ->willReturn($method);
+
+        $command = new Checkout(orderTokenValue: 'token123', shipments: [['methodCode' => 'DHL']]);
+
+        $this->applier->apply($order, $command);
+    }
+
+    public function testSetsNullWhenRequestedMethodDoesNotExist(): void
+    {
         $shipment = $this->createMock(ShipmentInterface::class);
         $shipment->expects(self::once())->method('setMethod')->with(null);
 
         $order = $this->createMock(OrderInterface::class);
         $order->method('getShipments')->willReturn(new ArrayCollection([$shipment]));
 
-        $this->shippingMethodsResolver->expects(self::once())
-            ->method('getSupportedMethods')
-            ->with($shipment)
-            ->willReturn([$supportedMethod]);
+        $this->shippingMethodRepository->expects(self::once())
+            ->method('findOneBy')
+            ->with(['code' => 'BOGUS'])
+            ->willReturn(null);
 
-        $command = new Checkout(orderTokenValue: 'token123', shipments: [['methodCode' => 'UPS']]);
+        $command = new Checkout(orderTokenValue: 'token123', shipments: [['methodCode' => 'BOGUS']]);
 
         $this->applier->apply($order, $command);
     }
@@ -91,7 +108,7 @@ final class ShippingMethodApplierTest extends TestCase
         $order = $this->createMock(OrderInterface::class);
         $order->method('getShipments')->willReturn(new ArrayCollection([$shipment]));
 
-        $this->shippingMethodsResolver->expects(self::never())->method('getSupportedMethods');
+        $this->shippingMethodRepository->expects(self::never())->method('findOneBy');
 
         $command = new Checkout(orderTokenValue: 'token123', shipments: [['methodCode' => null]]);
 
@@ -106,7 +123,7 @@ final class ShippingMethodApplierTest extends TestCase
         $order = $this->createMock(OrderInterface::class);
         $order->method('getShipments')->willReturn(new ArrayCollection([$shipment]));
 
-        $this->shippingMethodsResolver->expects(self::never())->method('getSupportedMethods');
+        $this->shippingMethodRepository->expects(self::never())->method('findOneBy');
 
         $command = new Checkout(orderTokenValue: 'token123', shipments: [['methodCode' => '']]);
 
@@ -118,7 +135,7 @@ final class ShippingMethodApplierTest extends TestCase
         $order = $this->createMock(OrderInterface::class);
         $order->method('getShipments')->willReturn(new ArrayCollection([]));
 
-        $this->shippingMethodsResolver->expects(self::never())->method('getSupportedMethods');
+        $this->shippingMethodRepository->expects(self::never())->method('findOneBy');
 
         $command = new Checkout(orderTokenValue: 'token123', shipments: [['methodCode' => 'UPS']]);
 
@@ -128,9 +145,7 @@ final class ShippingMethodApplierTest extends TestCase
     public function testAppliesMethodPerShipmentByPosition(): void
     {
         $ups = $this->createMock(ShippingMethodInterface::class);
-        $ups->method('getCode')->willReturn('UPS');
         $dhl = $this->createMock(ShippingMethodInterface::class);
-        $dhl->method('getCode')->willReturn('DHL');
 
         $firstShipment = $this->createMock(ShipmentInterface::class);
         $firstShipment->expects(self::once())->method('setMethod')->with($ups);
@@ -140,11 +155,11 @@ final class ShippingMethodApplierTest extends TestCase
         $order = $this->createMock(OrderInterface::class);
         $order->method('getShipments')->willReturn(new ArrayCollection([$firstShipment, $secondShipment]));
 
-        $this->shippingMethodsResolver
-            ->method('getSupportedMethods')
+        $this->shippingMethodRepository
+            ->method('findOneBy')
             ->willReturnMap([
-                [$firstShipment, [$ups]],
-                [$secondShipment, [$dhl]],
+                [['code' => 'UPS'], $ups],
+                [['code' => 'DHL'], $dhl],
             ]);
 
         $command = new Checkout(
@@ -160,7 +175,7 @@ final class ShippingMethodApplierTest extends TestCase
         $order = $this->createMock(OrderInterface::class);
         $order->method('getShipments')->willReturn(new ArrayCollection([]));
 
-        $this->shippingMethodsResolver->expects(self::never())->method('getSupportedMethods');
+        $this->shippingMethodRepository->expects(self::never())->method('findOneBy');
 
         $command = new Checkout(orderTokenValue: 'token123', shipments: []);
 

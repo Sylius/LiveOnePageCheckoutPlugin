@@ -14,15 +14,16 @@ declare(strict_types=1);
 namespace Sylius\LiveOnePageCheckoutPlugin\Api\Applier;
 
 use Sylius\Component\Core\Model\OrderInterface;
+use Sylius\Component\Core\Model\ShippingMethodInterface;
+use Sylius\Component\Core\Repository\ShippingMethodRepositoryInterface;
 use Sylius\Component\Shipping\Model\ShipmentInterface;
-use Sylius\Component\Shipping\Model\ShippingMethodInterface;
-use Sylius\Component\Shipping\Resolver\ShippingMethodsResolverInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Command\Checkout;
 
 final readonly class ShippingMethodApplier implements CheckoutApplierInterface
 {
+    /** @param ShippingMethodRepositoryInterface<ShippingMethodInterface> $shippingMethodRepository */
     public function __construct(
-        private ShippingMethodsResolverInterface $shippingMethodsResolver,
+        private ShippingMethodRepositoryInterface $shippingMethodRepository,
     ) {
     }
 
@@ -38,18 +39,9 @@ final readonly class ShippingMethodApplier implements CheckoutApplierInterface
                 continue;
             }
 
-            $shipment->setMethod($this->findSupportedMethod($shipment, $code));
-        }
-    }
+            $method = $this->shippingMethodRepository->findOneBy(['code' => $code]);
 
-    private function findSupportedMethod(ShipmentInterface $shipment, string $code): ?ShippingMethodInterface
-    {
-        foreach ($this->shippingMethodsResolver->getSupportedMethods($shipment) as $method) {
-            if ($method->getCode() === $code) {
-                return $method;
-            }
+            $shipment->setMethod($method instanceof ShippingMethodInterface ? $method : null);
         }
-
-        return null;
     }
 }

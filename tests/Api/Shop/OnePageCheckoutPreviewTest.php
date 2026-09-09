@@ -220,7 +220,7 @@ final class OnePageCheckoutPreviewTest extends JsonApiTestCase
         $this->assertResponse($this->client()->getResponse(), 'shop/one_page_checkout/de_address_methods');
     }
 
-    public function testClearsSelectedShippingMethodWhenCountryMakesItIneligible(): void
+    public function testKeepsSelectedShippingMethodWhenCountryMakesItIneligible(): void
     {
         $this->loadFixturesFromFiles([
             'channel.yaml',
@@ -249,6 +249,6 @@ final class OnePageCheckoutPreviewTest extends JsonApiTestCase
             ],
         );
 
-        $this->assertResponse($this->client()->getResponse(), 'shop/one_page_checkout/ineligible_method_selected');
+        $this->assertResponse($this->client()->getResponse(), 'shop/one_page_checkout/de_address_methods');
     }
 }

@@ -106,7 +106,7 @@ final class ShippingMethodEligibilityTest extends JsonApiTestCase
         );
 
         $this->assertResponseViolations([
-            ['propertyPath' => 'shipments[0].method', 'message' => 'Please select shipping method.'],
+            ['propertyPath' => '', 'message' => 'Product does not fit requirements for DHL shipping method. Please reselect your shipping method.'],
         ]);
     }
 

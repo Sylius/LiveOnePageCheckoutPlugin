@@ -89,7 +89,7 @@ return static function (ContainerConfigurator $container): void {
     $services
         ->set('sylius_live_one_page_checkout.api.applier.shipping_method', ShippingMethodApplier::class)
         ->args([
-            service('sylius.resolver.shipping_methods'),
+            service('sylius.repository.shipping_method'),
         ])
         ->tag('sylius_live_one_page_checkout.api.checkout_applier', ['priority' => 30])
     ;
@@ -97,7 +97,7 @@ return static function (ContainerConfigurator $container): void {
     $services
         ->set('sylius_live_one_page_checkout.api.applier.payment_method', PaymentMethodApplier::class)
         ->args([
-            service('sylius.resolver.payment_methods'),
+            service('sylius.repository.payment_method'),
         ])
         ->tag('sylius_live_one_page_checkout.api.checkout_applier', ['priority' => 20])
     ;

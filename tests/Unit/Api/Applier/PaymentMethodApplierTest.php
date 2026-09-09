@@ -17,23 +17,24 @@ use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\OrderInterface;
+use Sylius\Component\Core\Model\PaymentMethodInterface;
+use Sylius\Component\Core\Repository\PaymentMethodRepositoryInterface;
 use Sylius\Component\Payment\Model\PaymentInterface;
-use Sylius\Component\Payment\Model\PaymentMethodInterface;
-use Sylius\Component\Payment\Resolver\PaymentMethodsResolverInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Applier\CheckoutApplierInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Applier\PaymentMethodApplier;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Command\Checkout;
 
 final class PaymentMethodApplierTest extends TestCase
 {
-    private PaymentMethodsResolverInterface&MockObject $paymentMethodsResolver;
+    /** @var PaymentMethodRepositoryInterface<PaymentMethodInterface>&MockObject */
+    private PaymentMethodRepositoryInterface&MockObject $paymentMethodRepository;
 
     private PaymentMethodApplier $applier;
 
     protected function setUp(): void
     {
-        $this->paymentMethodsResolver = $this->createMock(PaymentMethodsResolverInterface::class);
-        $this->applier = new PaymentMethodApplier($this->paymentMethodsResolver);
+        $this->paymentMethodRepository = $this->createMock(PaymentMethodRepositoryInterface::class);
+        $this->applier = new PaymentMethodApplier($this->paymentMethodRepository);
     }
 
     public function testImplementsCheckoutApplierInterface(): void
@@ -41,10 +42,9 @@ final class PaymentMethodApplierTest extends TestCase
         self::assertInstanceOf(CheckoutApplierInterface::class, $this->applier);
     }
 
-    public function testAppliesSupportedPaymentMethodByCode(): void
+    public function testAppliesExistingPaymentMethodByCode(): void
     {
         $method = $this->createMock(PaymentMethodInterface::class);
-        $method->method('getCode')->willReturn('BANK_TRANSFER');
 
         $payment = $this->createMock(PaymentInterface::class);
         $payment->expects(self::once())->method('setMethod')->with($method);
@@ -52,33 +52,50 @@ final class PaymentMethodApplierTest extends TestCase
         $order = $this->createMock(OrderInterface::class);
         $order->method('getPayments')->willReturn(new ArrayCollection([$payment]));
 
-        $this->paymentMethodsResolver->expects(self::once())
-            ->method('getSupportedMethods')
-            ->with($payment)
-            ->willReturn([$method]);
+        $this->paymentMethodRepository->expects(self::once())
+            ->method('findOneBy')
+            ->with(['code' => 'CASH_ON_DELIVERY'])
+            ->willReturn($method);
 
-        $command = new Checkout(orderTokenValue: 'token123', payments: [['methodCode' => 'BANK_TRANSFER']]);
+        $command = new Checkout(orderTokenValue: 'token123', payments: [['methodCode' => 'CASH_ON_DELIVERY']]);
 
         $this->applier->apply($order, $command);
     }
 
-    public function testSetsNullWhenRequestedMethodIsNotSupported(): void
+    public function testAppliesDisabledMethodAndLeavesItToValidation(): void
     {
-        $supportedMethod = $this->createMock(PaymentMethodInterface::class);
-        $supportedMethod->method('getCode')->willReturn('CASH_ON_DELIVERY');
+        $method = $this->createMock(PaymentMethodInterface::class);
 
+        $payment = $this->createMock(PaymentInterface::class);
+        $payment->expects(self::once())->method('setMethod')->with($method);
+
+        $order = $this->createMock(OrderInterface::class);
+        $order->method('getPayments')->willReturn(new ArrayCollection([$payment]));
+
+        $this->paymentMethodRepository->expects(self::once())
+            ->method('findOneBy')
+            ->with(['code' => 'DISABLED_METHOD'])
+            ->willReturn($method);
+
+        $command = new Checkout(orderTokenValue: 'token123', payments: [['methodCode' => 'DISABLED_METHOD']]);
+
+        $this->applier->apply($order, $command);
+    }
+
+    public function testSetsNullWhenRequestedMethodDoesNotExist(): void
+    {
         $payment = $this->createMock(PaymentInterface::class);
         $payment->expects(self::once())->method('setMethod')->with(null);
 
         $order = $this->createMock(OrderInterface::class);
         $order->method('getPayments')->willReturn(new ArrayCollection([$payment]));
 
-        $this->paymentMethodsResolver->expects(self::once())
-            ->method('getSupportedMethods')
-            ->with($payment)
-            ->willReturn([$supportedMethod]);
+        $this->paymentMethodRepository->expects(self::once())
+            ->method('findOneBy')
+            ->with(['code' => 'BOGUS'])
+            ->willReturn(null);
 
-        $command = new Checkout(orderTokenValue: 'token123', payments: [['methodCode' => 'BANK_TRANSFER']]);
+        $command = new Checkout(orderTokenValue: 'token123', payments: [['methodCode' => 'BOGUS']]);
 
         $this->applier->apply($order, $command);
     }
@@ -91,7 +108,7 @@ final class PaymentMethodApplierTest extends TestCase
         $order = $this->createMock(OrderInterface::class);
         $order->method('getPayments')->willReturn(new ArrayCollection([$payment]));
 
-        $this->paymentMethodsResolver->expects(self::never())->method('getSupportedMethods');
+        $this->paymentMethodRepository->expects(self::never())->method('findOneBy');
 
         $command = new Checkout(orderTokenValue: 'token123', payments: [['methodCode' => null]]);
 
@@ -106,7 +123,7 @@ final class PaymentMethodApplierTest extends TestCase
         $order = $this->createMock(OrderInterface::class);
         $order->method('getPayments')->willReturn(new ArrayCollection([$payment]));
 
-        $this->paymentMethodsResolver->expects(self::never())->method('getSupportedMethods');
+        $this->paymentMethodRepository->expects(self::never())->method('findOneBy');
 
         $command = new Checkout(orderTokenValue: 'token123', payments: [['methodCode' => '']]);
 
@@ -118,38 +135,36 @@ final class PaymentMethodApplierTest extends TestCase
         $order = $this->createMock(OrderInterface::class);
         $order->method('getPayments')->willReturn(new ArrayCollection([]));
 
-        $this->paymentMethodsResolver->expects(self::never())->method('getSupportedMethods');
+        $this->paymentMethodRepository->expects(self::never())->method('findOneBy');
 
-        $command = new Checkout(orderTokenValue: 'token123', payments: [['methodCode' => 'BANK_TRANSFER']]);
+        $command = new Checkout(orderTokenValue: 'token123', payments: [['methodCode' => 'CASH_ON_DELIVERY']]);
 
         $this->applier->apply($order, $command);
     }
 
     public function testAppliesMethodPerPaymentByPosition(): void
     {
-        $bankTransfer = $this->createMock(PaymentMethodInterface::class);
-        $bankTransfer->method('getCode')->willReturn('BANK_TRANSFER');
-        $cashOnDelivery = $this->createMock(PaymentMethodInterface::class);
-        $cashOnDelivery->method('getCode')->willReturn('CASH_ON_DELIVERY');
+        $cash = $this->createMock(PaymentMethodInterface::class);
+        $stripe = $this->createMock(PaymentMethodInterface::class);
 
         $firstPayment = $this->createMock(PaymentInterface::class);
-        $firstPayment->expects(self::once())->method('setMethod')->with($bankTransfer);
+        $firstPayment->expects(self::once())->method('setMethod')->with($cash);
         $secondPayment = $this->createMock(PaymentInterface::class);
-        $secondPayment->expects(self::once())->method('setMethod')->with($cashOnDelivery);
+        $secondPayment->expects(self::once())->method('setMethod')->with($stripe);
 
         $order = $this->createMock(OrderInterface::class);
         $order->method('getPayments')->willReturn(new ArrayCollection([$firstPayment, $secondPayment]));
 
-        $this->paymentMethodsResolver
-            ->method('getSupportedMethods')
+        $this->paymentMethodRepository
+            ->method('findOneBy')
             ->willReturnMap([
-                [$firstPayment, [$bankTransfer]],
-                [$secondPayment, [$cashOnDelivery]],
+                [['code' => 'CASH_ON_DELIVERY'], $cash],
+                [['code' => 'STRIPE'], $stripe],
             ]);
 
         $command = new Checkout(
             orderTokenValue: 'token123',
-            payments: [['methodCode' => 'BANK_TRANSFER'], ['methodCode' => 'CASH_ON_DELIVERY']],
+            payments: [['methodCode' => 'CASH_ON_DELIVERY'], ['methodCode' => 'STRIPE']],
         );
 
         $this->applier->apply($order, $command);
@@ -160,7 +175,7 @@ final class PaymentMethodApplierTest extends TestCase
         $order = $this->createMock(OrderInterface::class);
         $order->method('getPayments')->willReturn(new ArrayCollection([]));
 
-        $this->paymentMethodsResolver->expects(self::never())->method('getSupportedMethods');
+        $this->paymentMethodRepository->expects(self::never())->method('findOneBy');
 
         $command = new Checkout(orderTokenValue: 'token123', payments: []);
 
