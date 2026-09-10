@@ -14,9 +14,6 @@ sylius_twig_hooks:
                 priority: 0
 
         'sylius_live_one_page_checkout.shop.checkout.one_page.content':
-            flashes:
-                template: '@SyliusShop/shared/flashes.html.twig'
-                priority: 100
             form:
                 component: 'sylius_live_one_page_checkout:checkout:form'
                 props:
@@ -26,6 +23,9 @@ sylius_twig_hooks:
                 priority: 0
 
         'sylius_live_one_page_checkout.shop.checkout.one_page.content.form':
+            flashes:
+                template: '@SyliusShop/shared/flashes.html.twig'
+                priority: 100
             sections:
                 template: '@SyliusLiveOnePageCheckoutPlugin/shop/checkout/one_page/content/form/sections.html.twig'
                 priority: 0
