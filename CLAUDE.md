@@ -13,7 +13,7 @@ The feature is **toggled per channel**: an admin enables "one page checkout" on 
 and only that channel switches to the one-page flow; other channels keep the standard
 Sylius checkout.
 
-- Requires: PHP `^8.2`, `sylius/sylius` `^2.0`.
+- Requires: PHP `^8.2`, `sylius/sylius` `^2.2`.
 - Namespace: `Sylius\LiveOnePageCheckoutPlugin\` → `src/`.
 - Tests namespace: `Tests\Sylius\LiveOnePageCheckoutPlugin\` → `tests/` + `tests/TestApplication/src/`.
 

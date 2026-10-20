@@ -1,0 +1,17 @@
+# Licensor Statement
+
+> **DRAFT - pending legal review. Do not publish.**
+
+This statement is made by Sylius sp. z o.o. (KRS 0001028152), the Licensor of Sylius Live One Page
+Checkout Plugin (`sylius/live-one-page-checkout-plugin`) version **[VERSION]**. It does not modify
+the [LICENSE](LICENSE), which remains the Business Source License 1.1 as published.
+
+Where your production use of the Licensed Work does not meet the conditions of the Additional Use
+Grant, Sylius will not enforce the termination of your rights under the License if, within 30 days
+of receiving notice from Sylius, you either:
+
+- restore the telemetry functionality so that it operates as documented, or
+- purchase a commercial license.
+
+Temporary technical failures of the telemetry functionality that are not caused by a deliberate
+action on your side are not treated as a breach of the Additional Use Grant.

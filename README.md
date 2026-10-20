@@ -31,7 +31,7 @@ See [`CLAUDE.md`](CLAUDE.md) for a full architecture breakdown.
 | Package         | Version |
 |-----------------|---------|
 | PHP             | `^8.2`  |
-| `sylius/sylius` | `^2.0`  |
+| `sylius/sylius` | `^2.2`  |
 
 ⚙️ Installation
 ---------------
@@ -372,4 +372,12 @@ is added.
 
 ## License
 
-Released under the [MIT License](LICENSE).
+Released under the [Business Source License 1.1](LICENSE). The plugin is source-available, not
+open source, and each version converts to the MIT License four years after it is published.
+
+Production use is free as long as Sylius telemetry is not deliberately disabled and the plugin is
+not used to provide a competing offering. Disabling telemetry (e.g. `SYLIUS_TELEMETRY_ENABLED=0`)
+in production has licensing consequences for this plugin: you need a commercial license. See the
+[License FAQ](LICENSE-FAQ.md) and the [Licensor Statement](LICENSOR-STATEMENT.md).
+
+For commercial licensing, contact [LICENSING CONTACT EMAIL].
