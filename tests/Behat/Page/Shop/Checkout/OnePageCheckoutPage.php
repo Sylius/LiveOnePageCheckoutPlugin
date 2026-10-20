@@ -194,7 +194,7 @@ class OnePageCheckoutPage extends Page implements OnePageCheckoutPageInterface
         $this->waitForElementUpdate('form');
     }
 
-    /** @return array<string, string> */
+    /** @return array<mixed> */
     protected function getDefinedElements(): array
     {
         return array_merge(parent::getDefinedElements(), [

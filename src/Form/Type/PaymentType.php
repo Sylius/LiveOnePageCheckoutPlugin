@@ -73,7 +73,7 @@ final class PaymentType extends AbstractType
 
         $supported = $event->getForm()->get('method')->getConfig()->getOption('choices');
         $supportedCodes = array_map(
-            static fn (PaymentMethodInterface $method) => $method->getCode(),
+            static fn (mixed $method): ?string => $method instanceof PaymentMethodInterface ? $method->getCode() : null,
             is_array($supported) ? $supported : [],
         );
 

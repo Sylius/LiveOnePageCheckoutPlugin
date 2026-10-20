@@ -235,7 +235,7 @@ final class StandardCheckoutStepBlockedTest extends JsonApiTestCase
         $order->setShippingAddress($address);
         $order->setBillingAddress(clone $address);
 
-        $this->get('doctrine.orm.entity_manager')->flush();
+        $this->entityManager()->flush();
     }
 
     private function addressCartAndTransition(string $tokenValue): void
@@ -251,7 +251,7 @@ final class StandardCheckoutStepBlockedTest extends JsonApiTestCase
         $stateMachine = $this->get('sylius_abstraction.state_machine');
         $stateMachine->apply($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_ADDRESS);
 
-        $this->get('doctrine.orm.entity_manager')->flush();
+        $this->entityManager()->flush();
     }
 
     private function selectShippingMethod(string $tokenValue): void
@@ -274,7 +274,7 @@ final class StandardCheckoutStepBlockedTest extends JsonApiTestCase
         $stateMachine = $this->get('sylius_abstraction.state_machine');
         $stateMachine->apply($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_SELECT_SHIPPING);
 
-        $this->get('doctrine.orm.entity_manager')->flush();
+        $this->entityManager()->flush();
     }
 
     private function selectPaymentMethod(string $tokenValue): void
@@ -297,7 +297,7 @@ final class StandardCheckoutStepBlockedTest extends JsonApiTestCase
         $stateMachine = $this->get('sylius_abstraction.state_machine');
         $stateMachine->apply($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_SELECT_PAYMENT);
 
-        $this->get('doctrine.orm.entity_manager')->flush();
+        $this->entityManager()->flush();
     }
 
     private function getShipmentId(string $tokenValue): int

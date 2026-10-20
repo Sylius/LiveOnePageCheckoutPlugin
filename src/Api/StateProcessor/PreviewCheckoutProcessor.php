@@ -25,7 +25,6 @@ use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\CheckoutPreview;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\CheckoutPreviewFactoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Ensurer\OrderObjectsEnsurerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Webmozart\Assert\Assert;
 
 /**
  * @implements ProcessorInterface<Checkout, CheckoutPreview>
@@ -54,8 +53,6 @@ final readonly class PreviewCheckoutProcessor implements ProcessorInterface
      */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): CheckoutPreview
     {
-        Assert::isInstanceOf($data, Checkout::class);
-
         $order = $this->orderRepository->findCartByTokenValue($data->orderTokenValue);
 
         if (!$order instanceof OrderInterface) {

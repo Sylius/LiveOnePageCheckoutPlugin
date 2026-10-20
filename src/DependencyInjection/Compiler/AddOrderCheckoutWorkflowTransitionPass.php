@@ -41,7 +41,7 @@ final class AddOrderCheckoutWorkflowTransitionPass implements CompilerPassInterf
 
         $definition = $container->getDefinition(self::WORKFLOW_DEFINITION_ID);
 
-        /** @var array<Definition> $transitions */
+        /** @var array<mixed> $transitions */
         $transitions = $definition->getArgument(1);
 
         $existingTransitions = $this->extractExistingTransitions($transitions);
@@ -64,7 +64,7 @@ final class AddOrderCheckoutWorkflowTransitionPass implements CompilerPassInterf
     }
 
     /**
-     * @param array<Definition> $transitions
+     * @param array<mixed> $transitions
      *
      * @return array<string>
      */
@@ -83,8 +83,16 @@ final class AddOrderCheckoutWorkflowTransitionPass implements CompilerPassInterf
             }
 
             [$name, $froms, $tos] = $arguments;
-            foreach ($froms as $from) {
-                foreach ($tos as $to) {
+            if (!is_string($name)) {
+                continue;
+            }
+
+            foreach ((array) $froms as $from) {
+                foreach ((array) $tos as $to) {
+                    if (!is_string($from) || !is_string($to)) {
+                        continue;
+                    }
+
                     $existingTransitions[] = $this->createTransitionKey($name, $from, $to);
                 }
             }

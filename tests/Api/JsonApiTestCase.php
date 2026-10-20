@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Tests\Sylius\LiveOnePageCheckoutPlugin\Api;
 
 use ApiTestCase\JsonApiTestCase as BaseJsonApiTestCase;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use PHPUnit\Framework\Attributes\Before;
@@ -140,11 +141,15 @@ abstract class JsonApiTestCase extends BaseJsonApiTestCase
     }
 
     /**
-     * @return ObjectRepository<object>
+     * @template T of object
+     *
+     * @param class-string<T> $className
+     *
+     * @return ObjectRepository<T>
      */
     protected function getRepository(string $className): ObjectRepository
     {
-        return $this->get('doctrine.orm.entity_manager')->getRepository($className);
+        return $this->entityManager()->getRepository($className);
     }
 
     protected function pickUpCartWithItem(
@@ -189,7 +194,7 @@ abstract class JsonApiTestCase extends BaseJsonApiTestCase
 
         $order->setCustomerWithAuthorization($customer);
 
-        $this->get('doctrine.orm.entity_manager')->flush();
+        $this->entityManager()->flush();
     }
 
     /**
@@ -215,18 +220,25 @@ abstract class JsonApiTestCase extends BaseJsonApiTestCase
 
         $actualDescription = $decoded['hydra:description'];
 
-        array_walk($actualViolations, function (&$item): void {
+        array_walk($actualViolations, function (mixed &$item): void {
+            Assert::isArray($item);
             unset($item['code']);
         });
 
         $mappedViolations = array_map(function (mixed $violation): string {
             Assert::isArray($violation);
 
+            $message = $violation['message'];
+            Assert::string($message);
+
             if (empty($violation['propertyPath'])) {
-                return $violation['message'];
+                return $message;
             }
 
-            return $violation['propertyPath'] . ': ' . $violation['message'];
+            $propertyPath = $violation['propertyPath'];
+            Assert::string($propertyPath);
+
+            return $propertyPath . ': ' . $message;
         }, $expectedViolations);
 
         $expectedDescription = implode("\n", $mappedViolations);
@@ -258,6 +270,14 @@ abstract class JsonApiTestCase extends BaseJsonApiTestCase
         Assert::isInstanceOf($adminUser, AdminUserInterface::class);
 
         return $this->generateJwtTokenForUser($adminUser);
+    }
+
+    protected function entityManager(): EntityManagerInterface
+    {
+        $entityManager = $this->get('doctrine.orm.entity_manager');
+        Assert::isInstanceOf($entityManager, EntityManagerInterface::class);
+
+        return $entityManager;
     }
 
     private function assertViolationResponseHeaders(): void

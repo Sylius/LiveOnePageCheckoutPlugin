@@ -34,7 +34,6 @@ final class ItemAvailabilityValidator extends ConstraintValidator
     {
         Assert::isInstanceOf($value, Checkout::class);
 
-        /** @var ItemAvailability $constraint */
         Assert::isInstanceOf($constraint, ItemAvailability::class);
 
         $order = $this->orderRepository->findCartByTokenValue($value->orderTokenValue);

@@ -64,9 +64,12 @@ final readonly class ChannelAwareCheckoutResolver implements EventSubscriberInte
     private function isOnePageEnabled(): bool
     {
         try {
-            /** @var ChannelOnePageCheckoutAwareInterface $channel */
             $channel = $this->channelContext->getChannel();
         } catch (ChannelNotFoundException) {
+            return false;
+        }
+
+        if (!$channel instanceof ChannelOnePageCheckoutAwareInterface) {
             return false;
         }
 

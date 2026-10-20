@@ -15,7 +15,8 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigura
 
 return function (ContainerConfigurator $container) {
     if (str_starts_with((string) $container->env(), 'test')) {
-        $container->import('../../../vendor/sylius/sylius/src/Sylius/Behat/Resources/config/services.xml');
+        $syliusBehatServices = '../../../vendor/sylius/sylius/src/Sylius/Behat/Resources/config/services';
+        $container->import(is_file(__DIR__ . '/' . $syliusBehatServices . '.php') ? $syliusBehatServices . '.php' : $syliusBehatServices . '.xml');
         $container->import('@SyliusLiveOnePageCheckoutPlugin/tests/Behat/Resources/services.php');
     }
 };

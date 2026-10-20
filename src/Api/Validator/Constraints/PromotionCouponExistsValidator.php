@@ -32,7 +32,6 @@ final class PromotionCouponExistsValidator extends ConstraintValidator
     {
         Assert::isInstanceOf($value, Checkout::class);
 
-        /** @var PromotionCouponExists $constraint */
         Assert::isInstanceOf($constraint, PromotionCouponExists::class);
 
         if (null === $value->couponCode || '' === $value->couponCode) {

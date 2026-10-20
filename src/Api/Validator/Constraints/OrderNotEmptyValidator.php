@@ -32,7 +32,6 @@ final class OrderNotEmptyValidator extends ConstraintValidator
     {
         Assert::isInstanceOf($value, Checkout::class);
 
-        /** @var OrderNotEmpty $constraint */
         Assert::isInstanceOf($constraint, OrderNotEmpty::class);
 
         $order = $this->orderRepository->findCartByTokenValue($value->orderTokenValue);

@@ -17,6 +17,7 @@ use Sylius\Bundle\CoreBundle\Application\SyliusPluginTrait;
 use Sylius\LiveOnePageCheckoutPlugin\DependencyInjection\Compiler\AddOrderCheckoutWorkflowTransitionPass;
 use Sylius\LiveOnePageCheckoutPlugin\DependencyInjection\Compiler\AddOrderProcessorTagPass;
 use Sylius\LiveOnePageCheckoutPlugin\DependencyInjection\Compiler\RegisterOnePageOrderProcessorsPass;
+use Sylius\Telemetry\TelemetryCompilerPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
@@ -47,6 +48,7 @@ final class SyliusLiveOnePageCheckoutPlugin extends Bundle
             ),
             priority: 10,
         );
+        $container->addCompilerPass(new TelemetryCompilerPass());
     }
 
     public function getPath(): string
