@@ -115,7 +115,7 @@ final class ChannelOnePageCheckoutTest extends JsonApiTestCase
 
     private function findChannel(string $code): Channel
     {
-        $this->get('doctrine.orm.entity_manager')->clear();
+        $this->entityManager()->clear();
 
         $channel = $this->getRepository(Channel::class)->findOneBy(['code' => $code]);
         self::assertInstanceOf(Channel::class, $channel);

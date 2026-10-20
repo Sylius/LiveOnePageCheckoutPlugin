@@ -44,7 +44,6 @@ final class StandardCheckoutStepBlockedValidator extends ConstraintValidator
         );
 
         /** @var UpdateCart|ChooseShippingMethod|ChoosePaymentMethod|CompleteOrder $value */
-        /** @var StandardCheckoutStepBlocked $constraint */
         Assert::isInstanceOf($constraint, StandardCheckoutStepBlocked::class);
 
         $order = $this->orderRepository->findCartByTokenValue($value->orderTokenValue);

@@ -82,7 +82,7 @@ final class OnePageCheckoutPreviewTest extends JsonApiTestCase
 
         self::assertSame(200, $this->client()->getResponse()->getStatusCode());
 
-        $this->get('doctrine.orm.entity_manager')->clear();
+        $this->entityManager()->clear();
 
         /** @var OrderRepositoryInterface<OrderInterface> $orderRepository */
         $orderRepository = $this->get('sylius.repository.order');

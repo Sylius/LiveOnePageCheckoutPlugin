@@ -105,10 +105,9 @@ final class OrderItemImageNormalizer implements NormalizerInterface, NormalizerA
             return null;
         }
 
-        /** @var ChannelOnePageCheckoutAwareInterface $channel */
         $channel = $order->getChannel();
 
-        return $channel;
+        return $channel instanceof ChannelOnePageCheckoutAwareInterface ? $channel : null;
     }
 
     /** @return array<class-string, bool> */

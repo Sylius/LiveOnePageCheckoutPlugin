@@ -31,7 +31,6 @@ final class PromotionCouponEligibilityValidator extends ConstraintValidator
     {
         Assert::isInstanceOf($value, OrderInterface::class);
 
-        /** @var PromotionCouponEligibility $constraint */
         Assert::isInstanceOf($constraint, PromotionCouponEligibility::class);
 
         $promotionCoupon = $value->getPromotionCoupon();

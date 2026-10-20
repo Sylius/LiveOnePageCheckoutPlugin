@@ -33,7 +33,6 @@ final class CountryCodeExistsValidator extends ConstraintValidator
     {
         Assert::isInstanceOf($value, Checkout::class);
 
-        /** @var CountryCodeExists $constraint */
         Assert::isInstanceOf($constraint, CountryCodeExists::class);
 
         $this->validateAddress($value->billingAddress, 'billingAddress', $constraint);

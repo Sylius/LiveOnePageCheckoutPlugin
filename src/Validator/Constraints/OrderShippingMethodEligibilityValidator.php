@@ -35,10 +35,8 @@ final class OrderShippingMethodEligibilityValidator extends ConstraintValidator
     /** @throws \InvalidArgumentException */
     public function validate(mixed $value, Constraint $constraint): void
     {
-        /** @var OrderInterface $value */
         Assert::isInstanceOf($value, OrderInterface::class);
 
-        /** @var OrderShippingMethodEligibility $constraint */
         Assert::isInstanceOf($constraint, OrderShippingMethodEligibility::class);
 
         $shipments = $value->getShipments();

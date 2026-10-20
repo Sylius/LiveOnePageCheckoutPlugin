@@ -5,3 +5,8 @@ parameters:
         - tests
     excludePaths:
         - src/Integration/Mollie
+    ignoreErrors:
+        -
+            identifier: missingType.generics
+            message: '#Symfony\\Component\\Workflow\\Event\\GuardEvent#'
+            reportUnmatched: false

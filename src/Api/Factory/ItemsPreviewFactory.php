@@ -15,6 +15,7 @@ namespace Sylius\LiveOnePageCheckoutPlugin\Api\Factory;
 
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\ItemPreview;
+use Webmozart\Assert\Assert;
 
 final readonly class ItemsPreviewFactory implements ItemsPreviewFactoryInterface
 {
@@ -23,8 +24,11 @@ final readonly class ItemsPreviewFactory implements ItemsPreviewFactoryInterface
         $previews = [];
 
         foreach ($order->getItems() as $item) {
+            $id = $item->getId();
+            Assert::integer($id);
+
             $previews[] = new ItemPreview(
-                (int) $item->getId(),
+                $id,
                 $item->getUnitPrice(),
                 $item->getOriginalUnitPrice(),
                 $item->getTotal(),

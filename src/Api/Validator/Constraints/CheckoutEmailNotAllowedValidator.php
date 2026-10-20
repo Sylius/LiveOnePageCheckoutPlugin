@@ -34,7 +34,6 @@ final class CheckoutEmailNotAllowedValidator extends ConstraintValidator
     {
         Assert::isInstanceOf($value, Checkout::class);
 
-        /** @var CheckoutEmailNotAllowed $constraint */
         Assert::isInstanceOf($constraint, CheckoutEmailNotAllowed::class);
 
         if (null === $this->userContext->getUser()) {

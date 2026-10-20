@@ -21,6 +21,7 @@ use Sylius\LiveOnePageCheckoutPlugin\Api\DTO\OrderSummary;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\OrderSummaryFactory;
 use Sylius\LiveOnePageCheckoutPlugin\Api\Factory\OrderSummaryFactoryInterface;
 use Sylius\LiveOnePageCheckoutPlugin\Entity\OrderAndItemPromotionTotalAwareInterface;
+use Tests\Sylius\LiveOnePageCheckoutPlugin\Entity\Order;
 
 final class OrderSummaryFactoryTest extends TestCase
 {
@@ -33,10 +34,7 @@ final class OrderSummaryFactoryTest extends TestCase
 
     private function mockOrder(): MockObject
     {
-        return $this->createMockForIntersectionOfInterfaces([
-            OrderInterface::class,
-            OrderAndItemPromotionTotalAwareInterface::class,
-        ]);
+        return $this->createMock(Order::class);
     }
 
     public function testImplementsOrderSummaryFactoryInterface(): void

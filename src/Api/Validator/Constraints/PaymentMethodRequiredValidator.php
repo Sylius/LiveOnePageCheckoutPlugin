@@ -32,7 +32,6 @@ final class PaymentMethodRequiredValidator extends ConstraintValidator
     {
         Assert::isInstanceOf($value, Checkout::class);
 
-        /** @var PaymentMethodRequired $constraint */
         Assert::isInstanceOf($constraint, PaymentMethodRequired::class);
 
         if ([] === $value->payments) {

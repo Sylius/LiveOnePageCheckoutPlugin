@@ -74,7 +74,7 @@ final class ShipmentType extends AbstractType
 
         $supported = $event->getForm()->get('method')->getConfig()->getOption('choices');
         $supportedCodes = array_map(
-            static fn (ShippingMethodInterface $method) => $method->getCode(),
+            static fn (mixed $method): ?string => $method instanceof ShippingMethodInterface ? $method->getCode() : null,
             is_array($supported) ? $supported : [],
         );
 

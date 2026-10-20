@@ -38,7 +38,6 @@ final class ShippingMethodRequiredValidator extends ConstraintValidator
     {
         Assert::isInstanceOf($value, Checkout::class);
 
-        /** @var ShippingMethodRequired $constraint */
         Assert::isInstanceOf($constraint, ShippingMethodRequired::class);
 
         $order = $this->orderRepository->findCartByTokenValue($value->orderTokenValue);

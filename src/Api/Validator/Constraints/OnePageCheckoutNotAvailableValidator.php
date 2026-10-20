@@ -35,7 +35,6 @@ final class OnePageCheckoutNotAvailableValidator extends ConstraintValidator
     {
         Assert::isInstanceOf($value, Checkout::class);
 
-        /** @var OnePageCheckoutNotAvailable $constraint */
         Assert::isInstanceOf($constraint, OnePageCheckoutNotAvailable::class);
 
         $order = $this->orderRepository->findCartByTokenValue($value->orderTokenValue);
@@ -44,8 +43,8 @@ final class OnePageCheckoutNotAvailableValidator extends ConstraintValidator
             return;
         }
 
-        /** @var ChannelOnePageCheckoutAwareInterface $channel */
         $channel = $order->getChannel();
+        Assert::isInstanceOf($channel, ChannelOnePageCheckoutAwareInterface::class);
 
         if (false === $this->checkoutEnabledChecker->isEnabled($channel)) {
             $this->context->addViolation($constraint->message);
