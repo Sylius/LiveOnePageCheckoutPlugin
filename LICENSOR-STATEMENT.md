@@ -1,9 +1,7 @@
 # Licensor Statement
 
-> **DRAFT - pending legal review. Do not publish.**
-
 This statement is made by Sylius sp. z o.o. (KRS 0001028152), the Licensor of Sylius Live One Page
-Checkout Plugin (`sylius/live-one-page-checkout-plugin`) version **[VERSION]**. It does not modify
+Checkout Plugin (`sylius/live-one-page-checkout-plugin`) version **1.0.0**. It does not modify
 the [LICENSE](LICENSE), which remains the Business Source License 1.1 as published.
 
 Where your production use of the Licensed Work does not meet the conditions of the Additional Use

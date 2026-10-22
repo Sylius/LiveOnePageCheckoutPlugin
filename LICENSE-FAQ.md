@@ -1,9 +1,7 @@
 # License FAQ
 
-> **DRAFT - pending legal review. Do not publish.**
-
 This FAQ applies to Sylius Live One Page Checkout Plugin (`sylius/live-one-page-checkout-plugin`)
-version **[VERSION]** and is shipped unchanged with that release. It only explains the
+version **1.0.0** and is shipped unchanged with that release. It only explains the
 [LICENSE](LICENSE); it does not add or change any obligation. If this FAQ and the LICENSE
 conflict, the LICENSE prevails.
 
@@ -71,7 +69,7 @@ the plugin are not a competing offering.
 
 [LIST OF AUTHORIZED ENTITIES: Sylius sp. z o.o. and named affiliates or resellers]
 
-Contact: [LICENSING CONTACT EMAIL]
+Contact: contact@sylius.com
 
 ## Does this affect One Page Checkout for Sylius 1.x?
 

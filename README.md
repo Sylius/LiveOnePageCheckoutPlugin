@@ -380,4 +380,4 @@ not used to provide a competing offering. Disabling telemetry (e.g. `SYLIUS_TELE
 in production has licensing consequences for this plugin: you need a commercial license. See the
 [License FAQ](LICENSE-FAQ.md) and the [Licensor Statement](LICENSOR-STATEMENT.md).
 
-For commercial licensing, contact [LICENSING CONTACT EMAIL].
+For commercial licensing, contact contact@sylius.com.
