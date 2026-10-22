@@ -67,7 +67,7 @@ the plugin are not a competing offering.
 
 ## Who can sell me a commercial license?
 
-[LIST OF AUTHORIZED ENTITIES: Sylius sp. z o.o. and named affiliates or resellers]
+Only Sylius sp. z o.o.
 
 Contact: contact@sylius.com
 
