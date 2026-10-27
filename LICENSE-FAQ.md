@@ -23,7 +23,7 @@ Regardless of telemetry, you may always:
 You may also use it in production for free, provided that:
 
 - you do not deliberately disable, remove, block or modify the telemetry functionality so as to
-  prevent it from operating as documented, and
+  prevent it from operating as defined in the LICENSE, and
 - you do not use the plugin to provide a competing offering.
 
 ## What is production use?
@@ -34,8 +34,20 @@ staging and demonstration environments are non-production use.
 ## What does telemetry require?
 
 The free production use requires Sylius **2.2 or later**, with the Sylius telemetry feature and the
-`sylius/telemetry` integration required by the plugin. Telemetry is described in
-[TELEMETRY DOCUMENTATION LINK, frozen for this release].
+`sylius/telemetry` integration required by the plugin, with the following settings of
+`sylius_core.telemetry`:
+
+| Setting     | Environment variable         | Required value |
+|-------------|------------------------------|----------------|
+| `enabled`   | `SYLIUS_TELEMETRY_ENABLED`   | `true` / `1`   |
+| `business`  | `SYLIUS_TELEMETRY_BUSINESS`  | `true` / `1`   |
+| `technical` | `SYLIUS_TELEMETRY_TECHNICAL` | `true` / `1`   |
+| `plugins`   | `SYLIUS_TELEMETRY_PLUGINS`   | `true` / `1`   |
+| `url`       | -                            | default value  |
+
+These are the defaults, so a standard installation meets the requirement without any changes.
+
+Telemetry is described in the [Sylius telemetry documentation](https://docs.sylius.com/the-book/configuration/telemetry).
 
 Temporary technical failures, such as a network outage or an unavailable Sylius endpoint, do not
 breach the condition. Only a deliberate action that stops telemetry from working does.
@@ -50,7 +62,8 @@ You then need to either restore telemetry or purchase a commercial license. Syli
 [licensor statement](LICENSOR-STATEMENT.md) giving you 30 days from notice to do so before it
 enforces the termination.
 
-Setting `SYLIUS_TELEMETRY_ENABLED=0` in Sylius core is such a deliberate action.
+Setting any of the required settings above to `false` or `0`, or pointing `url` to a different
+endpoint, is such a deliberate action.
 
 ## What is a competing offering?
 

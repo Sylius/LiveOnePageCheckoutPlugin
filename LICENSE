@@ -13,7 +13,7 @@ Additional Use Grant: You may make production use of the Licensed Work,
 
                       (a) you do not deliberately disable, remove, block or
                           modify the Telemetry Functionality so as to prevent
-                          it from operating as documented; and
+                          it from operating as defined below; and
 
                       (b) you do not use the Licensed Work to provide a
                           Competing Offering.
@@ -35,9 +35,9 @@ Additional Use Grant: You may make production use of the Licensed Work,
                       "Telemetry Functionality" means the telemetry feature
                       of Sylius, version 2.2 or later, together with the
                       sylius/telemetry integration required by the Licensed
-                      Work, as described in the telemetry documentation
-                      published with the version of the Licensed Work you
-                      use.
+                      Work, with telemetry and its business, technical and
+                      plugins categories enabled, sending data to the
+                      default Sylius telemetry endpoint.
 
                       "Competing Offering" means a paid product or service,
                       offered to third parties, that copies, embeds or hosts

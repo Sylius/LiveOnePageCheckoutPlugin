@@ -41,8 +41,7 @@ This guide covers the Live One Page Checkout plugin installation process using F
 Prerequisites
 -------------
 
-You need to have installed both SyliusRecipes and SyliusRector. You can find how to install them here:
-- [Sylius/SyliusRecipes](https://github.com/Sylius/SyliusRecipes)
+You need to have installed SyliusRector. You can find how to install it here:
 - [Sylius/SyliusRector](https://github.com/Sylius/SyliusRector)
 
 Installation guide
@@ -107,7 +106,7 @@ Don't want to use recipes or Rector? You can still follow the legacy installatio
 1. Run
 
     ```bash
-    composer require live-one-page-checkout --no-scripts
+    composer require sylius/live-one-page-checkout-plugin --no-scripts
     ```
 
    or

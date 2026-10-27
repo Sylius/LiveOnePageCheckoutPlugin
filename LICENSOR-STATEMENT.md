@@ -8,7 +8,7 @@ Where your production use of the Licensed Work does not meet the conditions of t
 Grant, Sylius will not enforce the termination of your rights under the License if, within 30 days
 of receiving notice from Sylius, you either:
 
-- restore the telemetry functionality so that it operates as documented, or
+- restore the telemetry functionality so that it operates as defined in the LICENSE, or
 - purchase a commercial license.
 
 Temporary technical failures of the telemetry functionality that are not caused by a deliberate
