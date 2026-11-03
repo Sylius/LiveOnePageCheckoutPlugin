@@ -31,7 +31,7 @@ See [`CLAUDE.md`](CLAUDE.md) for a full architecture breakdown.
 | Package         | Version |
 |-----------------|---------|
 | PHP             | `^8.2`  |
-| `sylius/sylius` | `^2.0`  |
+| `sylius/sylius` | `^2.2`  |
 
 ⚙️ Installation
 ---------------
@@ -41,8 +41,7 @@ This guide covers the Live One Page Checkout plugin installation process using F
 Prerequisites
 -------------
 
-You need to have installed both SyliusRecipes and SyliusRector. You can find how to install them here:
-- [Sylius/SyliusRecipes](https://github.com/Sylius/SyliusRecipes)
+You need to have installed SyliusRector. You can find how to install it here:
 - [Sylius/SyliusRector](https://github.com/Sylius/SyliusRector)
 
 Installation guide
@@ -107,7 +106,7 @@ Don't want to use recipes or Rector? You can still follow the legacy installatio
 1. Run
 
     ```bash
-    composer require live-one-page-checkout --no-scripts
+    composer require sylius/live-one-page-checkout-plugin --no-scripts
     ```
 
    or
@@ -372,4 +371,12 @@ is added.
 
 ## License
 
-Released under the [MIT License](LICENSE).
+Released under the [Business Source License 1.1](LICENSE). The plugin is source-available, not
+open source, and each version converts to the MIT License four years after it is published.
+
+Production use is free as long as Sylius telemetry is not deliberately disabled and the plugin is
+not used to provide a competing offering. Disabling telemetry (e.g. `SYLIUS_TELEMETRY_ENABLED=0`)
+in production has licensing consequences for this plugin: you need a commercial license. See the
+[License FAQ](LICENSE-FAQ.md) and the [Licensor Statement](LICENSOR-STATEMENT.md).
+
+For commercial licensing, contact contact@sylius.com.

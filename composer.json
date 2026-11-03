@@ -7,10 +7,10 @@
         "sylius-plugin",
         "sylius-live-one-page-checkout"
     ],
-    "license": "MIT",
+    "license": "BUSL-1.1",
     "require": {
         "php": "^8.2",
-        "sylius/sylius": "^2.0",
+        "sylius/sylius": "^2.2",
         "sylius/telemetry": "^1.0"
     },
     "require-dev": {
