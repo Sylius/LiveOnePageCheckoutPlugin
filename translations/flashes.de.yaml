@@ -1,0 +1,3 @@
+sylius_live_one_page_checkout:
+    checkout:
+        state_mismatch: "Die Bestellübersicht hat sich geändert. Bitte überprüfen Sie Ihre Bestellung und versuchen Sie es erneut."

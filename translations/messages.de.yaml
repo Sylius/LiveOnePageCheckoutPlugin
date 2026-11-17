@@ -1,0 +1,15 @@
+sylius_live_one_page_checkout:
+    form:
+        channel:
+            one_page_checkout_enabled: 'One-Page-Checkout aktivieren'
+            one_page_checkout_enabled_help: 'Wenn diese Option aktiviert ist, wird in diesem Verkaufskanal der One-Page-Checkout anstelle des standardmäßigen mehrstufigen Checkouts verwendet. Beim One-Page-Checkout ist die Angabe der Lieferadresse immer erforderlich, sobald Versandkosten anfallen, während die Rechnungsadresse optional bleibt.'
+        checkout:
+            new_shipping_address: "Neue Lieferadresse"
+            new_billing_address: "Neue Rechnungsadresse"
+
+    ui:
+        checkout:
+            billing_same_as_shipping: "Die Rechnungsadresse entspricht der Lieferadresse."
+            no_shipping: "Für diese Bestellung fallen keine Versandkosten an."
+            show_more: "Mehr anzeigen"
+            show_less: "Weniger anzeigen"

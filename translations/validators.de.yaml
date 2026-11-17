@@ -1,0 +1,6 @@
+sylius_live_one_page_checkout:
+    checkout:
+        standard_checkout_not_available: 'Diese Funktion ist nicht verfügbar: Für diesen Verkaufskanal ist der One-Page-Checkout aktiviert.'
+        one_page_checkout_not_available: 'Diese Funktion ist nicht verfügbar: Der One-Page-Checkout ist für diesen Verkaufskanal deaktiviert'
+        email_not_allowed: 'Sie können keine Bestellung über eine andere E-Mail-Adresse als Ihre eigene aufgeben.'
+        hash_required: 'Der Bestell-Hash ist erforderlich. Bitte sehen Sie sich zunächst eine Vorschau des Bestellvorgangs an.'
